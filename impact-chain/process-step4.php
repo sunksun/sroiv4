@@ -21,6 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") {
 
 $project_id = isset($_POST['project_id']) ? (int)$_POST['project_id'] : 0;
 $selected_outcome = isset($_POST['selected_outcome']) ? (int)$_POST['selected_outcome'] : 0;
+$outcome_details = isset($_POST['outcome_details']) ? trim($_POST['outcome_details']) : '';
 
 if ($project_id == 0) {
     $_SESSION['error_message'] = "ไม่พบข้อมูลโครงการ";
@@ -47,6 +48,13 @@ if (!$project) {
 if ($selected_outcome == 0) {
     // ถ้าไม่มีการเลือกผลลัพธ์ ให้ไปยัง Impact Pathway
     header("location: ../impact_pathway/impact_pathway.php?project_id=" . $project_id);
+    exit;
+}
+
+// ตรวจสอบข้อมูลรายละเอียดเพิ่มเติม
+if (empty($outcome_details)) {
+    $_SESSION['error_message'] = "กรุณาระบุรายละเอียดเพิ่มเติมเกี่ยวกับผลลัพธ์";
+    header("location: step4-outcome.php?project_id=" . $project_id);
     exit;
 }
 
@@ -98,10 +106,10 @@ try {
     mysqli_stmt_close($delete_stmt);
 
     // บันทึกการเลือกผลลัพธ์ใหม่
-    $insert_query = "INSERT INTO project_outcomes (project_id, outcome_id, created_by) VALUES (?, ?, ?)";
+    $insert_query = "INSERT INTO project_outcomes (project_id, outcome_id, outcome_details, created_by) VALUES (?, ?, ?, ?)";
     $insert_stmt = mysqli_prepare($conn, $insert_query);
 
-    mysqli_stmt_bind_param($insert_stmt, 'iii', $project_id, $selected_outcome, $user_id);
+    mysqli_stmt_bind_param($insert_stmt, 'iisi', $project_id, $selected_outcome, $outcome_details, $user_id);
     if (!mysqli_stmt_execute($insert_stmt)) {
         throw new Exception("เกิดข้อผิดพลาดในการบันทึกผลลัพธ์: " . $outcome['outcome_description']);
     }

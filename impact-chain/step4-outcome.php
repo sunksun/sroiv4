@@ -109,13 +109,17 @@ if (!empty($output_ids)) {
 
 // ดึงผลลัพธ์ที่เลือกไว้แล้ว (ถ้ามี)
 $selected_outcomes = [];
-$selected_outcomes_query = "SELECT outcome_id FROM project_outcomes WHERE project_id = ?";
+$existing_outcome_details = '';
+$selected_outcomes_query = "SELECT outcome_id, outcome_details FROM project_outcomes WHERE project_id = ?";
 $selected_stmt = mysqli_prepare($conn, $selected_outcomes_query);
 mysqli_stmt_bind_param($selected_stmt, 'i', $project_id);
 mysqli_stmt_execute($selected_stmt);
 $selected_result = mysqli_stmt_get_result($selected_stmt);
 while ($row = mysqli_fetch_assoc($selected_result)) {
     $selected_outcomes[] = $row['outcome_id'];
+    if (!empty($row['outcome_details'])) {
+        $existing_outcome_details = $row['outcome_details'];
+    }
 }
 mysqli_stmt_close($selected_stmt);
 
@@ -123,6 +127,22 @@ mysqli_stmt_close($selected_stmt);
 $outcomes_by_output = [];
 foreach ($outcomes as $outcome) {
     $outcomes_by_output[$outcome['output_description']][] = $outcome;
+}
+
+// ฟังก์ชันสำหรับดึงข้อมูล Proxy จากฐานข้อมูล
+function getProxiesForOutcome($conn, $outcome_id)
+{
+    $proxies_query = "SELECT proxy_id, proxy_sequence, proxy_name, calculation_formula, proxy_description 
+                      FROM proxies 
+                      WHERE outcome_id = ? 
+                      ORDER BY CAST(proxy_sequence AS UNSIGNED) ASC";
+    $proxies_stmt = mysqli_prepare($conn, $proxies_query);
+    mysqli_stmt_bind_param($proxies_stmt, 'i', $outcome_id);
+    mysqli_stmt_execute($proxies_stmt);
+    $proxies_result = mysqli_stmt_get_result($proxies_stmt);
+    $proxies = mysqli_fetch_all($proxies_result, MYSQLI_ASSOC);
+    mysqli_stmt_close($proxies_stmt);
+    return $proxies;
 }
 ?>
 
@@ -416,47 +436,49 @@ foreach ($outcomes as $outcome) {
                         </div>
                     </div>
 
-                    <!-- ข้อมูล Proxy (ย้ายมาข้างบน) -->
+                    <!-- textarea สำหรับรายละเอียดเพิ่มเติม -->
                     <div class="card mb-4">
-                        <div class="card-header bg-secondary text-white">
+                        <div class="card-header bg-primary text-white">
                             <h6 class="mb-0">
-                                <i class="fas fa-coins"></i> ตัวอย่างข้อมูล Proxy สำหรับการประเมินมูลค่า
+                                <i class="fas fa-edit"></i> รายละเอียดเพิ่มเติมเกี่ยวกับผลลัพธ์
                             </h6>
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-12">
-                                    <!-- Proxy Example -->
-                                    <div class="p-4 border rounded bg-light">
-                                        <h6 class="text-primary mb-3">
-                                            <i class="fas fa-hand-holding-usd"></i>
-                                            1. รายได้จากค่าตอบแทนในการถ่ายทอดความรู้ทักษะเกี่ยวกับ <span class="text-warning">........................................ </span>
-                                        </h6>
-
-                                        <div class="formula-box p-3 bg-white border rounded mb-3">
-                                            <div class="text-center">
-                                                <strong class="text-success fs-5">
-                                                    (ค่าตอบแทน/ครั้ง/คน × จำนวนครั้ง/ปี × จำนวนคน = xxxxx บาท/ปี)
-                                                </strong>
-                                            </div>
-                                        </div>
-
-                                        <div class="text-center">
-                                            <small class="text-muted fst-italic">
-                                                <i class="fas fa-quote-left"></i>
-                                                จากการสัมภาษณ์ค่าตอบแทนที่ได้รับ หรือระเบียบค่าตอบแทนวิทยากรในเรื่องที่คล้ายกัน
-                                                <i class="fas fa-quote-right"></i>
-                                            </small>
-                                        </div>
-                                    </div>
+                            <div class="mb-3">
+                                <label for="outcome_details" class="form-label fw-bold">
+                                    รายละเอียดเพิ่มเติม <span class="text-danger">*</span>
+                                </label>
+                                <textarea class="form-control" id="outcome_details" name="outcome_details" rows="5"
+                                    placeholder="กรุณาระบุรายละเอียดเพิ่มเติมเกี่ยวกับผลลัพธ์นี้ เช่น ผลกระทบที่คาดหวัง กลุ่มเป้าหมายที่ได้รับประโยชน์ ข้อมูลสำคัญสำหรับการประเมิน ฯลฯ" required><?php echo htmlspecialchars($existing_outcome_details); ?></textarea>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle"></i> ระบุรายละเอียดที่เป็นประโยชน์สำหรับการประเมินผลลัพธ์นี้และการคำนวณสัดส่วนผลกระทบ
                                 </div>
+                            </div>
+
+                            <!-- ปุ่มบันทึกรายละเอียดเพิ่มเติม -->
+                            <div class="text-center">
+                                <button type="button" class="btn btn-outline-primary" onclick="saveOutcomeDetails()">
+                                    <i class="fas fa-save"></i> บันทึกรายละเอียดเพิ่มเติม
+                                </button>
                             </div>
                         </div>
                     </div>
 
-                    <div class="alert alert-warning mb-4">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <strong>หมายเหตุ:</strong> ข้อมูล Proxy ข้างต้นเป็นตัวอย่างสำหรับการประเมินมูลค่า ในการใช้งานจริงควรมีการเก็บข้อมูลและการคำนวณที่แม่นยำตามบริบทของโครงการ
+                    <!-- ข้อมูล Proxy (ย้ายมาข้างบน) -->
+                    <div class="card mb-4" id="proxySection">
+                        <div class="card-header bg-secondary text-white">
+                            <h6 class="mb-0">
+                                <i class="fas fa-coins"></i> ข้อมูล Proxy สำหรับการประเมินมูลค่า
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div id="proxyContent">
+                                <div class="text-center text-muted py-4">
+                                    <i class="fas fa-hand-point-up fa-2x mb-2"></i>
+                                    <p>กรุณาเลือกผลลัพธ์เพื่อดูข้อมูล Proxy ที่เกี่ยวข้อง</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Formula Display -->
@@ -659,6 +681,9 @@ foreach ($outcomes as $outcome) {
                     card.classList.add('selected');
                     group.classList.add('has-selection');
 
+                    // โหลดข้อมูล Proxy สำหรับผลลัพธ์ที่เลือก
+                    loadProxyDataForMainPage(this.value);
+
                     // แสดง modal พร้อมข้อมูลผลลัพธ์ที่เลือก
                     showOutcomeProxyModal(this);
                 }
@@ -729,9 +754,13 @@ foreach ($outcomes as $outcome) {
         function showOutcomeProxyModal(radioElement) {
             const outcomeText = radioElement.closest('.card-body').querySelector('.text-dark').textContent.trim();
             const outcomeSequence = radioElement.closest('.card-body').querySelector('.fw-bold').textContent.trim();
+            const outcomeId = radioElement.value;
 
             // อัปเดตข้อความใน modal
             document.getElementById('selectedOutcomeText').textContent = outcomeSequence + ': ' + outcomeText;
+
+            // โหลดข้อมูล Proxy สำหรับผลลัพธ์ที่เลือก
+            loadProxyData(outcomeId);
 
             // โหลดข้อมูลเดิม (ถ้ามี)
             loadExistingData();
@@ -739,6 +768,139 @@ foreach ($outcomes as $outcome) {
             // แสดง modal
             const modal = new bootstrap.Modal(document.getElementById('outcomeProxyModal'));
             modal.show();
+        }
+
+        // ฟังก์ชันโหลดข้อมูล Proxy จากฐานข้อมูล
+        function loadProxyData(outcomeId) {
+            // แสดง loading
+            document.getElementById('proxyContent').innerHTML = `
+                <div class="text-center py-4">
+                    <i class="fas fa-spinner fa-spin fa-2x mb-2"></i>
+                    <p>กำลังโหลดข้อมูล Proxy...</p>
+                </div>
+            `;
+
+            // ดึงข้อมูล Proxy จากฐานข้อมูล
+            fetch(`get-proxy-data.php?outcome_id=${outcomeId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.proxies && data.proxies.length > 0) {
+                        displayProxyData(data.proxies);
+                    } else {
+                        // ไม่มีข้อมูล Proxy
+                        document.getElementById('proxyContent').innerHTML = `
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-info-circle fa-2x mb-2"></i>
+                                <p>ไม่พบข้อมูล Proxy สำหรับผลลัพธ์นี้</p>
+                                <small>สามารถเพิ่มข้อมูล Proxy ในระบบจัดการข้อมูลหลัก</small>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading proxy data:', error);
+                    document.getElementById('proxyContent').innerHTML = `
+                        <div class="text-center text-danger py-4">
+                            <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                            <p>เกิดข้อผิดพลาดในการโหลดข้อมูล Proxy</p>
+                            <small>กรุณาลองใหม่อีกครั้ง</small>
+                        </div>
+                    `;
+                });
+        }
+
+        // ฟังก์ชันแสดงข้อมูล Proxy
+        function displayProxyData(proxies) {
+            let proxyHtml = '<div class="row">';
+
+            proxies.forEach((proxy, index) => {
+                proxyHtml += `
+                    <div class="col-12 mb-3">
+                        <div class="p-4 border rounded bg-light">
+                            <h6 class="text-primary mb-3">
+                                <i class="fas fa-hand-holding-usd"></i>
+                                ${proxy.proxy_name}
+                            </h6>
+
+                            <div class="formula-box p-3 bg-white border rounded mb-3">
+                                <div class="text-center">
+                                    <strong class="text-success fs-6">
+                                        ${proxy.calculation_formula}
+                                    </strong>
+                                </div>
+                            </div>
+                `;
+
+                // แสดง proxy_description ถ้ามี
+                if (proxy.proxy_description && proxy.proxy_description.trim() !== '') {
+                    proxyHtml += `
+                        <div class="text-center">
+                            <small class="text-muted fst-italic">
+                                <i class="fas fa-quote-left"></i>
+                                ${proxy.proxy_description}
+                                <i class="fas fa-quote-right"></i>
+                            </small>
+                        </div>
+                    `;
+                }
+
+                proxyHtml += `
+                        </div>
+                    </div>
+                `;
+            });
+
+            proxyHtml += '</div>';
+
+            // แสดงหมายเหตุ
+            proxyHtml += `
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>หมายเหตุ:</strong> ข้อมูล Proxy ข้างต้นใช้สำหรับการประเมินมูลค่าทางการเงินของผลลัพธ์ 
+                    ในการใช้งานจริงควรมีการเก็บข้อมูลและการคำนวณที่แม่นยำตามบริบทของโครงการ
+                </div>
+            `;
+
+            document.getElementById('proxyContent').innerHTML = proxyHtml;
+        }
+
+        // ฟังก์ชันโหลดข้อมูล Proxy สำหรับหน้าหลัก
+        function loadProxyDataForMainPage(outcomeId) {
+            // แสดง loading ในส่วน Proxy ของหน้าหลัก
+            document.getElementById('proxyContent').innerHTML = `
+                <div class="text-center py-4">
+                    <i class="fas fa-spinner fa-spin fa-2x mb-2"></i>
+                    <p>กำลังโหลดข้อมูล Proxy...</p>
+                </div>
+            `;
+
+            // ดึงข้อมูล Proxy จากฐานข้อมูล
+            fetch(`get-proxy-data.php?outcome_id=${outcomeId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.proxies && data.proxies.length > 0) {
+                        displayProxyData(data.proxies);
+                    } else {
+                        // ไม่มีข้อมูล Proxy
+                        document.getElementById('proxyContent').innerHTML = `
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-info-circle fa-2x mb-2"></i>
+                                <p>ไม่พบข้อมูล Proxy สำหรับผลลัพธ์นี้</p>
+                                <small>สามารถเพิ่มข้อมูล Proxy ในระบบจัดการข้อมูลหลัก</small>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading proxy data for main page:', error);
+                    document.getElementById('proxyContent').innerHTML = `
+                        <div class="text-center text-danger py-4">
+                            <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                            <p>เกิดข้อผิดพลาดในการโหลดข้อมูล Proxy</p>
+                            <small>กรุณาลองใหม่อีกครั้ง</small>
+                        </div>
+                    `;
+                });
         }
 
         // ฟังก์ชันโหลดข้อมูลเดิมจากฐานข้อมูล
@@ -1000,6 +1162,24 @@ foreach ($outcomes as $outcome) {
                 return;
             }
 
+            // ตรวจสอบข้อมูลรายละเอียดเพิ่มเติม
+            const outcomeDetails = document.getElementById('outcome_details').value.trim();
+            if (!outcomeDetails) {
+                alert('กรุณากรอกรายละเอียดเพิ่มเติมเกี่ยวกับผลลัพธ์');
+                return;
+            }
+
+            // เพิ่ม outcome_details ลงในฟอร์มหลัก
+            const outcomeForm = document.getElementById('outcomeForm');
+            let outcomeDetailsInput = outcomeForm.querySelector('input[name="outcome_details"]');
+            if (!outcomeDetailsInput) {
+                outcomeDetailsInput = document.createElement('input');
+                outcomeDetailsInput.type = 'hidden';
+                outcomeDetailsInput.name = 'outcome_details';
+                outcomeForm.appendChild(outcomeDetailsInput);
+            }
+            outcomeDetailsInput.value = outcomeDetails;
+
             // รวบรวมข้อมูลจากฟอร์มสัดส่วนผลกระทบ
             const basecaseData = new FormData();
             basecaseData.append('project_id', document.querySelector('input[name="project_id"]').value);
@@ -1048,23 +1228,82 @@ foreach ($outcomes as $outcome) {
                         console.log('Basecase data saved');
 
                         // จากนั้นส่งข้อมูลผลลัพธ์ไปยัง process-step4.php
-                        const outcomeForm = document.getElementById('outcomeForm');
                         outcomeForm.submit();
                     }).catch(error => {
                         console.error('Error saving basecase data:', error);
                         // ถึงแม้มีข้อผิดพลาดในการบันทึกสัดส่วน ก็ยังส่งข้อมูลผลลัพธ์ต่อไป
-                        const outcomeForm = document.getElementById('outcomeForm');
                         outcomeForm.submit();
                     });
             } else {
                 // ไม่มีข้อมูลสัดส่วนผลกระทบ - ส่งข้อมูลผลลัพธ์ไปเลย
-                const outcomeForm = document.getElementById('outcomeForm');
                 outcomeForm.submit();
             }
 
             // ปิด modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('outcomeProxyModal'));
             modal.hide();
+        }
+
+        // ฟังก์ชันบันทึกรายละเอียดเพิ่มเติมเท่านั้น
+        function saveOutcomeDetails() {
+            const selectedRadio = document.querySelector('input[name="selected_outcome"]:checked');
+            if (!selectedRadio) {
+                alert('กรุณาเลือกผลลัพธ์ก่อน');
+                return;
+            }
+
+            const outcomeDetails = document.getElementById('outcome_details').value.trim();
+            if (!outcomeDetails) {
+                alert('กรุณากรอกรายละเอียดเพิ่มเติมเกี่ยวกับผลลัพธ์');
+                return;
+            }
+
+            // แสดง loading
+            const saveBtn = document.querySelector('button[onclick="saveOutcomeDetails()"]');
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
+            saveBtn.disabled = true;
+
+            // สร้าง FormData สำหรับส่งข้อมูล
+            const formData = new FormData();
+            formData.append('project_id', document.querySelector('input[name="project_id"]').value);
+            formData.append('selected_outcome', selectedRadio.value);
+            formData.append('outcome_details', outcomeDetails);
+
+            // ส่งข้อมูลไปยัง process-step4.php
+            fetch('process-step4.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(data => {
+                    // แสดงข้อความสำเร็จ
+                    saveBtn.innerHTML = '<i class="fas fa-check"></i> บันทึกเรียบร้อย';
+                    saveBtn.className = 'btn btn-success';
+
+                    // รีเซ็ตปุ่มหลังจาก 2 วินาที
+                    setTimeout(() => {
+                        saveBtn.innerHTML = originalText;
+                        saveBtn.className = 'btn btn-outline-primary';
+                        saveBtn.disabled = false;
+                    }, 2000);
+
+                    console.log('Outcome details saved successfully');
+                })
+                .catch(error => {
+                    console.error('Error saving outcome details:', error);
+
+                    // แสดงข้อความผิดพลาด
+                    saveBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> เกิดข้อผิดพลาด';
+                    saveBtn.className = 'btn btn-danger';
+
+                    // รีเซ็ตปุ่มหลังจาก 2 วินาที
+                    setTimeout(() => {
+                        saveBtn.innerHTML = originalText;
+                        saveBtn.className = 'btn btn-outline-primary';
+                        saveBtn.disabled = false;
+                    }, 2000);
+                });
         }
 
         // ฟังก์ชันคำนวณผลกระทบ
