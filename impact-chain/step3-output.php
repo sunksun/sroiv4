@@ -188,10 +188,16 @@ ksort($grouped_outputs);
         <div class="row mb-4">
             <div class="col-12">
                 <div class="progress" style="height: 30px;">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemax="100"></div>
-                    <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemax="100"></div>
-                    <div class="progress-bar bg-primary" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemax="100">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemax="100"></div>
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemax="100"></div>
+                    <div class="progress-bar bg-primary" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemax="100">
                         Step 3: ผลผลิต
+                    </div>
+                    <div class="progress-bar bg-light border" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemax="100">
+                        <span class="text-dark">Step 4</span>
+                    </div>
+                    <div class="progress-bar bg-light border" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemax="100">
+                        <span class="text-dark">สรุป</span>
                     </div>
                 </div>
                 <div class="d-flex justify-content-between mt-2">
@@ -199,6 +205,7 @@ ksort($grouped_outputs);
                     <small class="text-success">✓ 2. กิจกรรม</small>
                     <small class="text-primary fw-bold">3. ผลผลิต</small>
                     <small class="text-muted">4. ผลลัพธ์</small>
+                    <small class="text-muted">5. สรุป</small>
                 </div>
             </div>
         </div>
@@ -344,7 +351,7 @@ ksort($grouped_outputs);
 
                                 <div class="alert alert-info mt-4">
                                     <i class="fas fa-info-circle"></i>
-                                    <strong>คำแนะนำ:</strong> กรุณาเลือกผลผลิตที่ต้องการ ระบบจะเปิดหน้าต่างให้กรอกรายละเอียดเพิ่มเติม
+                                    <strong>คำแนะนำ:</strong> กรุณาเลือกผลผลิตที่ต้องการ ระบบจะเปิดหน้าต่างให้กรอกรายละเอียดเพิ่มเติม หลังจากนั้นจะไปยัง Step 4 เลือกผลลัพธ์
                                 </div>
                             </div>
                         <?php endif; ?>
@@ -396,8 +403,8 @@ ksort($grouped_outputs);
                         <button type="button" class="btn btn-outline-primary" onclick="goBack()">
                             <i class="fas fa-arrow-left"></i> ย้อนกลับ
                         </button>
-                        <button type="submit" class="btn btn-primary">
-                            เสร็จสิ้น: ดูสรุป Impact Chain <i class="fas fa-check"></i>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-arrow-right"></i> ถัดไป: เลือกผลลัพธ์ (Step 4)
                         </button>
                     </div>
                 </form>

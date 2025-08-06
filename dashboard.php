@@ -755,10 +755,10 @@ function formatThaiDate($date)
             </a>
             <ul class="nav-menu">
                 <li><a href="dashboard.php" class="nav-link active">📊 Dashboard</a></li>
-                <li><a href="#" class="nav-link">📋 โครงการ</a></li>
-                <li><a href="#" class="nav-link">📈 การวิเคราะห์</a></li>
-                <li><a href="#" class="nav-link">📄 รายงาน</a></li>
-                <li><a href="#" class="nav-link">⚙️ ตั้งค่า</a></li>
+                <li><a href="project-list.php" class="nav-link">📋 โครงการ</a></li>
+                <li><a href="impact_pathway/impact_pathway.php" class="nav-link">📈 การวิเคราะห์</a></li>
+                <li><a href="reports.php" class="nav-link">📄 รายงาน</a></li>
+                <li><a href="settings.php" class="nav-link">⚙️ ตั้งค่า</a></li>
             </ul>
             <?php include 'user-menu.php'; ?>
         </div>
@@ -923,11 +923,11 @@ function formatThaiDate($date)
                                 <p>เริ่มต้นการประเมิน SROI</p>
                             </div>
                         </a>
-                        <a href="#" class="action-button" onclick="importData()">
-                            <div class="action-icon">📥</div>
+                        <a href="impact_pathway/impact_pathway.php" class="action-button">
+                            <div class="action-icon">🔗</div>
                             <div class="action-content">
-                                <h4>นำเข้าข้อมูล</h4>
-                                <p>นำเข้าจาก Excel หรือ CSV</p>
+                                <h4>สร้าง Impact Pathway</h4>
+                                <p>ห่วงโซ่ผลกระทบทางสังคม</p>
                             </div>
                         </a>
                         <a href="#" class="action-button" onclick="generateReport()">

@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") {
 }
 
 $project_id = isset($_POST['project_id']) ? (int)$_POST['project_id'] : 0;
-$selected_outcomes = isset($_POST['outcomes']) ? $_POST['outcomes'] : [];
+$selected_outcome = isset($_POST['selected_outcome']) ? (int)$_POST['selected_outcome'] : 0;
 
 if ($project_id == 0) {
     $_SESSION['error_message'] = "ไม่พบข้อมูลโครงการ";
@@ -32,7 +32,7 @@ if ($project_id == 0) {
 $user_id = $_SESSION['user_id'];
 $check_query = "SELECT * FROM projects WHERE id = ? AND created_by = ?";
 $check_stmt = mysqli_prepare($conn, $check_query);
-mysqli_stmt_bind_param($check_stmt, 'is', $project_id, $user_id);
+mysqli_stmt_bind_param($check_stmt, 'ii', $project_id, $user_id);
 mysqli_stmt_execute($check_stmt);
 $project_result = mysqli_stmt_get_result($check_stmt);
 $project = mysqli_fetch_assoc($project_result);
@@ -44,62 +44,79 @@ if (!$project) {
     exit;
 }
 
-if (empty($selected_outcomes)) {
-    $_SESSION['error_message'] = "กรุณาเลือกผลลัพธ์อย่างน้อย 1 รายการ";
-    header("location: step4-outcome.php?project_id=" . $project_id);
+if ($selected_outcome == 0) {
+    // ถ้าไม่มีการเลือกผลลัพธ์ ให้ไปยัง Impact Pathway
+    header("location: ../impact_pathway/impact_pathway.php?project_id=" . $project_id);
     exit;
 }
 
-// TEST MODE: ไม่บันทึกข้อมูลจริง เพียงแค่ทดสอบการทำงาน
+// บันทึกข้อมูลการเลือกผลลัพธ์ลงฐานข้อมูล
 try {
-    // ตรวจสอบว่า outcome_id ที่เลือกมีจริงในฐานข้อมูล และดึง financial proxies
-    $valid_outcomes = [];
-    $financial_proxies_summary = [];
+    // ตรวจสอบว่าโครงการนี้ได้เลือกผลผลิตแล้วหรือไม่
+    $check_output_query = "SELECT output_id FROM project_outputs WHERE project_id = ?";
+    $check_output_stmt = mysqli_prepare($conn, $check_output_query);
+    mysqli_stmt_bind_param($check_output_stmt, 'i', $project_id);
+    mysqli_stmt_execute($check_output_stmt);
+    $output_result = mysqli_stmt_get_result($check_output_stmt);
 
-    foreach ($selected_outcomes as $outcome_id) {
-        $verify_query = "SELECT moc.id, moc.name, moc.description, mo.name as output_name, ma.name as activity_name, ms.name as strategy_name
-                         FROM master_outcomes moc 
-                         JOIN master_outputs mo ON moc.output_id = mo.id 
-                         JOIN master_activities ma ON mo.activity_id = ma.id 
-                         JOIN master_strategies ms ON ma.strategy_id = ms.id
-                         WHERE moc.id = ? AND moc.is_active = 1";
-        $verify_stmt = mysqli_prepare($conn, $verify_query);
-        mysqli_stmt_bind_param($verify_stmt, 'i', $outcome_id);
-        mysqli_stmt_execute($verify_stmt);
-        $verify_result = mysqli_stmt_get_result($verify_stmt);
-
-        if ($outcome = mysqli_fetch_assoc($verify_result)) {
-            $valid_outcomes[] = $outcome;
-
-            // ดึง financial proxies ที่เกี่ยวข้อง
-            $fp_query = "SELECT id, name, unit, estimated_value FROM master_financial_proxies WHERE outcome_id = ? AND is_active = 1";
-            $fp_stmt = mysqli_prepare($conn, $fp_query);
-            mysqli_stmt_bind_param($fp_stmt, 'i', $outcome_id);
-            mysqli_stmt_execute($fp_stmt);
-            $fp_result = mysqli_stmt_get_result($fp_stmt);
-
-            while ($fp = mysqli_fetch_assoc($fp_result)) {
-                $financial_proxies_summary[] = array_merge($fp, [
-                    'outcome_name' => $outcome['name'],
-                    'output_name' => $outcome['output_name']
-                ]);
-            }
-            mysqli_stmt_close($fp_stmt);
-        }
-        mysqli_stmt_close($verify_stmt);
+    if (mysqli_num_rows($output_result) == 0) {
+        $_SESSION['error_message'] = "กรุณาเลือกผลผลิตก่อน";
+        header("location: step3-output.php?project_id=" . $project_id);
+        exit;
     }
 
-    // เก็บข้อมูลใน session สำหรับการทดสอบ
-    $_SESSION['test_selected_outcomes'] = array_column($valid_outcomes, 'id');
-    $_SESSION['test_selected_outcomes_detail'] = $valid_outcomes;
-    $_SESSION['test_financial_proxies'] = $financial_proxies_summary;
-    $_SESSION['success_message'] = "ทดสอบการสร้าง Impact Chain สำเร็จ (ยังไม่บันทึกข้อมูลจริง)";
+    // ดึง output_id ที่เลือก
+    $output_row = mysqli_fetch_assoc($output_result);
+    $selected_output_id = $output_row['output_id'];
+    mysqli_stmt_close($check_output_stmt);
 
-    // ไปยังหน้าสรุปผล
-    header("location: summary.php?project_id=" . $project_id);
+    // ตรวจสอบว่า outcome_id ที่เลือกมีจริงในฐานข้อมูลและเกี่ยวข้องกับผลผลิตที่เลือก
+    $verify_query = "SELECT oc.outcome_id, oc.outcome_description, oc.outcome_sequence, 
+                            o.output_description, a.activity_name, s.strategy_name
+                     FROM outcomes oc 
+                     JOIN outputs o ON oc.output_id = o.output_id 
+                     JOIN activities a ON o.activity_id = a.activity_id 
+                     JOIN strategies s ON a.strategy_id = s.strategy_id
+                     WHERE oc.outcome_id = ? AND oc.output_id = ?";
+    $verify_stmt = mysqli_prepare($conn, $verify_query);
+    mysqli_stmt_bind_param($verify_stmt, 'ii', $selected_outcome, $selected_output_id);
+    mysqli_stmt_execute($verify_stmt);
+    $verify_result = mysqli_stmt_get_result($verify_stmt);
+
+    if (!($outcome = mysqli_fetch_assoc($verify_result))) {
+        $_SESSION['error_message'] = "ไม่พบผลลัพธ์ที่เลือกหรือผลลัพธ์ไม่สอดคล้องกับผลผลิต";
+        header("location: step4-outcome.php?project_id=" . $project_id);
+        exit;
+    }
+    mysqli_stmt_close($verify_stmt);
+
+    // ลบข้อมูลการเลือกผลลัพธ์เดิม (ถ้ามี)
+    $delete_query = "DELETE FROM project_outcomes WHERE project_id = ?";
+    $delete_stmt = mysqli_prepare($conn, $delete_query);
+    mysqli_stmt_bind_param($delete_stmt, 'i', $project_id);
+    mysqli_stmt_execute($delete_stmt);
+    mysqli_stmt_close($delete_stmt);
+
+    // บันทึกการเลือกผลลัพธ์ใหม่
+    $insert_query = "INSERT INTO project_outcomes (project_id, outcome_id, created_by) VALUES (?, ?, ?)";
+    $insert_stmt = mysqli_prepare($conn, $insert_query);
+
+    mysqli_stmt_bind_param($insert_stmt, 'iii', $project_id, $selected_outcome, $user_id);
+    if (!mysqli_stmt_execute($insert_stmt)) {
+        throw new Exception("เกิดข้อผิดพลาดในการบันทึกผลลัพธ์: " . $outcome['outcome_description']);
+    }
+    mysqli_stmt_close($insert_stmt);
+
+    // เก็บข้อมูลใน session เพื่อใช้ในการแสดงผล
+    $_SESSION['selected_outcome'] = $selected_outcome;
+    $_SESSION['selected_outcome_detail'] = $outcome;
+    $_SESSION['success_message'] = "บันทึกการเลือกผลลัพธ์สำเร็จ";
+
+    // ไปยังหน้า Impact Pathway
+    header("location: ../impact_pathway/impact_pathway.php?project_id=" . $project_id);
     exit;
 } catch (Exception $e) {
-    $_SESSION['error_message'] = "เกิดข้อผิดพลาดในการทดสอบ: " . $e->getMessage();
+    $_SESSION['error_message'] = "เกิดข้อผิดพลาดในการบันทึกข้อมูล: " . $e->getMessage();
     header("location: step4-outcome.php?project_id=" . $project_id);
     exit;
 }

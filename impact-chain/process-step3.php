@@ -104,8 +104,8 @@ try {
             $_SESSION['selected_output_details'] = $output_details;
             $_SESSION['success_message'] = "บันทึกการเลือกผลผลิตสำเร็จ: " . $output['output_description'];
 
-            // ไปยัง Summary เนื่องจากไม่มีตาราง outcomes ในโครงสร้างใหม่
-            header("location: summary.php?project_id=" . $project_id);
+            // ไปยัง Step 4 เพื่อเลือกผลลัพธ์
+            header("location: step4-outcome.php?project_id=" . $project_id);
             exit;
         } else {
             $_SESSION['error_message'] = "เกิดข้อผิดพลาดในการบันทึกข้อมูล";

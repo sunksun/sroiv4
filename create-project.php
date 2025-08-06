@@ -529,7 +529,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <ul class="nav-menu">
                 <li><a href="dashboard.php" class="nav-link">📊 Dashboard</a></li>
                 <li><a href="project-list.php" class="nav-link active">📋 โครงการ</a></li>
-                <li><a href="analysis.php" class="nav-link">📈 การวิเคราะห์</a></li>
+                <li><a href="impact_pathway/impact_pathway.php" class="nav-link">📈 การวิเคราะห์</a></li>
                 <li><a href="reports.php" class="nav-link">📄 รายงาน</a></li>
                 <li><a href="settings.php" class="nav-link">⚙️ ตั้งค่า</a></li>
             </ul>
