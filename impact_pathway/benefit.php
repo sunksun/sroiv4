@@ -21,6 +21,9 @@ $error = '';
 $user_id = $_SESSION['user_id'];
 $username = $_SESSION['username'];
 
+// รับ project_id จาก URL
+$project_id = isset($_GET['project_id']) ? intval($_GET['project_id']) : 0;
+
 // จัดการการส่งฟอร์ม
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
@@ -40,6 +43,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $message = "บันทึกข้อมูลเรียบร้อยแล้ว";
+
+        // ลิงค์ไปยังหน้า dashboard.php
+        header("Location: ../dashboard.php");
+        exit();
     } catch (Exception $e) {
         $error = $e->getMessage();
     }
@@ -482,30 +489,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         value="<?php echo $i == 1 ? 'ผลประโยชน์ 1' : ''; ?>">
                                 </td>
                                 <td class="value-cell">
-                                    <input type="number" name="value_<?php echo $i; ?>_2567"
-                                        step="0.01" min="0"
+                                    <input type="text" name="value_<?php echo $i; ?>_2567"
                                         value="<?php echo $i == 1 ? '100.00' : ''; ?>">
                                 </td>
                                 <td class="value-cell">
-                                    <input type="number" name="value_<?php echo $i; ?>_2568"
-                                        step="0.01" min="0"
+                                    <input type="text" name="value_<?php echo $i; ?>_2568"
                                         value="<?php echo $i == 1 ? '300.00' : ''; ?>">
                                 </td>
                                 <td class="value-cell">
-                                    <input type="number" name="value_<?php echo $i; ?>_2569"
-                                        step="0.01" min="0">
+                                    <input type="text" name="value_<?php echo $i; ?>_2569">
                                 </td>
                                 <td class="value-cell">
-                                    <input type="number" name="value_<?php echo $i; ?>_2570"
-                                        step="0.01" min="0">
+                                    <input type="text" name="value_<?php echo $i; ?>_2570">
                                 </td>
                                 <td class="value-cell">
-                                    <input type="number" name="value_<?php echo $i; ?>_25xx"
-                                        step="0.01" min="0">
+                                    <input type="text" name="value_<?php echo $i; ?>_25xx">
                                 </td>
                                 <td class="value-cell">
-                                    <input type="number" name="value_<?php echo $i; ?>_25xx2"
-                                        step="0.01" min="0">
+                                    <input type="text" name="value_<?php echo $i; ?>_25xx2">
                                 </td>
                             </tr>
                         <?php endfor; ?>
@@ -545,12 +546,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 submitBtn.style.display = 'none';
             });
 
-            // Auto-format number inputs
-            const numberInputs = document.querySelectorAll('input[type="number"]');
-            numberInputs.forEach(input => {
+            // Auto-format text inputs for numbers (optional formatting)
+            const valueInputs = document.querySelectorAll('input[name*="value_"]');
+            valueInputs.forEach(input => {
                 input.addEventListener('blur', function() {
-                    if (this.value) {
+                    if (this.value && !isNaN(this.value)) {
                         this.value = parseFloat(this.value).toFixed(2);
+                    }
+                });
+
+                // Allow only numbers and decimal point
+                input.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9.]/g, '');
+                    // Prevent multiple decimal points
+                    if ((this.value.match(/\./g) || []).length > 1) {
+                        this.value = this.value.slice(0, -1);
                     }
                 });
             });

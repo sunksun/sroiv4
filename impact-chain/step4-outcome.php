@@ -510,7 +510,7 @@ function getProxiesForOutcome($conn, $outcome_id)
                                         <td id="savedBenefitDetail">-</td>
                                     </tr>
                                     <tr>
-                                        <td class="fw-bold">หมายเหตุ</td>
+                                        <td class="fw-bold">จำนวนเงิน (บาท/ปี)</td>
                                         <td id="savedBenefitNote">-</td>
                                     </tr>
                                     <tr>
@@ -554,13 +554,62 @@ function getProxiesForOutcome($conn, $outcome_id)
                             <h6 class="text-primary mb-3">
                                 <i class="fas fa-list"></i> ข้อมูลผลประโยชน์
                             </h6>
+
+                            <!-- เลือกปี -->
+                            <div class="card mb-4">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0 text-secondary">
+                                        <i class="fas fa-calendar-alt"></i> เลือกปีที่ต้องการประเมิน
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="row">
+                                                <div class="col-md-3 col-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="evaluation_year" id="year2567" value="2567" checked>
+                                                        <label class="form-check-label fw-bold text-primary" for="year2567">
+                                                            2567
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 col-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="evaluation_year" id="year2568" value="2568">
+                                                        <label class="form-check-label fw-bold text-success" for="year2568">
+                                                            2568
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 col-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="evaluation_year" id="year2569" value="2569">
+                                                        <label class="form-check-label fw-bold text-info" for="year2569">
+                                                            2569
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 col-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="evaluation_year" id="year2570" value="2570">
+                                                        <label class="form-check-label fw-bold text-warning" for="year2570">
+                                                            2570
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="table-responsive mb-4">
                                 <table class="table table-bordered" id="benefitTable">
                                     <thead class="table-light">
                                         <tr>
                                             <th width="20%">ผลประโยชน์</th>
                                             <th width="40%">รายละเอียด</th>
-                                            <th width="30%">หมายเหตุ</th>
+                                            <th width="30%">จำนวนเงิน (บาท/ปี)</th>
                                             <th width="10%">จัดการ</th>
                                         </tr>
                                     </thead>
@@ -575,7 +624,7 @@ function getProxiesForOutcome($conn, $outcome_id)
                                             <td>
                                                 <input type="text" class="form-control"
                                                     name="benefit_note_1"
-                                                    placeholder="กรอกหมายเหตุ...">
+                                                    placeholder="กรอกจำนวนเงิน (บาท/ปี)">
                                             </td>
                                             <td class="text-center align-middle">
                                                 <button type="button" class="btn btn-outline-danger btn-sm"
@@ -660,6 +709,37 @@ function getProxiesForOutcome($conn, $outcome_id)
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // ฟังก์ชันจัดรูปแบบตัวเลขสำหรับจำนวนเงิน
+        function formatNumberInput(input) {
+            // ลบคอมมาออกก่อนเพื่อให้ได้ตัวเลขล้วน
+            let value = input.value.replace(/,/g, '');
+
+            // ตรวจสอบว่าเป็นตัวเลขหรือไม่
+            if (value && !isNaN(value)) {
+                // แปลงเป็นจำนวนเต็มและจัดรูปแบบให้มีคอมมา
+                const intValue = parseInt(value);
+                if (!isNaN(intValue)) {
+                    input.value = intValue.toLocaleString('th-TH');
+                }
+            }
+        }
+
+        // ฟังก์ชันลบคอมมาออกจากตัวเลขเพื่อการคำนวณ
+        function getNumericValue(input) {
+            return parseInt(input.value.replace(/,/g, '')) || 0;
+        }
+
+        // เพิ่ม event listener สำหรับ input field จำนวนเงิน
+        document.addEventListener('DOMContentLoaded', function() {
+            // เพิ่ม event listener สำหรับ input จำนวนเงินที่มีอยู่แล้ว
+            const existingMoneyInput = document.querySelector('input[name="benefit_note_1"]');
+            if (existingMoneyInput) {
+                existingMoneyInput.addEventListener('blur', function() {
+                    formatNumberInput(this);
+                });
+            }
+        });
+
         // เพิ่ม visual feedback เมื่อเลือก outcome
         document.querySelectorAll('input[type="radio"]').forEach(radio => {
             radio.addEventListener('change', function() {
@@ -960,7 +1040,7 @@ function getProxiesForOutcome($conn, $outcome_id)
                         <input type="text" class="form-control"
                             name="benefit_note_${rowNumber}"
                             value="${record.benefit_note || ''}"
-                            placeholder="กรอกหมายเหตุ...">
+                            placeholder="กรอกจำนวนเงิน (บาท/ปี)">
                     </td>
                     <td class="text-center align-middle">
                         <button type="button" class="btn btn-outline-danger btn-sm" 
@@ -970,6 +1050,20 @@ function getProxiesForOutcome($conn, $outcome_id)
                     </td>
                 `;
                 benefitTableBody.appendChild(newBenefitRow);
+
+                // เพิ่ม event listener สำหรับ input field จำนวนเงิน
+                const moneyInput = newBenefitRow.querySelector(`input[name="benefit_note_${rowNumber}"]`);
+                if (moneyInput) {
+                    // ฟอร์แมตค่าเริ่มต้นถ้ามีข้อมูล
+                    if (record.benefit_note && record.benefit_note !== '') {
+                        formatNumberInput(moneyInput);
+                    }
+
+                    // เพิ่ม event listener สำหรับการจัดรูปแบบ
+                    moneyInput.addEventListener('blur', function() {
+                        formatNumberInput(this);
+                    });
+                }
 
                 // สร้างแถวในตารางสัดส่วนผลกระทบ
                 const impactTableBody = document.querySelector('#impactTable tbody');
@@ -1016,7 +1110,15 @@ function getProxiesForOutcome($conn, $outcome_id)
             // อัปเดตข้อมูลใน saved data section ด้วยข้อมูลรายการแรก
             const firstRecord = records[0];
             document.getElementById('savedBenefitDetail').textContent = firstRecord.benefit_detail || '-';
-            document.getElementById('savedBenefitNote').textContent = firstRecord.benefit_note || '-';
+
+            // ฟอร์แมตจำนวนเงินให้มีคอมมา
+            const benefitNote = firstRecord.benefit_note || '0';
+            const formattedAmount = parseFloat(benefitNote).toLocaleString('th-TH', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            document.getElementById('savedBenefitNote').textContent = formattedAmount + ' บาท';
+
             document.getElementById('savedAttribution').textContent = firstRecord.attribution + '%';
             document.getElementById('savedDeadweight').textContent = firstRecord.deadweight + '%';
             document.getElementById('savedDisplacement').textContent = firstRecord.displacement + '%';
@@ -1057,7 +1159,8 @@ function getProxiesForOutcome($conn, $outcome_id)
 
                 if (benefitDetailInput && attributionInput && deadweightInput && displacementInput) {
                     const benefitDetail = benefitDetailInput.value;
-                    const benefitNote = benefitNoteInput.value;
+                    // แปลงจำนวนเงินที่มีคอมมากลับเป็นตัวเลขล้วน (ฟังก์ชัน saveBestPracticeData)
+                    const benefitNote = benefitNoteInput.value.replace(/,/g, '');
                     const attribution = attributionInput.value;
                     const deadweight = deadweightInput.value;
                     const displacement = displacementInput.value;
@@ -1129,7 +1232,7 @@ function getProxiesForOutcome($conn, $outcome_id)
         function updateSavedDataDisplay() {
             // อ่านข้อมูลจากฟอร์ม
             const benefitDetail = document.querySelector(`input[name="benefit_detail_1"]`).value || '-';
-            const benefitNote = document.querySelector(`input[name="benefit_note_1"]`).value || '-';
+            const benefitNote = document.querySelector(`input[name="benefit_note_1"]`).value || '0';
             const attribution = document.querySelector(`input[name="attribution_1"]`).value || '0';
             const deadweight = document.querySelector(`input[name="deadweight_1"]`).value || '0';
             const displacement = document.querySelector(`input[name="displacement_1"]`).value || '0';
@@ -1138,9 +1241,15 @@ function getProxiesForOutcome($conn, $outcome_id)
             const impact = 1 - (parseFloat(attribution) + parseFloat(deadweight) + parseFloat(displacement)) / 100;
             const impactPercentage = Math.max(0, impact * 100).toFixed(1);
 
+            // ฟอร์แมตจำนวนเงินให้มีคอมมา
+            const formattedAmount = parseFloat(benefitNote).toLocaleString('th-TH', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+
             // อัปเดตข้อมูลในตาราง
             document.getElementById('savedBenefitDetail').textContent = benefitDetail;
-            document.getElementById('savedBenefitNote').textContent = benefitNote;
+            document.getElementById('savedBenefitNote').textContent = formattedAmount + ' บาท';
             document.getElementById('savedAttribution').textContent = attribution + '%';
             document.getElementById('savedDeadweight').textContent = deadweight + '%';
             document.getElementById('savedDisplacement').textContent = displacement + '%';
@@ -1201,7 +1310,8 @@ function getProxiesForOutcome($conn, $outcome_id)
 
                 if (benefitDetailInput && attributionInput && deadweightInput && displacementInput) {
                     const benefitDetail = benefitDetailInput.value;
-                    const benefitNote = benefitNoteInput.value;
+                    // แปลงจำนวนเงินที่มีคอมมากลับเป็นตัวเลขล้วน (ฟังก์ชัน confirmOutcomeSelection)
+                    const benefitNote = benefitNoteInput.value.replace(/,/g, '');
                     const attribution = attributionInput.value;
                     const deadweight = deadweightInput.value;
                     const displacement = displacementInput.value;
@@ -1338,7 +1448,7 @@ function getProxiesForOutcome($conn, $outcome_id)
                 <td>
                     <input type="text" class="form-control"
                         name="benefit_note_${benefitRowCount}"
-                        placeholder="กรอกหมายเหตุ...">
+                        placeholder="กรอกจำนวนเงิน (บาท/ปี)">
                 </td>
                 <td class="text-center align-middle">
                     <button type="button" class="btn btn-outline-danger btn-sm" 
@@ -1348,6 +1458,14 @@ function getProxiesForOutcome($conn, $outcome_id)
                 </td>
             `;
             benefitTableBody.appendChild(newBenefitRow);
+
+            // เพิ่ม event listener สำหรับ input field จำนวนเงินที่สร้างใหม่
+            const newMoneyInput = newBenefitRow.querySelector(`input[name="benefit_note_${benefitRowCount}"]`);
+            if (newMoneyInput) {
+                newMoneyInput.addEventListener('blur', function() {
+                    formatNumberInput(this);
+                });
+            }
 
             // เพิ่มแถวในตารางสัดส่วนผลกระทบ
             const impactTableBody = document.querySelector('#impactTable tbody');
