@@ -23,9 +23,19 @@ $project_id = isset($_POST['project_id']) ? (int)$_POST['project_id'] : 0;
 $selected_outcome = isset($_POST['selected_outcome']) ? (int)$_POST['selected_outcome'] : 0;
 $outcome_details = isset($_POST['outcome_details']) ? trim($_POST['outcome_details']) : '';
 
+// รับค่าปีที่ต้องการประเมิน (จาก radio button)
+$evaluation_year = isset($_POST['evaluation_year']) ? trim($_POST['evaluation_year']) : '';
+
 if ($project_id == 0) {
     $_SESSION['error_message'] = "ไม่พบข้อมูลโครงการ";
     header("location: ../project-list.php");
+    exit;
+}
+
+// ตรวจสอบว่าได้เลือกปีที่ต้องการประเมินหรือไม่
+if (empty($evaluation_year)) {
+    $_SESSION['error_message'] = "กรุณาเลือกปีที่ต้องการประเมิน";
+    header("location: step4-outcome.php?project_id=" . $project_id);
     exit;
 }
 
@@ -58,7 +68,7 @@ if (empty($outcome_details)) {
     exit;
 }
 
-// บันทึกข้อมูลการเลือกผลลัพธ์ลงฐานข้อมูล
+// บันทึกข้อมูลการเลือกผลลัพธ์และปีที่ประเมินลงฐานข้อมูล
 try {
     // ตรวจสอบว่าโครงการนี้ได้เลือกผลผลิตแล้วหรือไม่
     $check_output_query = "SELECT output_id FROM project_outputs WHERE project_id = ?";
@@ -115,10 +125,30 @@ try {
     }
     mysqli_stmt_close($insert_stmt);
 
+    // บันทึกปีที่ต้องการประเมิน
+    // ลบข้อมูลเก่าก่อน
+    $delete_year_query = "DELETE FROM project_impact_ratios WHERE project_id = ?";
+    $delete_year_stmt = mysqli_prepare($conn, $delete_year_query);
+    mysqli_stmt_bind_param($delete_year_stmt, 'i', $project_id);
+    mysqli_stmt_execute($delete_year_stmt);
+    mysqli_stmt_close($delete_year_stmt);
+
+    // เพิ่มข้อมูลใหม่
+    $insert_year_query = "INSERT INTO project_impact_ratios (project_id, year) VALUES (?, ?)";
+    $insert_year_stmt = mysqli_prepare($conn, $insert_year_query);
+    mysqli_stmt_bind_param($insert_year_stmt, 'is', $project_id, $evaluation_year);
+    if (!mysqli_stmt_execute($insert_year_stmt)) {
+        throw new Exception("เกิดข้อผิดพลาดในการบันทึกปีที่ต้องการประเมิน");
+    }
+    mysqli_stmt_close($insert_year_stmt);
+
+    // เก็บปีที่เลือกใน session เพื่อใช้ในหน้าอื่น
+    $_SESSION['evaluation_year'] = $evaluation_year;
+
     // เก็บข้อมูลใน session เพื่อใช้ในการแสดงผล
     $_SESSION['selected_outcome'] = $selected_outcome;
     $_SESSION['selected_outcome_detail'] = $outcome;
-    $_SESSION['success_message'] = "บันทึกการเลือกผลลัพธ์สำเร็จ";
+    $_SESSION['success_message'] = "บันทึกการเลือกผลลัพธ์และปีที่ต้องการประเมินสำเร็จ";
 
     // ไปยังหน้า Impact Pathway
     header("location: ../impact_pathway/impact_pathway.php?project_id=" . $project_id);

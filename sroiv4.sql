@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 07, 2025 at 05:25 AM
+-- Generation Time: Aug 07, 2025 at 08:24 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -92,7 +92,13 @@ INSERT INTO `audit_logs` (`id`, `table_name`, `record_id`, `action`, `old_values
 (1, 'project_strategies', '1', 'INSERT', NULL, '{\"project_id\": 7, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 03:19:12'),
 (2, 'project_activities', '1', 'INSERT', NULL, '{\"project_id\": 7, \"activity_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 03:19:36'),
 (3, 'project_outputs', '1', 'INSERT', NULL, '{\"project_id\": 7, \"output_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 03:20:50'),
-(4, 'project_outputs', '1', 'INSERT', NULL, '{\"project_id\": 7, \"output_id\": 3, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 03:22:25');
+(4, 'project_outputs', '1', 'INSERT', NULL, '{\"project_id\": 7, \"output_id\": 3, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 03:22:25'),
+(5, 'project_strategies', '2', 'INSERT', NULL, '{\"project_id\": 4, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 04:26:31'),
+(6, 'project_activities', '2', 'INSERT', NULL, '{\"project_id\": 4, \"activity_id\": 19, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 04:26:37'),
+(7, 'project_outputs', '2', 'INSERT', NULL, '{\"project_id\": 4, \"output_id\": 39, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 04:26:46'),
+(8, 'project_strategies', '3', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 06:15:47'),
+(9, 'project_activities', '3', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 5, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 06:16:02'),
+(10, 'project_outputs', '3', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 14, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 06:16:39');
 
 -- --------------------------------------------------------
 
@@ -329,7 +335,9 @@ CREATE TABLE `project_activities` (
 --
 
 INSERT INTO `project_activities` (`id`, `project_id`, `activity_id`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 7, 1, '3', '2025-08-07 03:19:36', '2025-08-07 03:19:36');
+(1, 7, 1, '3', '2025-08-07 03:19:36', '2025-08-07 03:19:36'),
+(2, 4, 19, '3', '2025-08-07 04:26:37', '2025-08-07 04:26:37'),
+(3, 3, 5, '3', '2025-08-07 06:16:02', '2025-08-07 06:16:02');
 
 --
 -- Triggers `project_activities`
@@ -371,7 +379,8 @@ CREATE TABLE `project_impact_ratios` (
 --
 
 INSERT INTO `project_impact_ratios` (`id`, `project_id`, `benefit_number`, `attribution`, `deadweight`, `displacement`, `impact_ratio`, `created_at`, `updated_at`, `benefit_detail`, `benefit_note`) VALUES
-(2, 7, 1, 20.00, 10.00, 30.00, 0.4000, '2025-08-07 03:24:35', '2025-08-07 03:24:35', 'รายได้จากการเป็นวิทยากร', 1800);
+(2, 7, 1, 20.00, 10.00, 30.00, 0.4000, '2025-08-07 03:24:35', '2025-08-07 03:24:35', 'รายได้จากการเป็นวิทยากร', 1800),
+(4, 4, 1, 20.00, 10.00, 30.00, 0.4000, '2025-08-07 04:27:16', '2025-08-07 04:27:16', 'รายได้จากการเป็นวิทยากร', 3600);
 
 -- --------------------------------------------------------
 
@@ -394,7 +403,8 @@ CREATE TABLE `project_outcomes` (
 --
 
 INSERT INTO `project_outcomes` (`id`, `project_id`, `outcome_id`, `outcome_details`, `created_by`, `created_at`, `updated_at`) VALUES
-(2, 7, 4, 'กลุ่มเป้าหมาย จำนวน...30.......คน สามารถถ่ายทอดความรู้ความสามารถที่เกิดจากศักยภาพ ด้าน........นวัตกรรม...............ให้กับ.......ชุมชน...........จำนวน.....1....กลุ่ม (กลุ่ม/ชุมชน)', 3, '2025-08-07 03:24:35', '2025-08-07 03:24:35');
+(2, 7, 4, 'กลุ่มเป้าหมาย จำนวน...30.......คน สามารถถ่ายทอดความรู้ความสามารถที่เกิดจากศักยภาพ ด้าน........นวัตกรรม...............ให้กับ.......ชุมชน...........จำนวน.....1....กลุ่ม (กลุ่ม/ชุมชน)', 3, '2025-08-07 03:24:35', '2025-08-07 03:24:35'),
+(4, 4, 78, 'กลุ่มเป้าหมายมีความรู้/เข้าใจเกี่ยวกับการสร้างความรักความสามัคคีเพิ่มขึ้น และนำมาปรับใช้ทำให้มีความรักความสามัคคีจาก....(อะไรเปลี่ยนแปลงดีขึ้น เช่น มีพฤติกรรมบางอย่างด้านลบน้อยลง)..xx....', 3, '2025-08-07 04:27:16', '2025-08-07 04:27:16');
 
 -- --------------------------------------------------------
 
@@ -417,7 +427,9 @@ CREATE TABLE `project_outputs` (
 --
 
 INSERT INTO `project_outputs` (`id`, `project_id`, `output_id`, `output_details`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 7, 3, 'กลุ่มเป้าหมาย จำนวน.....30....คน มีศักยภาพ ด้าน..........IoT และ solar cell...........', '3', '2025-08-07 03:22:25', '2025-08-07 03:22:25');
+(1, 7, 3, 'กลุ่มเป้าหมาย จำนวน.....30....คน มีศักยภาพ ด้าน..........IoT และ solar cell...........', '3', '2025-08-07 03:22:25', '2025-08-07 03:22:25'),
+(2, 4, 39, 'กลุ่มเป้าหมายจำนวน...xx...คน มีความรู้/เข้าใจเกี่ยวกับการสร้างความรักความสามัคคีในชุมชน', '3', '2025-08-07 04:26:46', '2025-08-07 04:26:46'),
+(3, 3, 14, 'ผลิตภัณฑ์สร้างสรรค์ได้รับการจดทะเบียนทรัพย์สินทางปัญญา ประเภท ลิขสิทธิ์ จำนวน....1....ผลิตภัณฑ์', '3', '2025-08-07 06:16:39', '2025-08-07 06:16:39');
 
 --
 -- Triggers `project_outputs`
@@ -454,7 +466,9 @@ CREATE TABLE `project_strategies` (
 --
 
 INSERT INTO `project_strategies` (`id`, `project_id`, `strategy_id`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 7, 1, '3', '2025-08-07 03:19:12', '2025-08-07 03:19:12');
+(1, 7, 1, '3', '2025-08-07 03:19:12', '2025-08-07 03:19:12'),
+(2, 4, 1, '3', '2025-08-07 04:26:31', '2025-08-07 04:26:31'),
+(3, 3, 1, '3', '2025-08-07 06:15:47', '2025-08-07 06:15:47');
 
 --
 -- Triggers `project_strategies`
@@ -651,6 +665,15 @@ CREATE TABLE `social_impact_pathway` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='ตารางเก็บข้อมูลห่วงโซ่ผลกระทบทางสังคม (Social Impact Pathway)';
 
+--
+-- Dumping data for table `social_impact_pathway`
+--
+
+INSERT INTO `social_impact_pathway` (`pathway_id`, `project_id`, `pathway_sequence`, `input_description`, `input_amount`, `input_unit`, `activities_description`, `activity_id`, `output_description`, `output_id`, `output_quantity`, `output_unit`, `user_description`, `user_type`, `user_quantity`, `adoption_description`, `adoption_rate`, `adoption_method`, `outcome_description`, `outcome_id`, `outcome_value`, `outcome_unit`, `impact_description`, `impact_type`, `impact_category`, `impact_value`, `impact_unit`, `measurement_period`, `data_source`, `assumptions`, `risks`, `verification_method`, `notes`, `created_by`, `created_at`, `updated_at`) VALUES
+(1, 7, 'ฟฟฟฟ', '', NULL, NULL, '', NULL, '', NULL, NULL, NULL, '', NULL, NULL, '', NULL, NULL, '', NULL, NULL, NULL, '', 'positive', 'social', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '3', '2025-08-07 04:06:34', '2025-08-07 04:06:34'),
+(2, 7, 'ฟฟฟฟ', '', NULL, NULL, '', NULL, '', NULL, NULL, NULL, '', NULL, NULL, '', NULL, NULL, '', NULL, NULL, NULL, '', 'positive', 'social', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '3', '2025-08-07 04:14:48', '2025-08-07 04:14:48'),
+(3, 4, 'xx', '', NULL, NULL, '', NULL, '', NULL, NULL, NULL, '', NULL, NULL, '', NULL, NULL, '', NULL, NULL, NULL, '', 'positive', 'social', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '3', '2025-08-07 04:27:27', '2025-08-07 04:27:27');
+
 -- --------------------------------------------------------
 
 --
@@ -726,6 +749,35 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `username`, `email`, `password_hash`, `first_name`, `last_name`, `full_name_th`, `title`, `position`, `department`, `organization`, `phone`, `role`, `is_active`, `email_verified`, `last_login`, `login_count`, `created_at`, `updated_at`, `created_by`) VALUES
 (3, 'sunksun.lap', 'sunksun.lap@lru.ac.th', '$2y$10$8uas62T9NwlsSlIYJmU15.svZQYZcnz9jYc6PmocsJsPMm5.NndPm', NULL, NULL, 'นายสังสรรค์ หล้าพันธ์', NULL, NULL, 'คณะวิทยาศาสตร์และเทคโนโลยี', NULL, NULL, 'teacher', 1, 0, NULL, 0, '2025-07-30 16:33:27', '2025-07-30 16:33:27', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `years`
+--
+
+CREATE TABLE `years` (
+  `year_id` int(11) NOT NULL,
+  `year_be` varchar(10) NOT NULL COMMENT 'ปี พ.ศ. เช่น 2567, 2568',
+  `year_ad` int(11) NOT NULL COMMENT 'ปี ค.ศ. เช่น 2024, 2025',
+  `year_display` varchar(50) NOT NULL COMMENT 'ชื่อปีที่แสดง เช่น 2567, 25xx',
+  `year_description` varchar(200) DEFAULT NULL COMMENT 'รายละเอียดปี',
+  `is_active` tinyint(1) DEFAULT 1 COMMENT 'สถานะการใช้งาน',
+  `sort_order` int(11) DEFAULT 0 COMMENT 'ลำดับการแสดงผล',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='ตารางเก็บข้อมูลปี พ.ศ.';
+
+--
+-- Dumping data for table `years`
+--
+
+INSERT INTO `years` (`year_id`, `year_be`, `year_ad`, `year_display`, `year_description`, `is_active`, `sort_order`, `created_at`, `updated_at`) VALUES
+(1, '2567', 2024, '2567', 'ปี พ.ศ. 2567 (ค.ศ. 2024)', 1, 1, '2025-08-07 06:22:36', '2025-08-07 06:22:36'),
+(2, '2568', 2025, '2568', 'ปี พ.ศ. 2568 (ค.ศ. 2025)', 1, 2, '2025-08-07 06:22:36', '2025-08-07 06:22:36'),
+(3, '2569', 2026, '2569', 'ปี พ.ศ. 2569 (ค.ศ. 2026)', 1, 3, '2025-08-07 06:22:36', '2025-08-07 06:22:36'),
+(4, '2570', 2027, '2570', 'ปี พ.ศ. 2570 (ค.ศ. 2027)', 1, 4, '2025-08-07 06:22:36', '2025-08-07 06:22:36'),
+(5, '25xx', 2028, '25xx', 'ปี พ.ศ. 25xx (อนาคต)', 1, 5, '2025-08-07 06:22:36', '2025-08-07 06:22:36');
 
 --
 -- Indexes for dumped tables
@@ -864,6 +916,15 @@ ALTER TABLE `users`
   ADD KEY `idx_active` (`is_active`);
 
 --
+-- Indexes for table `years`
+--
+ALTER TABLE `years`
+  ADD PRIMARY KEY (`year_id`),
+  ADD UNIQUE KEY `year_be` (`year_be`),
+  ADD KEY `idx_year_active` (`is_active`),
+  ADD KEY `idx_sort_order` (`sort_order`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -877,7 +938,7 @@ ALTER TABLE `activities`
 -- AUTO_INCREMENT for table `audit_logs`
 --
 ALTER TABLE `audit_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `outcomes`
@@ -901,31 +962,31 @@ ALTER TABLE `projects`
 -- AUTO_INCREMENT for table `project_activities`
 --
 ALTER TABLE `project_activities`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `project_impact_ratios`
 --
 ALTER TABLE `project_impact_ratios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `project_outcomes`
 --
 ALTER TABLE `project_outcomes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `project_outputs`
 --
 ALTER TABLE `project_outputs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `project_strategies`
 --
 ALTER TABLE `project_strategies`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `proxies`
@@ -937,7 +998,7 @@ ALTER TABLE `proxies`
 -- AUTO_INCREMENT for table `social_impact_pathway`
 --
 ALTER TABLE `social_impact_pathway`
-  MODIFY `pathway_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `pathway_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `strategies`
@@ -956,6 +1017,12 @@ ALTER TABLE `system_logs`
 --
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `years`
+--
+ALTER TABLE `years`
+  MODIFY `year_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables
