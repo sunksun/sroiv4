@@ -21,6 +21,7 @@ if (!$conn) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $project_id = isset($_POST['project_id']) ? (int)$_POST['project_id'] : 0;
+    $evaluation_year = isset($_POST['evaluation_year']) ? trim($_POST['evaluation_year']) : '';
     $user_id = $_SESSION['user_id'];
 
     if ($project_id == 0) {
@@ -82,15 +83,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_stmt_execute($delete_stmt);
     mysqli_stmt_close($delete_stmt);
 
-    // เตรียม SQL สำหรับ insert
-    $insert_query = "INSERT INTO project_impact_ratios (project_id, benefit_number, attribution, deadweight, displacement, impact_ratio, benefit_detail, benefit_note, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+    // เตรียม SQL สำหรับ insert (รวม year)
+    $insert_query = "INSERT INTO project_impact_ratios (project_id, benefit_number, attribution, deadweight, displacement, impact_ratio, benefit_detail, benefit_note, year, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
     $insert_stmt = mysqli_prepare($conn, $insert_query);
 
     $success_count = 0;
     foreach ($impact_data as $data) {
         mysqli_stmt_bind_param(
             $insert_stmt,
-            'iiddddss',
+            'iiddddsss',
             $project_id,
             $data['benefit_number'],
             $data['attribution'],
@@ -98,7 +99,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $data['displacement'],
             $data['impact_ratio'],
             $data['benefit_detail'],
-            $data['benefit_note']
+            $data['benefit_note'],
+            $evaluation_year
         );
 
         if (mysqli_stmt_execute($insert_stmt)) {

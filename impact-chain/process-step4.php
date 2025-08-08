@@ -26,6 +26,9 @@ $outcome_details = isset($_POST['outcome_details']) ? trim($_POST['outcome_detai
 // รับค่าปีที่ต้องการประเมิน (จาก radio button)
 $evaluation_year = isset($_POST['evaluation_year']) ? trim($_POST['evaluation_year']) : '';
 
+// ตรวจสอบว่าเป็นการบันทึกรายละเอียดเท่านั้นหรือไม่
+$save_details_only = isset($_POST['save_details_only']) && $_POST['save_details_only'] == '1';
+
 if ($project_id == 0) {
     $_SESSION['error_message'] = "ไม่พบข้อมูลโครงการ";
     header("location: ../project-list.php");
@@ -125,22 +128,27 @@ try {
     }
     mysqli_stmt_close($insert_stmt);
 
-    // บันทึกปีที่ต้องการประเมิน
-    // ลบข้อมูลเก่าก่อน
-    $delete_year_query = "DELETE FROM project_impact_ratios WHERE project_id = ?";
-    $delete_year_stmt = mysqli_prepare($conn, $delete_year_query);
-    mysqli_stmt_bind_param($delete_year_stmt, 'i', $project_id);
-    mysqli_stmt_execute($delete_year_stmt);
-    mysqli_stmt_close($delete_year_stmt);
+    // บันทึกปีที่ต้องการประเมินในขั้นตอนบันทึกข้อมูลสัดส่วนผลกระทบเท่านั้น
+    // (ไม่บันทึกตอนบันทึกรายละเอียดเพิ่มเติม)
+    if (!$save_details_only) {
+        // ลบข้อมูลเก่าก่อน
+        $delete_year_query = "DELETE FROM project_impact_ratios WHERE project_id = ?";
+        $delete_year_stmt = mysqli_prepare($conn, $delete_year_query);
+        mysqli_stmt_bind_param($delete_year_stmt, 'i', $project_id);
+        mysqli_stmt_execute($delete_year_stmt);
+        mysqli_stmt_close($delete_year_stmt);
 
-    // เพิ่มข้อมูลใหม่
-    $insert_year_query = "INSERT INTO project_impact_ratios (project_id, year) VALUES (?, ?)";
-    $insert_year_stmt = mysqli_prepare($conn, $insert_year_query);
-    mysqli_stmt_bind_param($insert_year_stmt, 'is', $project_id, $evaluation_year);
-    if (!mysqli_stmt_execute($insert_year_stmt)) {
-        throw new Exception("เกิดข้อผิดพลาดในการบันทึกปีที่ต้องการประเมิน");
+        // เพิ่มข้อมูลใหม่ (รวม benefit_number และ benefit_note เป็นค่าเริ่มต้น)
+        $insert_year_query = "INSERT INTO project_impact_ratios (project_id, year, benefit_number, benefit_note) VALUES (?, ?, ?, ?)";
+        $insert_year_stmt = mysqli_prepare($conn, $insert_year_query);
+        $benefit_number = 1; // ค่าเริ่มต้นสำหรับการบันทึกข้อมูลสัดส่วนผลกระทบ
+        $benefit_note = 0;   // ค่าเริ่มต้นสำหรับจำนวนเงิน (บาท/ปี)
+        mysqli_stmt_bind_param($insert_year_stmt, 'isii', $project_id, $evaluation_year, $benefit_number, $benefit_note);
+        if (!mysqli_stmt_execute($insert_year_stmt)) {
+            throw new Exception("เกิดข้อผิดพลาดในการบันทึกปีที่ต้องการประเมิน");
+        }
+        mysqli_stmt_close($insert_year_stmt);
     }
-    mysqli_stmt_close($insert_year_stmt);
 
     // เก็บปีที่เลือกใน session เพื่อใช้ในหน้าอื่น
     $_SESSION['evaluation_year'] = $evaluation_year;
@@ -150,10 +158,34 @@ try {
     $_SESSION['selected_outcome_detail'] = $outcome;
     $_SESSION['success_message'] = "บันทึกการเลือกผลลัพธ์และปีที่ต้องการประเมินสำเร็จ";
 
-    // ไปยังหน้า Impact Pathway
+    // ถ้าเป็นการบันทึกรายละเอียดเท่านั้น ให้ return JSON response
+    if ($save_details_only) {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => true,
+            'message' => 'บันทึกรายละเอียดผลลัพธ์สำเร็จ',
+            'outcome_id' => $selected_outcome,
+            'outcome_details' => $outcome_details,
+            'evaluation_year' => $evaluation_year
+        ]);
+        exit;
+    }
+
+    // ไปยังหน้า Impact Pathway (เฉพาะกรณีไม่ใช่การบันทึกรายละเอียดเท่านั้น)
     header("location: ../impact_pathway/impact_pathway.php?project_id=" . $project_id);
     exit;
 } catch (Exception $e) {
+    // ถ้าเป็นการบันทึกรายละเอียดเท่านั้น ให้ return JSON error response
+    if ($save_details_only) {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => false,
+            'message' => 'เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' . $e->getMessage(),
+            'error' => $e->getMessage()
+        ]);
+        exit;
+    }
+    
     $_SESSION['error_message'] = "เกิดข้อผิดพลาดในการบันทึกข้อมูล: " . $e->getMessage();
     header("location: step4-outcome.php?project_id=" . $project_id);
     exit;

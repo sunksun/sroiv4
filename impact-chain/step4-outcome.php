@@ -1118,6 +1118,12 @@ function getProxiesForOutcome($conn, $outcome_id)
             const basecaseData = new FormData();
             basecaseData.append('project_id', document.querySelector('input[name="project_id"]').value);
             basecaseData.append('from_modal', '1');
+            
+            // เพิ่มปีที่เลือกในข้อมูลสัดส่วนผลกระทบ
+            const selectedYear = document.querySelector('input[name="evaluation_year"]:checked');
+            if (selectedYear) {
+                basecaseData.append('evaluation_year', selectedYear.value);
+            }
 
             // เก็บข้อมูลทุกรายการที่มีข้อมูล
             const benefitRows = document.querySelectorAll('#benefitTable tbody tr');
@@ -1269,6 +1275,12 @@ function getProxiesForOutcome($conn, $outcome_id)
             const basecaseData = new FormData();
             basecaseData.append('project_id', document.querySelector('input[name="project_id"]').value);
             basecaseData.append('from_modal', '1');
+            
+            // เพิ่มปีที่เลือกในข้อมูลสัดส่วนผลกระทบ
+            const selectedYear = document.querySelector('input[name="evaluation_year"]:checked');
+            if (selectedYear) {
+                basecaseData.append('evaluation_year', selectedYear.value);
+            }
 
             // เก็บข้อมูลทุกรายการที่มีข้อมูล
             const benefitRows = document.querySelectorAll('#benefitTable tbody tr');
@@ -1344,6 +1356,13 @@ function getProxiesForOutcome($conn, $outcome_id)
                 return;
             }
 
+            // ตรวจสอบว่าได้เลือกปีหรือไม่
+            const selectedYear = document.querySelector('input[name="evaluation_year"]:checked');
+            if (!selectedYear) {
+                alert('กรุณาเลือกปีที่ต้องการประเมิน');
+                return;
+            }
+
             // แสดง loading
             const saveBtn = document.querySelector('button[onclick="saveOutcomeDetails()"]');
             const originalText = saveBtn.innerHTML;
@@ -1355,17 +1374,43 @@ function getProxiesForOutcome($conn, $outcome_id)
             formData.append('project_id', document.querySelector('input[name="project_id"]').value);
             formData.append('selected_outcome', selectedRadio.value);
             formData.append('outcome_details', outcomeDetails);
+            formData.append('evaluation_year', selectedYear.value);
+            formData.append('save_details_only', '1'); // เพิ่ม flag เพื่อบอกว่าเป็นการบันทึกรายละเอียดเท่านั้น
 
             // ส่งข้อมูลไปยัง process-step4.php
             fetch('process-step4.php', {
                     method: 'POST',
                     body: formData
                 })
-                .then(response => response.text())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    // ตรวจสอบ Content-Type ก่อน parse JSON
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        // ถ้าไม่ใช่ JSON ให้อ่านเป็น text เพื่อ debug
+                        return response.text().then(text => {
+                            console.error('Non-JSON response:', text);
+                            throw new Error('Server did not return JSON response');
+                        });
+                    }
+                    
+                    return response.json();
+                })
                 .then(data => {
-                    // แสดงข้อความสำเร็จ
-                    saveBtn.innerHTML = '<i class="fas fa-check"></i> บันทึกเรียบร้อย';
-                    saveBtn.className = 'btn btn-success';
+                    console.log('Server response:', data);
+                    
+                    if (data.success) {
+                        // แสดงข้อความสำเร็จ
+                        saveBtn.innerHTML = '<i class="fas fa-check"></i> บันทึกเรียบร้อย';
+                        saveBtn.className = 'btn btn-success';
+
+                        console.log('Outcome details saved successfully:', data);
+                    } else {
+                        throw new Error(data.message || 'เกิดข้อผิดพลาดในการบันทึก');
+                    }
 
                     // รีเซ็ตปุ่มหลังจาก 2 วินาที
                     setTimeout(() => {
@@ -1373,22 +1418,26 @@ function getProxiesForOutcome($conn, $outcome_id)
                         saveBtn.className = 'btn btn-outline-primary';
                         saveBtn.disabled = false;
                     }, 2000);
-
-                    console.log('Outcome details saved successfully');
                 })
                 .catch(error => {
                     console.error('Error saving outcome details:', error);
 
-                    // แสดงข้อความผิดพลาด
-                    saveBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> เกิดข้อผิดพลาด';
+                    // แสดงข้อความผิดพลาด พร้อมรายละเอียด error
+                    let errorMessage = 'เกิดข้อผิดพลาด';
+                    if (error.message) {
+                        errorMessage += ': ' + error.message;
+                        console.error('Error message:', error.message);
+                    }
+                    
+                    saveBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + errorMessage;
                     saveBtn.className = 'btn btn-danger';
 
-                    // รีเซ็ตปุ่มหลังจาก 2 วินาที
+                    // รีเซ็ตปุ่มหลังจาก 3 วินาที (เพิ่มเวลาเพื่อดู error message)
                     setTimeout(() => {
                         saveBtn.innerHTML = originalText;
                         saveBtn.className = 'btn btn-outline-primary';
                         saveBtn.disabled = false;
-                    }, 2000);
+                    }, 3000);
                 });
         }
 
