@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 07, 2025 at 08:24 AM
+-- Generation Time: Aug 08, 2025 at 05:09 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -98,7 +98,22 @@ INSERT INTO `audit_logs` (`id`, `table_name`, `record_id`, `action`, `old_values
 (7, 'project_outputs', '2', 'INSERT', NULL, '{\"project_id\": 4, \"output_id\": 39, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 04:26:46'),
 (8, 'project_strategies', '3', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 06:15:47'),
 (9, 'project_activities', '3', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 5, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 06:16:02'),
-(10, 'project_outputs', '3', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 14, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 06:16:39');
+(10, 'project_outputs', '3', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 14, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 06:16:39'),
+(11, 'project_strategies', '1', 'INSERT', NULL, '{\"project_id\": 7, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 08:22:34'),
+(12, 'project_activities', '1', 'INSERT', NULL, '{\"project_id\": 7, \"activity_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 08:22:38'),
+(13, 'project_outputs', '1', 'INSERT', NULL, '{\"project_id\": 7, \"output_id\": 2, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 08:22:51'),
+(14, 'project_strategies', '2', 'INSERT', NULL, '{\"project_id\": 7, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 08:27:01'),
+(15, 'project_activities', '2', 'INSERT', NULL, '{\"project_id\": 7, \"activity_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 08:27:05'),
+(16, 'project_outputs', '2', 'INSERT', NULL, '{\"project_id\": 7, \"output_id\": 2, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-07 08:27:13'),
+(17, 'project_strategies', '3', 'INSERT', NULL, '{\"project_id\": 7, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-08 03:55:24'),
+(18, 'project_activities', '3', 'INSERT', NULL, '{\"project_id\": 7, \"activity_id\": 10, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-08 03:55:33'),
+(19, 'project_outputs', '3', 'INSERT', NULL, '{\"project_id\": 7, \"output_id\": 19, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-08 03:55:45'),
+(20, 'project_strategies', '4', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-08 07:40:25'),
+(21, 'project_activities', '4', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 7, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-08 07:40:31'),
+(22, 'project_outputs', '4', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 16, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-08 07:40:44'),
+(23, 'project_strategies', '5', 'INSERT', NULL, '{\"project_id\": 4, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-08 08:02:52'),
+(24, 'project_activities', '5', 'INSERT', NULL, '{\"project_id\": 4, \"activity_id\": 13, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-08 08:03:06'),
+(25, 'project_outputs', '5', 'INSERT', NULL, '{\"project_id\": 4, \"output_id\": 29, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-08 08:03:24');
 
 -- --------------------------------------------------------
 
@@ -335,9 +350,9 @@ CREATE TABLE `project_activities` (
 --
 
 INSERT INTO `project_activities` (`id`, `project_id`, `activity_id`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 7, 1, '3', '2025-08-07 03:19:36', '2025-08-07 03:19:36'),
-(2, 4, 19, '3', '2025-08-07 04:26:37', '2025-08-07 04:26:37'),
-(3, 3, 5, '3', '2025-08-07 06:16:02', '2025-08-07 06:16:02');
+(3, 7, 10, '3', '2025-08-08 03:55:33', '2025-08-08 03:55:33'),
+(4, 3, 7, '3', '2025-08-08 07:40:31', '2025-08-08 07:40:31'),
+(5, 4, 13, '3', '2025-08-08 08:03:06', '2025-08-08 08:03:06');
 
 --
 -- Triggers `project_activities`
@@ -357,6 +372,30 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `project_costs`
+--
+
+CREATE TABLE `project_costs` (
+  `id` int(11) NOT NULL,
+  `project_id` int(11) NOT NULL,
+  `cost_name` varchar(500) NOT NULL COMMENT 'ชื่อรายการต้นทุน/งบประมาณ',
+  `yearly_amounts` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'จำนวนเงินแยกตามปี พ.ศ. ในรูปแบบ JSON' CHECK (json_valid(`yearly_amounts`)),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_by` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='ตารางเก็บข้อมูลต้นทุน/งบประมาณโครงการ';
+
+--
+-- Dumping data for table `project_costs`
+--
+
+INSERT INTO `project_costs` (`id`, `project_id`, `cost_name`, `yearly_amounts`, `created_at`, `updated_at`, `created_by`) VALUES
+(6, 4, 'ต้นทุน 1', '{\"2567\":7500,\"2568\":8000,\"2569\":21132,\"2570\":23412312}', '2025-08-08 14:33:08', '2025-08-08 14:33:08', 3),
+(7, 4, 'ต้นทุน 2', '{\"2567\":1231,\"2568\":3213,\"2569\":212333,\"2570\":21323123}', '2025-08-08 14:33:08', '2025-08-08 14:33:08', 3);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `project_impact_ratios`
 --
 
@@ -371,16 +410,20 @@ CREATE TABLE `project_impact_ratios` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `benefit_detail` text DEFAULT NULL,
-  `benefit_note` int(11) NOT NULL
+  `beneficiary` text DEFAULT NULL,
+  `benefit_note` int(11) NOT NULL,
+  `year` varchar(10) DEFAULT NULL COMMENT 'ปี พ.ศ. ของการประเมิน'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `project_impact_ratios`
 --
 
-INSERT INTO `project_impact_ratios` (`id`, `project_id`, `benefit_number`, `attribution`, `deadweight`, `displacement`, `impact_ratio`, `created_at`, `updated_at`, `benefit_detail`, `benefit_note`) VALUES
-(2, 7, 1, 20.00, 10.00, 30.00, 0.4000, '2025-08-07 03:24:35', '2025-08-07 03:24:35', 'รายได้จากการเป็นวิทยากร', 1800),
-(4, 4, 1, 20.00, 10.00, 30.00, 0.4000, '2025-08-07 04:27:16', '2025-08-07 04:27:16', 'รายได้จากการเป็นวิทยากร', 3600);
+INSERT INTO `project_impact_ratios` (`id`, `project_id`, `benefit_number`, `attribution`, `deadweight`, `displacement`, `impact_ratio`, `created_at`, `updated_at`, `benefit_detail`, `beneficiary`, `benefit_note`, `year`) VALUES
+(39, 7, 1, 0.00, 0.00, 0.00, 1.0000, '2025-08-08 05:58:00', '2025-08-08 05:58:00', NULL, NULL, 0, '2569'),
+(42, 3, 1, 0.00, 0.00, 0.00, 1.0000, '2025-08-08 07:42:10', '2025-08-08 14:48:30', 'ผลประโยชน์ 11', 'ผลประโยชน์ 11', 3600, '2568'),
+(49, 4, 1, 12.00, 12.00, 12.00, 0.6400, '2025-08-08 08:15:46', '2025-08-08 08:15:46', 'ผลประโยชน์ 12', 'ผลประโยชน์ 12', 5500, '2568'),
+(51, 4, 2, 12.00, 12.00, 12.00, 0.6400, '2025-08-08 08:15:46', '2025-08-08 08:15:46', 'ผลประโยชน์ 12', 'ผลประโยชน์ 12', 5500, '2568');
 
 -- --------------------------------------------------------
 
@@ -403,8 +446,9 @@ CREATE TABLE `project_outcomes` (
 --
 
 INSERT INTO `project_outcomes` (`id`, `project_id`, `outcome_id`, `outcome_details`, `created_by`, `created_at`, `updated_at`) VALUES
-(2, 7, 4, 'กลุ่มเป้าหมาย จำนวน...30.......คน สามารถถ่ายทอดความรู้ความสามารถที่เกิดจากศักยภาพ ด้าน........นวัตกรรม...............ให้กับ.......ชุมชน...........จำนวน.....1....กลุ่ม (กลุ่ม/ชุมชน)', 3, '2025-08-07 03:24:35', '2025-08-07 03:24:35'),
-(4, 4, 78, 'กลุ่มเป้าหมายมีความรู้/เข้าใจเกี่ยวกับการสร้างความรักความสามัคคีเพิ่มขึ้น และนำมาปรับใช้ทำให้มีความรักความสามัคคีจาก....(อะไรเปลี่ยนแปลงดีขึ้น เช่น มีพฤติกรรมบางอย่างด้านลบน้อยลง)..xx....', 3, '2025-08-07 04:27:16', '2025-08-07 04:27:16');
+(11, 7, 25, 'กลุ่มเป้าหมายจำนวน....12....คน สามารถใช้ประโยชน์จากหลักสูตรในการจัดอบรมพัฒนาทักษะและทำให้เกิดรายได้จากค่าตอบแทนในการจัดอบรมหลักสูตร', 3, '2025-08-08 05:58:00', '2025-08-08 05:58:00'),
+(13, 3, 21, 'ผู้ประกอบการที่พัก (โฮมสเตย์) เป้าหมาย จำนวน....30...ราย มีรายได้เพิ่มขึ้น จากการได้รับมาตรฐาน........30...........', 3, '2025-08-08 07:42:10', '2025-08-08 07:42:10'),
+(18, 4, 47, 'รายได้เพิ่มขึ้น จาก...12.....อะไร.....12.......จากการจัดตั้งกลุ่มวิสาหกิจ', 3, '2025-08-08 08:15:18', '2025-08-08 08:15:18');
 
 -- --------------------------------------------------------
 
@@ -427,9 +471,9 @@ CREATE TABLE `project_outputs` (
 --
 
 INSERT INTO `project_outputs` (`id`, `project_id`, `output_id`, `output_details`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 7, 3, 'กลุ่มเป้าหมาย จำนวน.....30....คน มีศักยภาพ ด้าน..........IoT และ solar cell...........', '3', '2025-08-07 03:22:25', '2025-08-07 03:22:25'),
-(2, 4, 39, 'กลุ่มเป้าหมายจำนวน...xx...คน มีความรู้/เข้าใจเกี่ยวกับการสร้างความรักความสามัคคีในชุมชน', '3', '2025-08-07 04:26:46', '2025-08-07 04:26:46'),
-(3, 3, 14, 'ผลิตภัณฑ์สร้างสรรค์ได้รับการจดทะเบียนทรัพย์สินทางปัญญา ประเภท ลิขสิทธิ์ จำนวน....1....ผลิตภัณฑ์', '3', '2025-08-07 06:16:39', '2025-08-07 06:16:39');
+(3, 7, 19, 'หลักสูตรใหม่ จำนวน......11......หลักสูตร ได้แก่.........11..........', '3', '2025-08-08 03:55:45', '2025-08-08 03:55:45'),
+(4, 3, 16, 'ที่พัก จำนวน...30....แห่ง ได้รับมาตรฐาน........30...........', '3', '2025-08-08 07:40:44', '2025-08-08 07:40:44'),
+(5, 4, 29, 'เกิดกลุ่มวิสาหกิจชุมชนจำนวน…22.....กลุ่ม ได้แก่.....22......', '3', '2025-08-08 08:03:24', '2025-08-08 08:03:24');
 
 --
 -- Triggers `project_outputs`
@@ -466,9 +510,9 @@ CREATE TABLE `project_strategies` (
 --
 
 INSERT INTO `project_strategies` (`id`, `project_id`, `strategy_id`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 7, 1, '3', '2025-08-07 03:19:12', '2025-08-07 03:19:12'),
-(2, 4, 1, '3', '2025-08-07 04:26:31', '2025-08-07 04:26:31'),
-(3, 3, 1, '3', '2025-08-07 06:15:47', '2025-08-07 06:15:47');
+(3, 7, 1, '3', '2025-08-08 03:55:24', '2025-08-08 03:55:24'),
+(4, 3, 1, '3', '2025-08-08 07:40:25', '2025-08-08 07:40:25'),
+(5, 4, 1, '3', '2025-08-08 08:02:52', '2025-08-08 08:02:52');
 
 --
 -- Triggers `project_strategies`
@@ -650,6 +694,10 @@ CREATE TABLE `social_impact_pathway` (
   `outcome_value` decimal(15,2) DEFAULT NULL COMMENT 'มูลค่าผลลัพธ์',
   `outcome_unit` varchar(100) DEFAULT NULL COMMENT 'หน่วยผลลัพธ์',
   `impact_description` text DEFAULT NULL COMMENT 'ผลกระทบ (Impact)',
+  `selected_outcome` int(11) DEFAULT NULL,
+  `outcome_details` text DEFAULT NULL,
+  `evaluation_year` varchar(10) DEFAULT NULL,
+  `benefit_data` text DEFAULT NULL,
   `impact_type` enum('positive','negative') DEFAULT 'positive' COMMENT 'ประเภทผลกระทบ',
   `impact_category` enum('social','economic','environmental','educational','health') DEFAULT 'social' COMMENT 'หมวดหมู่ผลกระทบ',
   `impact_value` decimal(15,2) DEFAULT NULL COMMENT 'มูลค่าผลกระทบ',
@@ -669,10 +717,11 @@ CREATE TABLE `social_impact_pathway` (
 -- Dumping data for table `social_impact_pathway`
 --
 
-INSERT INTO `social_impact_pathway` (`pathway_id`, `project_id`, `pathway_sequence`, `input_description`, `input_amount`, `input_unit`, `activities_description`, `activity_id`, `output_description`, `output_id`, `output_quantity`, `output_unit`, `user_description`, `user_type`, `user_quantity`, `adoption_description`, `adoption_rate`, `adoption_method`, `outcome_description`, `outcome_id`, `outcome_value`, `outcome_unit`, `impact_description`, `impact_type`, `impact_category`, `impact_value`, `impact_unit`, `measurement_period`, `data_source`, `assumptions`, `risks`, `verification_method`, `notes`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 7, 'ฟฟฟฟ', '', NULL, NULL, '', NULL, '', NULL, NULL, NULL, '', NULL, NULL, '', NULL, NULL, '', NULL, NULL, NULL, '', 'positive', 'social', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '3', '2025-08-07 04:06:34', '2025-08-07 04:06:34'),
-(2, 7, 'ฟฟฟฟ', '', NULL, NULL, '', NULL, '', NULL, NULL, NULL, '', NULL, NULL, '', NULL, NULL, '', NULL, NULL, NULL, '', 'positive', 'social', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '3', '2025-08-07 04:14:48', '2025-08-07 04:14:48'),
-(3, 4, 'xx', '', NULL, NULL, '', NULL, '', NULL, NULL, NULL, '', NULL, NULL, '', NULL, NULL, '', NULL, NULL, NULL, '', 'positive', 'social', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '3', '2025-08-07 04:27:27', '2025-08-07 04:27:27');
+INSERT INTO `social_impact_pathway` (`pathway_id`, `project_id`, `pathway_sequence`, `input_description`, `input_amount`, `input_unit`, `activities_description`, `activity_id`, `output_description`, `output_id`, `output_quantity`, `output_unit`, `user_description`, `user_type`, `user_quantity`, `adoption_description`, `adoption_rate`, `adoption_method`, `outcome_description`, `outcome_id`, `outcome_value`, `outcome_unit`, `impact_description`, `selected_outcome`, `outcome_details`, `evaluation_year`, `benefit_data`, `impact_type`, `impact_category`, `impact_value`, `impact_unit`, `measurement_period`, `data_source`, `assumptions`, `risks`, `verification_method`, `notes`, `created_by`, `created_at`, `updated_at`) VALUES
+(1, 4, '1', 'ปัจจัยนำเข้า (Input)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', 47, 'รายได้เพิ่มขึ้น จาก...12.....อะไร.....12.......จากการจัดตั้งกลุ่มวิสาหกิจ', '2568', '[{\"benefit_number\":1,\"benefit_detail\":\"ผลประโยชน์ 12\",\"beneficiary\":\"ผลประโยชน์ 12\",\"benefit_note\":\"5500\",\"attribution\":\"12.00\",\"deadweight\":\"12.00\",\"displacement\":\"12.00\",\"impact_ratio\":0.64}]', 'positive', 'social', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '3', '2025-08-08 10:13:02', '2025-08-08 10:13:02'),
+(2, 4, '2', 'ปัจจัยนำเข้า (Input)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL, '', '', '', 'positive', 'social', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '3', '2025-08-08 10:15:56', '2025-08-08 10:15:56'),
+(3, 4, '3', 'ปัจจัยนำเข้า (Input) 3', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ผลกระทบ (Impact) 3', NULL, '', '', '', 'positive', 'social', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '3', '2025-08-08 10:18:32', '2025-08-08 10:18:32'),
+(4, 4, '4', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, '', '', '', 'positive', 'social', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '3', '2025-08-08 11:40:49', '2025-08-08 11:40:49');
 
 -- --------------------------------------------------------
 
@@ -776,8 +825,7 @@ INSERT INTO `years` (`year_id`, `year_be`, `year_ad`, `year_display`, `year_desc
 (1, '2567', 2024, '2567', 'ปี พ.ศ. 2567 (ค.ศ. 2024)', 1, 1, '2025-08-07 06:22:36', '2025-08-07 06:22:36'),
 (2, '2568', 2025, '2568', 'ปี พ.ศ. 2568 (ค.ศ. 2025)', 1, 2, '2025-08-07 06:22:36', '2025-08-07 06:22:36'),
 (3, '2569', 2026, '2569', 'ปี พ.ศ. 2569 (ค.ศ. 2026)', 1, 3, '2025-08-07 06:22:36', '2025-08-07 06:22:36'),
-(4, '2570', 2027, '2570', 'ปี พ.ศ. 2570 (ค.ศ. 2027)', 1, 4, '2025-08-07 06:22:36', '2025-08-07 06:22:36'),
-(5, '25xx', 2028, '25xx', 'ปี พ.ศ. 25xx (อนาคต)', 1, 5, '2025-08-07 06:22:36', '2025-08-07 06:22:36');
+(4, '2570', 2027, '2570', 'ปี พ.ศ. 2570 (ค.ศ. 2027)', 1, 4, '2025-08-07 06:22:36', '2025-08-07 06:22:36');
 
 --
 -- Indexes for dumped tables
@@ -833,6 +881,14 @@ ALTER TABLE `project_activities`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_project_id` (`project_id`),
   ADD KEY `idx_activity_id` (`activity_id`);
+
+--
+-- Indexes for table `project_costs`
+--
+ALTER TABLE `project_costs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_project_id` (`project_id`),
+  ADD KEY `idx_created_by` (`created_by`);
 
 --
 -- Indexes for table `project_impact_ratios`
@@ -938,7 +994,7 @@ ALTER TABLE `activities`
 -- AUTO_INCREMENT for table `audit_logs`
 --
 ALTER TABLE `audit_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `outcomes`
@@ -962,31 +1018,37 @@ ALTER TABLE `projects`
 -- AUTO_INCREMENT for table `project_activities`
 --
 ALTER TABLE `project_activities`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `project_costs`
+--
+ALTER TABLE `project_costs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `project_impact_ratios`
 --
 ALTER TABLE `project_impact_ratios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT for table `project_outcomes`
 --
 ALTER TABLE `project_outcomes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `project_outputs`
 --
 ALTER TABLE `project_outputs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `project_strategies`
 --
 ALTER TABLE `project_strategies`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `proxies`
@@ -998,7 +1060,7 @@ ALTER TABLE `proxies`
 -- AUTO_INCREMENT for table `social_impact_pathway`
 --
 ALTER TABLE `social_impact_pathway`
-  MODIFY `pathway_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `pathway_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `strategies`
@@ -1052,6 +1114,13 @@ ALTER TABLE `outputs`
 ALTER TABLE `project_activities`
   ADD CONSTRAINT `project_activities_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `project_activities_ibfk_2` FOREIGN KEY (`activity_id`) REFERENCES `activities` (`activity_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `project_costs`
+--
+ALTER TABLE `project_costs`
+  ADD CONSTRAINT `fk_project_costs_project` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_project_costs_user` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `project_impact_ratios`

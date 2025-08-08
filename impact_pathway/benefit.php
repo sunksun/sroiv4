@@ -24,12 +24,57 @@ $username = $_SESSION['username'];
 // รับ project_id จาก URL
 $project_id = isset($_GET['project_id']) ? intval($_GET['project_id']) : 0;
 
+// ดึงข้อมูลปี พ.ศ. จากตาราง years
+$available_years = [];
+$years_query = "SELECT year_be, year_display FROM years WHERE is_active = 1 ORDER BY sort_order ASC";
+$years_result = mysqli_query($conn, $years_query);
+if ($years_result) {
+    while ($year = mysqli_fetch_assoc($years_result)) {
+        $available_years[] = $year;
+    }
+}
+
+// ดึงข้อมูลผลประโยชน์จากตาราง project_impact_ratios
+$existing_benefits = [];
+$benefit_notes_by_year = []; // เก็บ benefit_note ตามปี
+if ($project_id > 0) {
+    $benefits_query = "SELECT benefit_number, benefit_detail, beneficiary, benefit_note, year FROM project_impact_ratios WHERE project_id = ? AND benefit_detail IS NOT NULL AND benefit_detail != '' ORDER BY benefit_number ASC";
+    $benefits_stmt = mysqli_prepare($conn, $benefits_query);
+    mysqli_stmt_bind_param($benefits_stmt, 'i', $project_id);
+    mysqli_stmt_execute($benefits_stmt);
+    $benefits_result = mysqli_stmt_get_result($benefits_stmt);
+    
+    while ($benefit_row = mysqli_fetch_assoc($benefits_result)) {
+        $benefit_number = $benefit_row['benefit_number'];
+        $year = $benefit_row['year'];
+        
+        // เก็บข้อมูลผลประโยชน์ (benefit_detail, beneficiary) ครั้งแรกเท่านั้น
+        if (!isset($existing_benefits[$benefit_number - 1])) {
+            $existing_benefits[$benefit_number - 1] = [
+                'detail' => $benefit_row['benefit_detail'],
+                'beneficiary' => $benefit_row['beneficiary']
+            ];
+        }
+        
+        // เก็บ benefit_note ตามปีและ benefit_number
+        if (!isset($benefit_notes_by_year[$benefit_number])) {
+            $benefit_notes_by_year[$benefit_number] = [];
+        }
+        $benefit_notes_by_year[$benefit_number][$year] = $benefit_row['benefit_note'];
+    }
+    mysqli_stmt_close($benefits_stmt);
+}
+
 // จัดการการส่งฟอร์ม
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         // รับข้อมูลจากฟอร์ม
         $stakeholders = $_POST['stakeholder'] ?? [];
-        $years = ['2567', '2568', '2569', '2570', '25xx', '25xx2'];
+        // ใช้ปีจากฐานข้อมูล
+        $years = [];
+        foreach ($available_years as $year) {
+            $years[] = $year['year_be'];
+        }
 
         // ตรวจสอบข้อมูลและบันทึก
         foreach ($stakeholders as $index => $stakeholder) {
@@ -468,46 +513,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <tr>
                             <th rowspan="2" class="header-main">ลำดับที่</th>
                             <th rowspan="2" class="header-main">ผลประโยชน์</th>
-                            <th colspan="6" class="header-main">ผลประโยชน์ที่ได้ (งบ/ปี)</th>
+                            <th colspan="<?php echo count($available_years); ?>" class="header-main">ผลประโยชน์ที่ได้ (งบ/ปี)</th>
                         </tr>
                         <tr>
-                            <th class="header-year">2567</th>
-                            <th class="header-year">2568</th>
-                            <th class="header-year">2569</th>
-                            <th class="header-year">2570</th>
-                            <th class="header-year">25xx</th>
-                            <th class="header-year">25xx</th>
+                            <?php foreach ($available_years as $year): ?>
+                                <th class="header-year"><?php echo htmlspecialchars($year['year_display']); ?></th>
+                            <?php endforeach; ?>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php for ($i = 1; $i <= 10; $i++): ?>
+                        <?php 
+                        $max_benefits = max(10, count($existing_benefits));
+                        for ($i = 1; $i <= $max_benefits; $i++): 
+                        ?>
+                            <?php
+                            // ดึงข้อมูลผลประโยชน์ที่มีอยู่แล้วสำหรับแถวนี้
+                            $existing_benefit = '';
+                            $existing_beneficiary = '';
+                            if (isset($existing_benefits[$i-1])) {
+                                $existing_benefit = $existing_benefits[$i-1]['detail'];
+                                $existing_beneficiary = $existing_benefits[$i-1]['beneficiary'];
+                            }
+                            ?>
                             <tr>
                                 <td class="row-number"><?php echo $i; ?></td>
                                 <td class="stakeholder-input">
                                     <input type="text" name="stakeholder[<?php echo $i; ?>]"
                                         placeholder="ผลประโยชน์ <?php echo $i; ?>"
-                                        value="<?php echo $i == 1 ? 'ผลประโยชน์ 1' : ''; ?>">
+                                        value="<?php echo htmlspecialchars($existing_benefit); ?>"
+                                        title="ผู้รับผลประโยชน์: <?php echo htmlspecialchars($existing_beneficiary); ?>">
                                 </td>
-                                <td class="value-cell">
-                                    <input type="text" name="value_<?php echo $i; ?>_2567"
-                                        value="<?php echo $i == 1 ? '100.00' : ''; ?>">
-                                </td>
-                                <td class="value-cell">
-                                    <input type="text" name="value_<?php echo $i; ?>_2568"
-                                        value="<?php echo $i == 1 ? '300.00' : ''; ?>">
-                                </td>
-                                <td class="value-cell">
-                                    <input type="text" name="value_<?php echo $i; ?>_2569">
-                                </td>
-                                <td class="value-cell">
-                                    <input type="text" name="value_<?php echo $i; ?>_2570">
-                                </td>
-                                <td class="value-cell">
-                                    <input type="text" name="value_<?php echo $i; ?>_25xx">
-                                </td>
-                                <td class="value-cell">
-                                    <input type="text" name="value_<?php echo $i; ?>_25xx2">
-                                </td>
+                                <?php foreach ($available_years as $year): ?>
+                                    <?php
+                                    // ดึงค่า benefit_note สำหรับปีนี้และ benefit_number นี้
+                                    $benefit_note_value = '';
+                                    if (isset($benefit_notes_by_year[$i]) && isset($benefit_notes_by_year[$i][$year['year_be']])) {
+                                        $benefit_note_value = $benefit_notes_by_year[$i][$year['year_be']];
+                                        if (is_numeric($benefit_note_value) && $benefit_note_value > 0) {
+                                            $benefit_note_value = number_format($benefit_note_value, 2, '.', '');
+                                        }
+                                    }
+                                    ?>
+                                    <td class="value-cell">
+                                        <input type="text" name="value_<?php echo $i; ?>_<?php echo $year['year_be']; ?>"
+                                               value="<?php echo htmlspecialchars($benefit_note_value); ?>">
+                                    </td>
+                                <?php endforeach; ?>
                             </tr>
                         <?php endfor; ?>
                     </tbody>
@@ -515,8 +566,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <!-- Form Actions -->
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="goBack()">
-                        ← ยกเลิก
+                    <button type="button" class="btn btn-secondary" onclick="goToCost()">
+                        ← ย้อนกลับ (แก้ไขต้นทุน)
                     </button>
 
                     <div class="loading" id="loadingSpinner">
@@ -566,9 +617,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
         });
 
-        function goBack() {
-            if (confirm('คุณต้องการยกเลิกการกรอกข้อมูลหรือไม่? ข้อมูลที่กรอกจะไม่ถูกบันทึก')) {
-                window.history.back();
+        function goToCost() {
+            if (confirm('คุณต้องการย้อนกลับเพื่อแก้ไขหรือเพิ่มข้อมูลต้นทุน/งบประมาณโครงการหรือไม่?')) {
+                const urlParams = new URLSearchParams(window.location.search);
+                const projectId = urlParams.get('project_id');
+                if (projectId) {
+                    window.location.href = 'cost.php?project_id=' + projectId;
+                } else {
+                    window.history.back();
+                }
             }
         }
 

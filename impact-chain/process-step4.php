@@ -19,6 +19,35 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") {
     exit;
 }
 
+// ตรวจสอบว่าเป็น action save_to_session หรือไม่
+if (isset($_POST['action']) && $_POST['action'] == 'save_to_session') {
+    // เก็บข้อมูลลง session แล้ว redirect
+    $project_id = isset($_POST['project_id']) ? (int)$_POST['project_id'] : 0;
+    $selected_outcome = isset($_POST['selected_outcome']) ? (int)$_POST['selected_outcome'] : 0;
+    $outcome_details = isset($_POST['outcome_details']) ? trim($_POST['outcome_details']) : '';
+    $evaluation_year = isset($_POST['evaluation_year']) ? trim($_POST['evaluation_year']) : '';
+    $benefit_data = isset($_POST['benefit_data']) ? $_POST['benefit_data'] : '';
+    
+    // เก็บข้อมูลใน session
+    $_SESSION['step4_data'] = [
+        'project_id' => $project_id,
+        'selected_outcome' => $selected_outcome,
+        'outcome_details' => $outcome_details,
+        'evaluation_year' => $evaluation_year,
+        'benefit_data' => $benefit_data,
+        'timestamp' => time()
+    ];
+    
+    // ส่ง JSON response
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => true,
+        'message' => 'ข้อมูลถูกเก็บใน session แล้ว',
+        'data' => $_SESSION['step4_data']
+    ]);
+    exit;
+}
+
 $project_id = isset($_POST['project_id']) ? (int)$_POST['project_id'] : 0;
 $selected_outcome = isset($_POST['selected_outcome']) ? (int)$_POST['selected_outcome'] : 0;
 $outcome_details = isset($_POST['outcome_details']) ? trim($_POST['outcome_details']) : '';
@@ -172,6 +201,7 @@ try {
     }
 
     // ไปยังหน้า Impact Pathway (เฉพาะกรณีไม่ใช่การบันทึกรายละเอียดเท่านั้น)
+    error_log("Redirecting to impact_pathway.php with project_id: " . $project_id);
     header("location: ../impact_pathway/impact_pathway.php?project_id=" . $project_id);
     exit;
 } catch (Exception $e) {

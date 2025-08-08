@@ -681,8 +681,8 @@ function getProxiesForOutcome($conn, $outcome_id)
                     <button type="button" class="btn btn-primary" onclick="saveBestPracticeData()">
                         <i class="fas fa-save"></i> บันทึกข้อมูลสัดส่วนผลกระทบ
                     </button>
-                    <button type="button" class="btn btn-success" onclick="confirmOutcomeSelection()">
-                        <i class="fas fa-check"></i> ยืนยันและไปขั้นตอนต่อไป
+                    <button type="button" class="btn btn-success" onclick="goToNextStep()">
+                        <i class="fas fa-arrow-right"></i> ไปขั้นตอนต่อไป
                     </button>
                 </div>
             </div>
@@ -723,7 +723,7 @@ function getProxiesForOutcome($conn, $outcome_id)
         });
 
         // เพิ่ม visual feedback เมื่อเลือก outcome
-        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        document.querySelectorAll('input[name="selected_outcome"]').forEach(radio => {
             radio.addEventListener('change', function() {
                 // เอา selected class ออกจาก card ทั้งหมด
                 document.querySelectorAll('.outcome-card').forEach(card => {
@@ -740,8 +740,10 @@ function getProxiesForOutcome($conn, $outcome_id)
                     const card = this.closest('.outcome-card');
                     const group = this.closest('.outcome-group');
 
-                    card.classList.add('selected');
-                    group.classList.add('has-selection');
+                    if (card && group) {
+                        card.classList.add('selected');
+                        group.classList.add('has-selection');
+                    }
 
                     // โหลดข้อมูล Proxy สำหรับผลลัพธ์ที่เลือก
                     loadProxyDataForMainPage(this.value);
@@ -795,8 +797,10 @@ function getProxiesForOutcome($conn, $outcome_id)
                 const card = selectedRadio.closest('.outcome-card');
                 const group = selectedRadio.closest('.outcome-group');
 
-                card.classList.add('selected');
-                group.classList.add('has-selection');
+                if (card && group) {
+                    card.classList.add('selected');
+                    group.classList.add('has-selection');
+                }
             }
         });
 
@@ -1279,11 +1283,14 @@ function getProxiesForOutcome($conn, $outcome_id)
 
         // ฟังก์ชันยืนยันการเลือกผลลัพธ์
         function confirmOutcomeSelection() {
+            console.log('=== confirmOutcomeSelection started ===');
+            
             const selectedRadio = document.querySelector('input[name="selected_outcome"]:checked');
             if (!selectedRadio) {
                 alert('กรุณาเลือกผลลัพธ์ก่อน');
                 return;
             }
+            console.log('Selected outcome:', selectedRadio.value);
 
             // ตรวจสอบข้อมูลรายละเอียดเพิ่มเติม
             const outcomeDetails = document.getElementById('outcome_details').value.trim();
@@ -1291,9 +1298,22 @@ function getProxiesForOutcome($conn, $outcome_id)
                 alert('กรุณากรอกรายละเอียดเพิ่มเติมเกี่ยวกับผลลัพธ์');
                 return;
             }
+            console.log('Outcome details:', outcomeDetails);
+
+            // ตรวจสอบว่าได้เลือกปีหรือไม่
+            const selectedYear = document.querySelector('input[name="evaluation_year"]:checked');
+            if (!selectedYear) {
+                alert('กรุณาเลือกปีที่ต้องการประเมิน');
+                return;
+            }
+            console.log('Selected year:', selectedYear.value);
 
             // เพิ่ม outcome_details ลงในฟอร์มหลัก
             const outcomeForm = document.getElementById('outcomeForm');
+            console.log('Form found:', outcomeForm);
+            console.log('Form action before:', outcomeForm.action);
+            console.log('Form method before:', outcomeForm.method);
+            
             let outcomeDetailsInput = outcomeForm.querySelector('input[name="outcome_details"]');
             if (!outcomeDetailsInput) {
                 outcomeDetailsInput = document.createElement('input');
@@ -1302,14 +1322,23 @@ function getProxiesForOutcome($conn, $outcome_id)
                 outcomeForm.appendChild(outcomeDetailsInput);
             }
             outcomeDetailsInput.value = outcomeDetails;
+            
+            // เพิ่ม evaluation_year ลงในฟอร์มหลัก
+            let evaluationYearInput = outcomeForm.querySelector('input[name="evaluation_year"]');
+            if (!evaluationYearInput) {
+                evaluationYearInput = document.createElement('input');
+                evaluationYearInput.type = 'hidden';
+                evaluationYearInput.name = 'evaluation_year';
+                outcomeForm.appendChild(evaluationYearInput);
+            }
+            evaluationYearInput.value = selectedYear.value;
 
             // รวบรวมข้อมูลจากฟอร์มสัดส่วนผลกระทบ
             const basecaseData = new FormData();
             basecaseData.append('project_id', document.querySelector('input[name="project_id"]').value);
             basecaseData.append('from_modal', '1');
             
-            // เพิ่มปีที่เลือกในข้อมูลสัดส่วนผลกระทบ
-            const selectedYear = document.querySelector('input[name="evaluation_year"]:checked');
+            // เพิ่มปีที่เลือกในข้อมูลสัดส่วนผลกระทบ (ใช้ selectedYear ที่ declare แล้วข้างบน)
             if (selectedYear) {
                 basecaseData.append('evaluation_year', selectedYear.value);
             }
@@ -1321,27 +1350,30 @@ function getProxiesForOutcome($conn, $outcome_id)
             benefitRows.forEach((row, index) => {
                 const rowNumber = index + 1;
 
-                // ดึงข้อมูลจากฟอร์ม
-                const benefitDetailInput = document.querySelector(`input[name="benefit_detail_${rowNumber}"]`);
+                // ดึงข้อมูลจากฟอร์ม (รองรับทั้ง input และ textarea)
+                const benefitDetailInput = document.querySelector(`textarea[name="benefit_detail_${rowNumber}"]`);
+                const beneficiaryInput = document.querySelector(`textarea[name="beneficiary_${rowNumber}"]`);
                 const benefitNoteInput = document.querySelector(`input[name="benefit_note_${rowNumber}"]`);
                 const attributionInput = document.querySelector(`input[name="attribution_${rowNumber}"]`);
                 const deadweightInput = document.querySelector(`input[name="deadweight_${rowNumber}"]`);
                 const displacementInput = document.querySelector(`input[name="displacement_${rowNumber}"]`);
 
                 if (benefitDetailInput && attributionInput && deadweightInput && displacementInput) {
-                    const benefitDetail = benefitDetailInput.value;
+                    const benefitDetail = benefitDetailInput.value.trim();
+                    const beneficiary = beneficiaryInput ? beneficiaryInput.value.trim() : '';
                     // แปลงจำนวนเงินที่มีคอมมากลับเป็นตัวเลขล้วน (ฟังก์ชัน confirmOutcomeSelection)
-                    const benefitNote = benefitNoteInput.value.replace(/,/g, '');
+                    const benefitNote = benefitNoteInput.value.replace(/,/g, '').trim();
                     const attribution = attributionInput.value;
                     const deadweight = deadweightInput.value;
                     const displacement = displacementInput.value;
 
                     // บันทึกข้อมูลถ้ามีการกรอก
-                    if (benefitDetail || attribution !== '0' || deadweight !== '0' || displacement !== '0') {
+                    if (benefitDetail || beneficiary || benefitNote || attribution !== '0' || deadweight !== '0' || displacement !== '0') {
                         basecaseData.append(`attribution_${rowNumber}`, attribution);
                         basecaseData.append(`deadweight_${rowNumber}`, deadweight);
                         basecaseData.append(`displacement_${rowNumber}`, displacement);
                         basecaseData.append(`benefit_detail_${rowNumber}`, benefitDetail);
+                        basecaseData.append(`beneficiary_${rowNumber}`, beneficiary);
                         basecaseData.append(`benefit_note_${rowNumber}`, benefitNote);
                         savedCount++;
                     }
@@ -1350,28 +1382,153 @@ function getProxiesForOutcome($conn, $outcome_id)
 
             // ส่งข้อมูลสัดส่วนผลกระทบก่อน (ถ้ามี)
             if (savedCount > 0) {
+                console.log('Sending basecase data first...');
                 fetch('../impact_pathway/process-basecase.php', {
                         method: 'POST',
                         body: basecaseData
-                    }).then(response => response.text())
+                    }).then(response => {
+                        console.log('Basecase response status:', response.status);
+                        return response.text();
+                    })
                     .then(data => {
-                        console.log('Basecase data saved');
+                        console.log('Basecase data saved:', data);
 
                         // จากนั้นส่งข้อมูลผลลัพธ์ไปยัง process-step4.php
-                        outcomeForm.submit();
+                        console.log('Now submitting outcome form...');
+                        submitOutcomeForm();
                     }).catch(error => {
                         console.error('Error saving basecase data:', error);
                         // ถึงแม้มีข้อผิดพลาดในการบันทึกสัดส่วน ก็ยังส่งข้อมูลผลลัพธ์ต่อไป
-                        outcomeForm.submit();
+                        console.log('Submitting outcome form despite error...');
+                        submitOutcomeForm();
                     });
             } else {
                 // ไม่มีข้อมูลสัดส่วนผลกระทบ - ส่งข้อมูลผลลัพธ์ไปเลย
-                outcomeForm.submit();
+                console.log('No basecase data, submitting outcome form directly...');
+                submitOutcomeForm();
             }
+
+            // ฟังก์ชันส่งข้อมูลฟอร์ม
+            function submitOutcomeForm() {
+                console.log('=== submitOutcomeForm called ===');
+                console.log('Form action:', outcomeForm.action);
+                console.log('Form method:', outcomeForm.method);
+                
+                // พิมพ์ข้อมูลทั้งหมดในฟอร์ม
+                const formData = new FormData(outcomeForm);
+                for (let pair of formData.entries()) {
+                    console.log('Form field:', pair[0], '=', pair[1]);
+                }
+                
+                console.log('About to submit form...');
+                outcomeForm.submit();
+                console.log('Form submit() called');
+            }
+
+            // ปิด modal หลังจาก submit แล้ว
+            // const modal = bootstrap.Modal.getInstance(document.getElementById('outcomeProxyModal'));
+            // modal.hide();
+        }
+
+        // ฟังก์ชันไปขั้นตอนต่อไปโดยเก็บข้อมูลใน session
+        function goToNextStep() {
+            console.log('=== goToNextStep started ===');
+            
+            const selectedRadio = document.querySelector('input[name="selected_outcome"]:checked');
+            if (!selectedRadio) {
+                alert('กรุณาเลือกผลลัพธ์ก่อน');
+                return;
+            }
+            console.log('Selected outcome:', selectedRadio.value);
+
+            // ตรวจสอบข้อมูลรายละเอียดเพิ่มเติม
+            const outcomeDetails = document.getElementById('outcome_details').value.trim();
+            if (!outcomeDetails) {
+                alert('กรุณากรอกรายละเอียดเพิ่มเติมเกี่ยวกับผลลัพธ์');
+                return;
+            }
+            console.log('Outcome details:', outcomeDetails);
+
+            // ตรวจสอบว่าได้เลือกปีหรือไม่
+            const selectedYear = document.querySelector('input[name="evaluation_year"]:checked');
+            if (!selectedYear) {
+                alert('กรุณาเลือกปีที่ต้องการประเมิน');
+                return;
+            }
+            console.log('Selected year:', selectedYear.value);
+
+            // รวบรวมข้อมูลสัดส่วนผลกระทบ (ถ้ามี) 
+            const benefitData = [];
+            const benefitRows = document.querySelectorAll('#benefitTable tbody tr');
+            
+            benefitRows.forEach((row, index) => {
+                const rowNumber = index + 1;
+
+                const benefitDetailInput = document.querySelector(`textarea[name="benefit_detail_${rowNumber}"]`);
+                const beneficiaryInput = document.querySelector(`textarea[name="beneficiary_${rowNumber}"]`);
+                const benefitNoteInput = document.querySelector(`input[name="benefit_note_${rowNumber}"]`);
+                const attributionInput = document.querySelector(`input[name="attribution_${rowNumber}"]`);
+                const deadweightInput = document.querySelector(`input[name="deadweight_${rowNumber}"]`);
+                const displacementInput = document.querySelector(`input[name="displacement_${rowNumber}"]`);
+
+                if (benefitDetailInput && attributionInput && deadweightInput && displacementInput) {
+                    const benefitDetail = benefitDetailInput.value.trim();
+                    const beneficiary = beneficiaryInput ? beneficiaryInput.value.trim() : '';
+                    const benefitNote = benefitNoteInput.value.replace(/,/g, '').trim();
+                    const attribution = attributionInput.value;
+                    const deadweight = deadweightInput.value;
+                    const displacement = displacementInput.value;
+
+                    // บันทึกข้อมูลถ้ามีการกรอก
+                    if (benefitDetail || beneficiary || benefitNote || attribution !== '0' || deadweight !== '0' || displacement !== '0') {
+                        benefitData.push({
+                            benefit_number: rowNumber,
+                            benefit_detail: benefitDetail,
+                            beneficiary: beneficiary,
+                            benefit_note: benefitNote,
+                            attribution: attribution,
+                            deadweight: deadweight,
+                            displacement: displacement,
+                            impact_ratio: 1 - (parseFloat(attribution) + parseFloat(deadweight) + parseFloat(displacement)) / 100
+                        });
+                    }
+                }
+            });
+
+            // ส่งข้อมูลไปยัง PHP เพื่อเก็บใน session
+            const formData = new FormData();
+            formData.append('action', 'save_to_session');
+            formData.append('project_id', document.querySelector('input[name="project_id"]').value);
+            formData.append('selected_outcome', selectedRadio.value);
+            formData.append('outcome_details', outcomeDetails);
+            formData.append('evaluation_year', selectedYear.value);
+            formData.append('benefit_data', JSON.stringify(benefitData));
+
+            // ส่งข้อมูลไปยัง process-step4.php
+            fetch('process-step4.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Data saved to session successfully');
+                    // ไปยังหน้า Impact Pathway
+                    window.location.href = '../impact_pathway/impact_pathway.php?project_id=' + document.querySelector('input[name="project_id"]').value;
+                } else {
+                    alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์');
+            });
 
             // ปิด modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('outcomeProxyModal'));
-            modal.hide();
+            if (modal) {
+                modal.hide();
+            }
         }
 
         // ฟังก์ชันบันทึกรายละเอียดเพิ่มเติมเท่านั้น

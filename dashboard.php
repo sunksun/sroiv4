@@ -930,7 +930,7 @@ function formatThaiDate($date)
                                 <p>ห่วงโซ่ผลกระทบทางสังคม</p>
                             </div>
                         </a>
-                        <a href="#" class="action-button" onclick="generateReport()">
+                        <a href="sroi-expost/index.php" class="action-button">
                             <div class="action-icon">📄</div>
                             <div class="action-content">
                                 <h4>สร้างรายงาน</h4>

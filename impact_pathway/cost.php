@@ -24,25 +24,99 @@ $username = $_SESSION['username'];
 // รับ project_id จาก URL
 $project_id = isset($_GET['project_id']) ? intval($_GET['project_id']) : 0;
 
+// ดึงข้อมูลปี พ.ศ. จากตาราง years
+$available_years = [];
+$years_query = "SELECT year_be, year_display FROM years WHERE is_active = 1 ORDER BY sort_order ASC";
+$years_result = mysqli_query($conn, $years_query);
+if ($years_result) {
+    while ($year = mysqli_fetch_assoc($years_result)) {
+        $available_years[] = $year;
+    }
+}
+
+// ดึงข้อมูลต้นทุนที่บันทึกไว้แล้ว
+$existing_costs = [];
+if ($project_id > 0) {
+    $cost_query = "SELECT cost_name, yearly_amounts FROM project_costs WHERE project_id = ? ORDER BY id ASC";
+    $cost_stmt = mysqli_prepare($conn, $cost_query);
+    mysqli_stmt_bind_param($cost_stmt, 'i', $project_id);
+    mysqli_stmt_execute($cost_stmt);
+    $cost_result = mysqli_stmt_get_result($cost_stmt);
+    
+    while ($cost_row = mysqli_fetch_assoc($cost_result)) {
+        $yearly_data = json_decode($cost_row['yearly_amounts'], true);
+        $existing_costs[] = [
+            'name' => $cost_row['cost_name'],
+            'amounts' => $yearly_data ? $yearly_data : []
+        ];
+    }
+    mysqli_stmt_close($cost_stmt);
+}
+
 // จัดการการส่งฟอร์ม
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
+        // ตรวจสอบสิทธิ์เข้าถึงโครงการ
+        $check_query = "SELECT id FROM projects WHERE id = ? AND created_by = ?";
+        $check_stmt = mysqli_prepare($conn, $check_query);
+        mysqli_stmt_bind_param($check_stmt, 'ii', $project_id, $user_id);
+        mysqli_stmt_execute($check_stmt);
+        $check_result = mysqli_stmt_get_result($check_stmt);
+        
+        if (mysqli_num_rows($check_result) == 0) {
+            throw new Exception("คุณไม่มีสิทธิ์เข้าถึงโครงการนี้");
+        }
+        mysqli_stmt_close($check_stmt);
+
         // รับข้อมูลจากฟอร์ม
         $costs = $_POST['cost'] ?? [];
-        $years = ['2567', '2568', '2569', '2570', '25xx', '25xx2'];
+        
+        // ใช้ปีจากฐานข้อมูล
+        $years = [];
+        foreach ($available_years as $year) {
+            $years[] = $year['year_be'];
+        }
+
+        // ลบข้อมูลเดิมก่อน
+        $delete_query = "DELETE FROM project_costs WHERE project_id = ?";
+        $delete_stmt = mysqli_prepare($conn, $delete_query);
+        mysqli_stmt_bind_param($delete_stmt, 'i', $project_id);
+        mysqli_stmt_execute($delete_stmt);
+        mysqli_stmt_close($delete_stmt);
 
         // ตรวจสอบข้อมูลและบันทึก
-        foreach ($costs as $index => $cost) {
-            if (!empty($cost)) {
-                $values = [];
+        $saved_count = 0;
+        foreach ($costs as $index => $cost_name) {
+            if (!empty(trim($cost_name))) {
+                // รวบรวมข้อมูลจำนวนเงินตามปี
+                $yearly_amounts = [];
                 foreach ($years as $year) {
-                    $values[$year] = $_POST['value_' . $index . '_' . $year] ?? 0;
+                    $amount = $_POST['value_' . $index . '_' . $year] ?? '';
+                    if (!empty($amount) && is_numeric($amount)) {
+                        $yearly_amounts[$year] = floatval($amount);
+                    }
                 }
-                // บันทึกข้อมูลลงฐานข้อมูล (ใส่โค้ดบันทึกตรงนี้)
+                
+                // บันทึกข้อมูลลงฐานข้อมูล (เฉพาะที่มีข้อมูลจำนวนเงิน)
+                if (!empty($yearly_amounts)) {
+                    $insert_query = "INSERT INTO project_costs (project_id, cost_name, yearly_amounts, created_by) VALUES (?, ?, ?, ?)";
+                    $insert_stmt = mysqli_prepare($conn, $insert_query);
+                    $yearly_json = json_encode($yearly_amounts, JSON_UNESCAPED_UNICODE);
+                    mysqli_stmt_bind_param($insert_stmt, 'issi', $project_id, trim($cost_name), $yearly_json, $user_id);
+                    
+                    if (mysqli_stmt_execute($insert_stmt)) {
+                        $saved_count++;
+                    }
+                    mysqli_stmt_close($insert_stmt);
+                }
             }
         }
 
-        $message = "บันทึกข้อมูลเรียบร้อยแล้ว";
+        if ($saved_count > 0) {
+            $message = "บันทึกข้อมูลต้นทุน " . $saved_count . " รายการเรียบร้อยแล้ว";
+        } else {
+            $message = "ไม่มีข้อมูลที่จะบันทึก";
+        }
 
         // ลิงค์ไปยังหน้า benefit.php พร้อมส่ง project_id
         header("Location: benefit.php?project_id=" . $project_id);
@@ -468,44 +542,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <tr>
                             <th rowspan="2" class="header-main">ลำดับที่</th>
                             <th rowspan="2" class="header-main">ต้นทุน/งบประมาณโครงการ</th>
-                            <th colspan="6" class="header-main">ต้นทุน/งบประมาณโครงการ (งบ/ปี)</th>
+                            <th colspan="<?php echo count($available_years); ?>" class="header-main">ต้นทุน/งบประมาณโครงการ (งบ/ปี)</th>
                         </tr>
                         <tr>
-                            <th class="header-year">2567</th>
-                            <th class="header-year">2568</th>
-                            <th class="header-year">2569</th>
-                            <th class="header-year">2570</th>
-                            <th class="header-year">25xx</th>
-                            <th class="header-year">25xx</th>
+                            <?php foreach ($available_years as $year): ?>
+                                <th class="header-year"><?php echo htmlspecialchars($year['year_display']); ?></th>
+                            <?php endforeach; ?>
                         </tr>
                     </thead>
                     <tbody>
                         <?php for ($i = 1; $i <= 5; $i++): ?>
+                            <?php
+                            // ดึงข้อมูลที่บันทึกไว้แล้วสำหรับแถวนี้
+                            $existing_name = '';
+                            $existing_amounts = [];
+                            if (isset($existing_costs[$i-1])) {
+                                $existing_name = $existing_costs[$i-1]['name'];
+                                $existing_amounts = $existing_costs[$i-1]['amounts'];
+                            }
+                            ?>
                             <tr>
                                 <td class="row-number"><?php echo $i; ?></td>
                                 <td class="cost-input">
                                     <input type="text" name="cost[<?php echo $i; ?>]"
                                         placeholder="ต้นทุน <?php echo $i; ?>"
-                                        value="<?php echo $i == 1 ? 'ต้นทุน 1' : ''; ?>">
+                                        value="<?php echo htmlspecialchars($existing_name); ?>">
                                 </td>
-                                <td class="value-cell">
-                                    <input type="text" name="value_<?php echo $i; ?>_2567">
-                                </td>
-                                <td class="value-cell">
-                                    <input type="text" name="value_<?php echo $i; ?>_2568">
-                                </td>
-                                <td class="value-cell">
-                                    <input type="text" name="value_<?php echo $i; ?>_2569">
-                                </td>
-                                <td class="value-cell">
-                                    <input type="text" name="value_<?php echo $i; ?>_2570">
-                                </td>
-                                <td class="value-cell">
-                                    <input type="text" name="value_<?php echo $i; ?>_25xx">
-                                </td>
-                                <td class="value-cell">
-                                    <input type="text" name="value_<?php echo $i; ?>_25xx2">
-                                </td>
+                                <?php foreach ($available_years as $year): ?>
+                                    <?php
+                                    $existing_value = '';
+                                    if (isset($existing_amounts[$year['year_be']])) {
+                                        $existing_value = number_format($existing_amounts[$year['year_be']], 2, '.', '');
+                                    }
+                                    ?>
+                                    <td class="value-cell">
+                                        <input type="text" name="value_<?php echo $i; ?>_<?php echo $year['year_be']; ?>"
+                                               value="<?php echo $existing_value; ?>">
+                                    </td>
+                                <?php endforeach; ?>
                             </tr>
                         <?php endfor; ?>
                     </tbody>
