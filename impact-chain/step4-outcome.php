@@ -584,9 +584,10 @@ function getProxiesForOutcome($conn, $outcome_id)
                                 <table class="table table-bordered" id="benefitTable">
                                     <thead class="table-light">
                                         <tr>
-                                            <th width="20%">ผลประโยชน์</th>
-                                            <th width="40%">รายละเอียด</th>
-                                            <th width="30%">จำนวนเงิน (บาท/ปี)</th>
+                                            <th width="15%">ผลประโยชน์</th>
+                                            <th width="30%">รายละเอียด</th>
+                                            <th width="25%">ผู้ใช้ประโยชน์</th>
+                                            <th width="20%">จำนวนเงิน (บาท/ปี)</th>
                                             <th width="10%">จัดการ</th>
                                         </tr>
                                     </thead>
@@ -594,9 +595,14 @@ function getProxiesForOutcome($conn, $outcome_id)
                                         <tr>
                                             <td class="fw-bold text-primary align-middle">ผลประโยชน์ 1</td>
                                             <td>
-                                                <input type="text" class="form-control"
+                                                <textarea class="form-control" rows="3"
                                                     name="benefit_detail_1"
-                                                    placeholder="กรอกรายละเอียดผลประโยชน์...">
+                                                    placeholder="กรอกรายละเอียดผลประโยชน์..."></textarea>
+                                            </td>
+                                            <td>
+                                                <textarea class="form-control" rows="3"
+                                                    name="beneficiary_1"
+                                                    placeholder="ระบุผู้ใช้ประโยชน์..."></textarea>
                                             </td>
                                             <td>
                                                 <input type="text" class="form-control"
@@ -1007,10 +1013,14 @@ function getProxiesForOutcome($conn, $outcome_id)
                 newBenefitRow.innerHTML = `
                     <td class="fw-bold text-primary align-middle">ผลประโยชน์ ${rowNumber}</td>
                     <td>
-                        <input type="text" class="form-control"
+                        <textarea class="form-control" rows="3"
                             name="benefit_detail_${rowNumber}"
-                            value="${record.benefit_detail || ''}"
-                            placeholder="กรอกรายละเอียดผลประโยชน์...">
+                            placeholder="กรอกรายละเอียดผลประโยชน์...">${record.benefit_detail || ''}</textarea>
+                    </td>
+                    <td>
+                        <textarea class="form-control" rows="3"
+                            name="beneficiary_${rowNumber}"
+                            placeholder="ระบุผู้ใช้ประโยชน์...">${record.beneficiary || ''}</textarea>
                     </td>
                     <td>
                         <input type="text" class="form-control"
@@ -1132,35 +1142,57 @@ function getProxiesForOutcome($conn, $outcome_id)
             benefitRows.forEach((row, index) => {
                 const rowNumber = index + 1;
 
-                // ดึงข้อมูลจากฟอร์ม
-                const benefitDetailInput = document.querySelector(`input[name="benefit_detail_${rowNumber}"]`);
+                // ดึงข้อมูลจากฟอร์ม (รองรับทั้ง input และ textarea)
+                const benefitDetailInput = document.querySelector(`textarea[name="benefit_detail_${rowNumber}"]`);
+                const beneficiaryInput = document.querySelector(`textarea[name="beneficiary_${rowNumber}"]`);
                 const benefitNoteInput = document.querySelector(`input[name="benefit_note_${rowNumber}"]`);
                 const attributionInput = document.querySelector(`input[name="attribution_${rowNumber}"]`);
                 const deadweightInput = document.querySelector(`input[name="deadweight_${rowNumber}"]`);
                 const displacementInput = document.querySelector(`input[name="displacement_${rowNumber}"]`);
 
                 if (benefitDetailInput && attributionInput && deadweightInput && displacementInput) {
-                    const benefitDetail = benefitDetailInput.value;
+                    const benefitDetail = benefitDetailInput.value.trim();
+                    const beneficiary = beneficiaryInput ? beneficiaryInput.value.trim() : '';
                     // แปลงจำนวนเงินที่มีคอมมากลับเป็นตัวเลขล้วน (ฟังก์ชัน saveBestPracticeData)
-                    const benefitNote = benefitNoteInput.value.replace(/,/g, '');
+                    const benefitNote = benefitNoteInput.value.replace(/,/g, '').trim();
                     const attribution = attributionInput.value;
                     const deadweight = deadweightInput.value;
                     const displacement = displacementInput.value;
 
                     // บันทึกข้อมูลถ้ามีการกรอก
-                    if (benefitDetail || attribution !== '0' || deadweight !== '0' || displacement !== '0') {
+                    if (benefitDetail || beneficiary || benefitNote || attribution !== '0' || deadweight !== '0' || displacement !== '0') {
                         basecaseData.append(`attribution_${rowNumber}`, attribution);
                         basecaseData.append(`deadweight_${rowNumber}`, deadweight);
                         basecaseData.append(`displacement_${rowNumber}`, displacement);
                         basecaseData.append(`benefit_detail_${rowNumber}`, benefitDetail);
+                        basecaseData.append(`beneficiary_${rowNumber}`, beneficiary);
                         basecaseData.append(`benefit_note_${rowNumber}`, benefitNote);
                         savedCount++;
                     }
                 }
             });
 
+            console.log('Saved count:', savedCount);
+            console.log('Total rows:', benefitRows.length);
+            
+            // Debug: ดูว่าแต่ละแถวมีข้อมูลอะไรบ้าง
+            benefitRows.forEach((row, index) => {
+                const rowNumber = index + 1;
+                const benefitDetailInput = document.querySelector(`textarea[name="benefit_detail_${rowNumber}"]`);
+                const beneficiaryInput = document.querySelector(`textarea[name="beneficiary_${rowNumber}"]`);
+                const benefitNoteInput = document.querySelector(`input[name="benefit_note_${rowNumber}"]`);
+                const attributionInput = document.querySelector(`input[name="attribution_${rowNumber}"]`);
+                
+                console.log(`Row ${rowNumber}:`, {
+                    benefitDetail: benefitDetailInput ? benefitDetailInput.value : 'not found',
+                    beneficiary: beneficiaryInput ? beneficiaryInput.value : 'not found',
+                    benefitNote: benefitNoteInput ? benefitNoteInput.value : 'not found',
+                    attribution: attributionInput ? attributionInput.value : 'not found'
+                });
+            });
+
             if (savedCount === 0) {
-                alert('กรุณากรอกข้อมูลอย่างน้อย 1 รายการ');
+                alert('กรุณากรอกข้อมูลอย่างน้อย 1 รายการ\n\nโปรดตรวจสอบ Developer Console เพื่อดูรายละเอียด');
                 return;
             }
 
@@ -1212,8 +1244,8 @@ function getProxiesForOutcome($conn, $outcome_id)
 
         // ฟังก์ชันอัปเดตข้อมูลที่บันทึกแล้ว
         function updateSavedDataDisplay() {
-            // อ่านข้อมูลจากฟอร์ม
-            const benefitDetail = document.querySelector(`input[name="benefit_detail_1"]`).value || '-';
+            // อ่านข้อมูลจากฟอร์ม (รองรับทั้ง input และ textarea)
+            const benefitDetail = document.querySelector(`textarea[name="benefit_detail_1"]`).value || '-';
             const benefitNote = document.querySelector(`input[name="benefit_note_1"]`).value || '0';
             const attribution = document.querySelector(`input[name="attribution_1"]`).value || '0';
             const deadweight = document.querySelector(`input[name="deadweight_1"]`).value || '0';
@@ -1466,9 +1498,14 @@ function getProxiesForOutcome($conn, $outcome_id)
             newBenefitRow.innerHTML = `
                 <td class="fw-bold text-primary align-middle">ผลประโยชน์ ${benefitRowCount}</td>
                 <td>
-                    <input type="text" class="form-control"
+                    <textarea class="form-control" rows="3"
                         name="benefit_detail_${benefitRowCount}"
-                        placeholder="กรอกรายละเอียดผลประโยชน์...">
+                        placeholder="กรอกรายละเอียดผลประโยชน์..."></textarea>
+                </td>
+                <td>
+                    <textarea class="form-control" rows="3"
+                        name="beneficiary_${benefitRowCount}"
+                        placeholder="ระบุผู้ใช้ประโยชน์..."></textarea>
                 </td>
                 <td>
                     <input type="text" class="form-control"

@@ -55,6 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $deadweight = isset($_POST["deadweight_$i"]) ? (float)$_POST["deadweight_$i"] : 0;
             $displacement = isset($_POST["displacement_$i"]) ? (float)$_POST["displacement_$i"] : 0;
             $benefit_detail = isset($_POST["benefit_detail_$i"]) ? trim($_POST["benefit_detail_$i"]) : '';
+            $beneficiary = isset($_POST["beneficiary_$i"]) ? trim($_POST["beneficiary_$i"]) : '';
             $benefit_note = isset($_POST["benefit_note_$i"]) ? trim($_POST["benefit_note_$i"]) : '';
 
             // คำนวณสัดส่วนผลกระทบ
@@ -62,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $impact_ratio = max(0, $impact_ratio); // ไม่ให้ต่ำกว่า 0
 
             // บันทึกเฉพาะรายการที่มีข้อมูล
-            if ($attribution > 0 || $deadweight > 0 || $displacement > 0 || !empty($benefit_detail) || !empty($benefit_note)) {
+            if ($attribution > 0 || $deadweight > 0 || $displacement > 0 || !empty($benefit_detail) || !empty($beneficiary) || !empty($benefit_note)) {
                 $impact_data[] = array(
                     'benefit_number' => $i,
                     'attribution' => $attribution,
@@ -70,6 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     'displacement' => $displacement,
                     'impact_ratio' => $impact_ratio,
                     'benefit_detail' => $benefit_detail,
+                    'beneficiary' => $beneficiary,
                     'benefit_note' => $benefit_note
                 );
             }
@@ -83,15 +85,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_stmt_execute($delete_stmt);
     mysqli_stmt_close($delete_stmt);
 
-    // เตรียม SQL สำหรับ insert (รวม year)
-    $insert_query = "INSERT INTO project_impact_ratios (project_id, benefit_number, attribution, deadweight, displacement, impact_ratio, benefit_detail, benefit_note, year, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+    // เตรียม SQL สำหรับ insert (รวม year และ beneficiary)
+    $insert_query = "INSERT INTO project_impact_ratios (project_id, benefit_number, attribution, deadweight, displacement, impact_ratio, benefit_detail, beneficiary, benefit_note, year, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
     $insert_stmt = mysqli_prepare($conn, $insert_query);
 
     $success_count = 0;
     foreach ($impact_data as $data) {
         mysqli_stmt_bind_param(
             $insert_stmt,
-            'iiddddsss',
+            'iiddddssss',
             $project_id,
             $data['benefit_number'],
             $data['attribution'],
@@ -99,6 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $data['displacement'],
             $data['impact_ratio'],
             $data['benefit_detail'],
+            $data['beneficiary'],
             $data['benefit_note'],
             $evaluation_year
         );

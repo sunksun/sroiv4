@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     mysqli_stmt_close($check_stmt);
 
     // ดึงข้อมูลสัดส่วนผลกระทบที่บันทึกไว้
-    $query = "SELECT benefit_number, attribution, deadweight, displacement, impact_ratio, benefit_detail, benefit_note 
+    $query = "SELECT benefit_number, attribution, deadweight, displacement, impact_ratio, benefit_detail, beneficiary, benefit_note 
               FROM project_impact_ratios 
               WHERE project_id = ? 
               ORDER BY benefit_number ASC";
