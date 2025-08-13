@@ -31,7 +31,8 @@
         foreach ($available_years as $year_index => $year) {
             $amount = isset($benefit_notes_by_year[$benefit_number]) && isset($benefit_notes_by_year[$benefit_number][$year['year_be']])
                 ? $benefit_notes_by_year[$benefit_number][$year['year_be']] : 0;
-            $present_value = $amount / pow(1 + $default_settings['discount_rate'], $year_index);
+            // ใช้ discount rate จากฐานข้อมูลเหมือนกับ Present Cost
+            $present_value = $amount / pow(1 + ($default_settings['discount_rate']), $year_index);
 
             $total_benefits += $amount;
             if (!isset($benefits_by_year[$year['year_be']])) {
@@ -49,114 +50,38 @@
     $npv = $total_present_benefits - $total_present_costs;
     $sensitivity = calculateSensitivityAnalysis($sroi_ratio, $default_settings['sensitivity_range']);
 
-    // คำนวณ Base Case Impact (สมมติ 10% ของผลประโยชน์)
-    $base_case_impact = $total_present_benefits * 0.1;
+    // คำนวณ Base Case Impact จากข้อมูลจริงในฐานข้อมูล
+    $base_case_impact = 0;
+    foreach ($project_benefits as $index => $benefit) {
+        $benefit_number = $index + 1;
+        foreach ($available_years as $year_index => $year) {
+            $benefit_amount = isset($benefit_notes_by_year[$benefit_number]) && isset($benefit_notes_by_year[$benefit_number][$year['year_be']])
+                ? $benefit_notes_by_year[$benefit_number][$year['year_be']] : 0;
+            
+            // ดึงค่า base case factors จากฐานข้อมูล
+            $attribution_rate = isset($base_case_factors[$benefit_number]) && isset($base_case_factors[$benefit_number][$year['year_be']])
+                ? $base_case_factors[$benefit_number][$year['year_be']]['attribution'] : 0;
+            $deadweight_rate = isset($base_case_factors[$benefit_number]) && isset($base_case_factors[$benefit_number][$year['year_be']])
+                ? $base_case_factors[$benefit_number][$year['year_be']]['deadweight'] : 0;
+            $displacement_rate = isset($base_case_factors[$benefit_number]) && isset($base_case_factors[$benefit_number][$year['year_be']])
+                ? $base_case_factors[$benefit_number][$year['year_be']]['displacement'] : 0;
+            
+            // คำนวณ present value ของ base case impact
+            $attribution = $benefit_amount * ($attribution_rate / 100);
+            $deadweight = $benefit_amount * ($deadweight_rate / 100);
+            $displacement = $benefit_amount * ($displacement_rate / 100);
+            
+            $impact_amount = $attribution + $deadweight + $displacement;
+            $present_impact = $impact_amount / pow(1 + ($default_settings['discount_rate']), $year_index);
+            
+            $base_case_impact += $present_impact;
+        }
+    }
+    
     $net_social_benefit = $total_present_benefits - $base_case_impact;
     ?>
 
 
-
-    <!-- Base Case Impact Section -->
-    <div class="section">
-        <h2 class="section-title">⚖️ ผลกระทบกรณีฐาน (Base Case Impact)</h2>
-
-        <h3 style="color: #667eea; margin-bottom: 15px;">ผลจากปัจจัยอื่นๆ (Attribution)</h3>
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>รายการ</th>
-                    <?php foreach ($available_years as $year): ?>
-                        <th><?php echo htmlspecialchars($year['year_display']); ?></th>
-                    <?php endforeach; ?>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($project_benefits as $index => $benefit): ?>
-                    <?php $benefit_number = $index + 1; ?>
-                    <tr class="impact-row">
-                        <td><?php echo htmlspecialchars($benefit['detail']); ?> (Attribution 5%)</td>
-                        <?php foreach ($available_years as $year): ?>
-                            <td>
-                                <?php
-                                $benefit_amount = isset($benefit_notes_by_year[$benefit_number]) && isset($benefit_notes_by_year[$benefit_number][$year['year_be']])
-                                    ? $benefit_notes_by_year[$benefit_number][$year['year_be']] : 0;
-                                $attribution = $benefit_amount * 0.05; // 5% attribution
-                                echo $attribution > 0 ? formatCurrency($attribution, 0) : '-';
-                                ?>
-                            </td>
-                        <?php endforeach; ?>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-
-        <h3 style="color: #667eea; margin-bottom: 15px; margin-top: 20px;">ผลลัพธ์ส่วนเกิน (Deadweight)</h3>
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>รายการ</th>
-                    <?php foreach ($available_years as $year): ?>
-                        <th><?php echo htmlspecialchars($year['year_display']); ?></th>
-                    <?php endforeach; ?>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($project_benefits as $index => $benefit): ?>
-                    <?php $benefit_number = $index + 1; ?>
-                    <tr class="impact-row">
-                        <td><?php echo htmlspecialchars($benefit['detail']); ?> (Deadweight 3%)</td>
-                        <?php foreach ($available_years as $year): ?>
-                            <td>
-                                <?php
-                                $benefit_amount = isset($benefit_notes_by_year[$benefit_number]) && isset($benefit_notes_by_year[$benefit_number][$year['year_be']])
-                                    ? $benefit_notes_by_year[$benefit_number][$year['year_be']] : 0;
-                                $deadweight = $benefit_amount * 0.03; // 3% deadweight
-                                echo $deadweight > 0 ? formatCurrency($deadweight, 0) : '-';
-                                ?>
-                            </td>
-                        <?php endforeach; ?>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-
-        <h3 style="color: #667eea; margin-bottom: 15px; margin-top: 20px;">ผลลัพธ์ทดแทน (Displacement)</h3>
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>รายการ</th>
-                    <?php foreach ($available_years as $year): ?>
-                        <th><?php echo htmlspecialchars($year['year_display']); ?></th>
-                    <?php endforeach; ?>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($project_benefits as $index => $benefit): ?>
-                    <?php $benefit_number = $index + 1; ?>
-                    <tr class="impact-row">
-                        <td><?php echo htmlspecialchars($benefit['detail']); ?> (Displacement 2%)</td>
-                        <?php foreach ($available_years as $year): ?>
-                            <td>
-                                <?php
-                                $benefit_amount = isset($benefit_notes_by_year[$benefit_number]) && isset($benefit_notes_by_year[$benefit_number][$year['year_be']])
-                                    ? $benefit_notes_by_year[$benefit_number][$year['year_be']] : 0;
-                                $displacement = $benefit_amount * 0.02; // 2% displacement
-                                echo $displacement > 0 ? formatCurrency($displacement, 0) : '-';
-                                ?>
-                            </td>
-                        <?php endforeach; ?>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-
-        <div class="metric-cards">
-            <div class="metric-card">
-                <div class="metric-value"><?php echo formatCurrency($base_case_impact, 0); ?></div>
-                <div class="metric-label">ผลกระทบกรณีฐานรวมปัจจุบัน (บาท)</div>
-            </div>
-        </div>
-    </div>
 
     <!-- Benefit Section -->
     <div class="section">
@@ -185,7 +110,7 @@
                                 <?php
                                 $amount = isset($benefit_notes_by_year[$benefit_number]) && isset($benefit_notes_by_year[$benefit_number][$year['year_be']])
                                     ? $benefit_notes_by_year[$benefit_number][$year['year_be']] : 0;
-                                echo $amount > 0 ? formatCurrency($amount, 0) : '-';
+                                echo $amount > 0 ? formatNumber($amount, 0) : '-';
                                 ?>
                             </td>
                         <?php endforeach; ?>
@@ -194,21 +119,184 @@
                 <tr class="total-row">
                     <td>รวม (Benefit)</td>
                     <?php foreach ($available_years as $year): ?>
-                        <td><?php echo formatCurrency($benefits_by_year[$year['year_be']] ?? 0, 0); ?></td>
+                        <td><?php echo formatNumber($benefits_by_year[$year['year_be']] ?? 0, 0); ?></td>
                     <?php endforeach; ?>
                 </tr>
                 <tr class="total-row">
                     <td>ผลประโยชน์ปัจจุบันสุทธิ (Present Benefit)</td>
                     <?php foreach ($available_years as $year): ?>
-                        <td><?php echo formatCurrency($present_benefits_by_year[$year['year_be']] ?? 0, 0); ?></td>
+                        <td><?php echo formatNumber($present_benefits_by_year[$year['year_be']] ?? 0, 0); ?></td>
                     <?php endforeach; ?>
+                </tr>
+                
+                <!-- แถวรวมผลประโยชน์ปัจจุบันสุทธิ (Total Present Benefit) -->
+                <tr class="total-present-benefit-row" style="background-color: #e8f5e8; font-weight: bold; border-top: 3px solid #28a745;">
+                    <td>รวมผลประโยชน์ปัจจุบันสุทธิ (Total Present Benefit)</td>
+                    <td id="total-present-benefit-summary">
+                        <?php echo formatNumber($total_present_benefits, 0); ?>
+                    </td>
+                    <?php 
+                    // แสดงเครื่องหมาย "-" ในคอลัมน์ปีอื่นๆ
+                    for ($i = 1; $i < count($available_years); $i++): ?>
+                        <td>-</td>
+                    <?php endfor; ?>
                 </tr>
             </tbody>
         </table>
         <div class="metric-cards">
             <div class="metric-card">
-                <div class="metric-value"><?php echo formatCurrency($total_present_benefits, 0); ?></div>
+                <div class="metric-value"><?php echo formatNumber($total_present_benefits, 0); ?></div>
                 <div class="metric-label">รวมผลประโยชน์ปัจจุบันสุทธิ (บาท)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Base Case Impact Section -->
+    <div class="section">
+        <h2 class="section-title">⚖️ ผลกระทบกรณีฐาน (Base Case Impact)</h2>
+
+        <h3 style="color: #667eea; margin-bottom: 15px;">ผลจากปัจจัยอื่นๆ (Attribution)</h3>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>รายการ</th>
+                    <?php foreach ($available_years as $year): ?>
+                        <th><?php echo htmlspecialchars($year['year_display']); ?></th>
+                    <?php endforeach; ?>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($project_benefits as $index => $benefit): ?>
+                    <?php $benefit_number = $index + 1; ?>
+                    <tr class="impact-row">
+                        <td><?php echo htmlspecialchars($benefit['detail']); ?> 
+                            <?php 
+                            // แสดงค่า attribution เฉลี่ยจากฐานข้อมูล
+                            $attribution_avg = 0;
+                            $count = 0;
+                            if (isset($base_case_factors[$benefit_number])) {
+                                foreach ($base_case_factors[$benefit_number] as $year_data) {
+                                    $attribution_avg += $year_data['attribution'];
+                                    $count++;
+                                }
+                                $attribution_avg = $count > 0 ? $attribution_avg / $count : 0;
+                            }
+                            echo "(Attribution " . number_format($attribution_avg, 1) . "%)";
+                            ?>
+                        </td>
+                        <?php foreach ($available_years as $year): ?>
+                            <td>
+                                <?php
+                                $benefit_amount = isset($benefit_notes_by_year[$benefit_number]) && isset($benefit_notes_by_year[$benefit_number][$year['year_be']])
+                                    ? $benefit_notes_by_year[$benefit_number][$year['year_be']] : 0;
+                                $attribution_rate = isset($base_case_factors[$benefit_number]) && isset($base_case_factors[$benefit_number][$year['year_be']])
+                                    ? $base_case_factors[$benefit_number][$year['year_be']]['attribution'] : 0;
+                                $attribution = $benefit_amount * ($attribution_rate / 100); // ใช้ค่าจากฐานข้อมูล
+                                echo $attribution > 0 ? formatNumber($attribution, 0) : '-';
+                                ?>
+                            </td>
+                        <?php endforeach; ?>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+
+        <h3 style="color: #667eea; margin-bottom: 15px; margin-top: 20px;">ผลลัพธ์ส่วนเกิน (Deadweight)</h3>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>รายการ</th>
+                    <?php foreach ($available_years as $year): ?>
+                        <th><?php echo htmlspecialchars($year['year_display']); ?></th>
+                    <?php endforeach; ?>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($project_benefits as $index => $benefit): ?>
+                    <?php $benefit_number = $index + 1; ?>
+                    <tr class="impact-row">
+                        <td><?php echo htmlspecialchars($benefit['detail']); ?> 
+                            <?php 
+                            // แสดงค่า deadweight เฉลี่ยจากฐานข้อมูล
+                            $deadweight_avg = 0;
+                            $count = 0;
+                            if (isset($base_case_factors[$benefit_number])) {
+                                foreach ($base_case_factors[$benefit_number] as $year_data) {
+                                    $deadweight_avg += $year_data['deadweight'];
+                                    $count++;
+                                }
+                                $deadweight_avg = $count > 0 ? $deadweight_avg / $count : 0;
+                            }
+                            echo "(Deadweight " . number_format($deadweight_avg, 1) . "%)";
+                            ?>
+                        </td>
+                        <?php foreach ($available_years as $year): ?>
+                            <td>
+                                <?php
+                                $benefit_amount = isset($benefit_notes_by_year[$benefit_number]) && isset($benefit_notes_by_year[$benefit_number][$year['year_be']])
+                                    ? $benefit_notes_by_year[$benefit_number][$year['year_be']] : 0;
+                                $deadweight_rate = isset($base_case_factors[$benefit_number]) && isset($base_case_factors[$benefit_number][$year['year_be']])
+                                    ? $base_case_factors[$benefit_number][$year['year_be']]['deadweight'] : 0;
+                                $deadweight = $benefit_amount * ($deadweight_rate / 100); // ใช้ค่าจากฐานข้อมูล
+                                echo $deadweight > 0 ? formatNumber($deadweight, 0) : '-';
+                                ?>
+                            </td>
+                        <?php endforeach; ?>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+
+        <h3 style="color: #667eea; margin-bottom: 15px; margin-top: 20px;">ผลลัพธ์ทดแทน (Displacement)</h3>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>รายการ</th>
+                    <?php foreach ($available_years as $year): ?>
+                        <th><?php echo htmlspecialchars($year['year_display']); ?></th>
+                    <?php endforeach; ?>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($project_benefits as $index => $benefit): ?>
+                    <?php $benefit_number = $index + 1; ?>
+                    <tr class="impact-row">
+                        <td><?php echo htmlspecialchars($benefit['detail']); ?> 
+                            <?php 
+                            // แสดงค่า displacement เฉลี่ยจากฐานข้อมูล
+                            $displacement_avg = 0;
+                            $count = 0;
+                            if (isset($base_case_factors[$benefit_number])) {
+                                foreach ($base_case_factors[$benefit_number] as $year_data) {
+                                    $displacement_avg += $year_data['displacement'];
+                                    $count++;
+                                }
+                                $displacement_avg = $count > 0 ? $displacement_avg / $count : 0;
+                            }
+                            echo "(Displacement " . number_format($displacement_avg, 1) . "%)";
+                            ?>
+                        </td>
+                        <?php foreach ($available_years as $year): ?>
+                            <td>
+                                <?php
+                                $benefit_amount = isset($benefit_notes_by_year[$benefit_number]) && isset($benefit_notes_by_year[$benefit_number][$year['year_be']])
+                                    ? $benefit_notes_by_year[$benefit_number][$year['year_be']] : 0;
+                                $displacement_rate = isset($base_case_factors[$benefit_number]) && isset($base_case_factors[$benefit_number][$year['year_be']])
+                                    ? $base_case_factors[$benefit_number][$year['year_be']]['displacement'] : 0;
+                                $displacement = $benefit_amount * ($displacement_rate / 100); // ใช้ค่าจากฐานข้อมูล
+                                echo $displacement > 0 ? formatNumber($displacement, 0) : '-';
+                                ?>
+                            </td>
+                        <?php endforeach; ?>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+
+        <div class="metric-cards">
+            <div class="metric-card">
+                <div class="metric-value"><?php echo formatNumber($base_case_impact, 0); ?></div>
+                <div class="metric-label">ผลกระทบกรณีฐานรวมปัจจุบัน (บาท)</div>
             </div>
         </div>
     </div>
@@ -291,7 +379,7 @@
                 SROI = (ผลประโยชน์ปัจจุบันสุทธิ - ผลกระทบกรณีฐาน) ÷ ต้นทุนปัจจุบันสุทธิ
             </div>
             <div class="formula" style="margin-top: 10px;">
-                SROI = (<?php echo formatCurrency($total_present_benefits, 0); ?> - <?php echo formatCurrency($base_case_impact, 0); ?>) ÷ <?php echo formatCurrency($total_present_costs, 0); ?> = <?php echo formatNumber($sroi_ratio, 4); ?> เท่า
+                SROI = (<?php echo formatNumber($total_present_benefits, 0); ?> - <?php echo formatNumber($base_case_impact, 0); ?>) ÷ <?php echo formatNumber($total_present_costs, 0); ?> = <?php echo formatNumber($sroi_ratio, 4); ?> เท่า
             </div>
         </div>
     </div>
@@ -349,19 +437,19 @@
                             <td>ดีที่สุด</td>
                             <td>1%</td>
                             <td><?php echo formatNumber($sensitivity['best_case'], 4); ?></td>
-                            <td><?php echo formatCurrency($npv * 1.2, 0); ?></td>
+                            <td><?php echo formatNumber($npv * 1.2, 0); ?></td>
                         </tr>
                         <tr class="highlight-positive">
                             <td>ปัจจุบัน</td>
                             <td><?php echo ($default_settings['discount_rate'] * 100); ?>%</td>
                             <td><?php echo formatNumber($sroi_ratio, 4); ?></td>
-                            <td><?php echo formatCurrency($npv, 0); ?></td>
+                            <td><?php echo formatNumber($npv, 0); ?></td>
                         </tr>
                         <tr>
                             <td>เลวที่สุด</td>
                             <td>5%</td>
                             <td><?php echo formatNumber($sensitivity['worst_case'], 4); ?></td>
-                            <td><?php echo formatCurrency($npv * 0.8, 0); ?></td>
+                            <td><?php echo formatNumber($npv * 0.8, 0); ?></td>
                         </tr>
                     </tbody>
                 </table>
@@ -376,7 +464,7 @@
             <div class="impact-item">
                 <h4>🎯 Input</h4>
                 <div class="impact-value">ทรัพยากร</div>
-                <p>งบประมาณ: <?php echo formatCurrency($total_present_costs, 0); ?></p>
+                <p>งบประมาณ: <?php echo formatNumber($total_present_costs, 0); ?> บาท</p>
             </div>
             <div class="impact-item">
                 <h4>⚙️ Activities</h4>
@@ -396,7 +484,7 @@
             <div class="impact-item">
                 <h4>🌟 Impact</h4>
                 <div class="impact-value">ผลกระทบ</div>
-                <p><?php echo formatCurrency($net_social_benefit, 0); ?> บาท</p>
+                <p><?php echo formatNumber($net_social_benefit, 0); ?> บาท</p>
             </div>
         </div>
     </div>
@@ -414,7 +502,7 @@
 
                 <div class="impact-item">
                     <h4>💰 ผลประโยชน์สุทธิ</h4>
-                    <div class="impact-value highlight-positive"><?php echo formatCurrency($npv, 0); ?></div>
+                    <div class="impact-value highlight-positive"><?php echo formatNumber($npv, 0); ?></div>
                     <p>โครงการสร้างมูลค่าเพิ่มให้กับสังคมสุทธิ</p>
                 </div>
 

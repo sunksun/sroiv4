@@ -15,6 +15,15 @@ if ($pvf_years_result) {
 }
 
 // Use only actual years from database, no extra 25xx years
+
+// ดึงค่า discount_rate จากฐานข้อมูล present_value_factors
+$saved_discount_rate = 3.0; // ค่าเริ่มต้น
+$discount_query = "SELECT discount_rate FROM present_value_factors WHERE pvf_name = 'current' AND is_active = 1 LIMIT 1";
+$discount_result = mysqli_query($conn, $discount_query);
+if ($discount_result && mysqli_num_rows($discount_result) > 0) {
+    $row = mysqli_fetch_assoc($discount_result);
+    $saved_discount_rate = floatval($row['discount_rate']);
+}
 ?>
 
 <div class="settings-section">
@@ -25,7 +34,7 @@ if ($pvf_years_result) {
             <thead>
                 <tr>
                     <th rowspan="2">ปี พ.ศ.</th>
-                    <th class="pvf-highlight-header">กำหนดค่า<br>อัตราคิดลด<br>ร้อยละ</th>
+                    <th class="pvf-highlight-header">กำหนดค่า<br>อัตราคิดลด<br><?php echo $saved_discount_rate; ?>%</th>
                     <?php for ($i = 1; $i < count($pvf_years_data); $i++): ?>
                         <th></th>
                     <?php endfor; ?>
@@ -46,7 +55,7 @@ if ($pvf_years_result) {
                 <tr>
                     <td class="pvf-year-cell">Present Value Factor</td>
                     <?php for ($t = 0; $t < count($pvf_years_data); $t++): ?>
-                        <td class="pvf-cell" id="pvf<?php echo $t; ?>"><?php echo number_format(1 / pow(1.03, $t), 2); ?></td>
+                        <td class="pvf-cell" id="pvf<?php echo $t; ?>"><?php echo number_format(1 / pow(1 + ($saved_discount_rate/100), $t), 2); ?></td>
                     <?php endfor; ?>
                 </tr>
             </tbody>
@@ -63,6 +72,7 @@ if ($pvf_years_result) {
     $benefit_data = getProjectBenefits($conn, $selected_project_id);
     $project_benefits = $benefit_data['benefits'];
     $benefit_notes_by_year = $benefit_data['benefit_notes_by_year'];
+    $base_case_factors = $benefit_data['base_case_factors'];
 
     // ดึงข้อมูลปีสำหรับส่วนอื่นๆ
     $years_query = "SELECT year_be, year_display FROM years WHERE is_active = 1 ORDER BY sort_order ASC LIMIT 6";
@@ -158,14 +168,27 @@ if ($pvf_years_result) {
                         $total_present_cost = 0;
                         foreach ($available_years as $year_index => $year): 
                             $total_amount = isset($total_costs_by_year[$year['year_be']]) ? $total_costs_by_year[$year['year_be']] : 0;
-                            // ใช้อัตราคิดลด 3% เป็นค่าเริ่มต้น (จะถูกอัปเดตด้วย JavaScript)
-                            $present_value = $total_amount / pow(1.03, $year_index);
+                            // ใช้อัตราคิดลดจากฐานข้อมูล (ค่า $saved_discount_rate จาก input-section.php)
+                            $present_value = $total_amount / pow(1 + ($saved_discount_rate/100), $year_index);
                             $total_present_cost += $present_value;
                         ?>
                             <td id="present-cost-<?php echo $year_index; ?>">
                                 <?php echo $present_value > 0 ? number_format($present_value, 0) . ' บาท' : '-'; ?>
                             </td>
                         <?php endforeach; ?>
+                    </tr>
+                    
+                    <!-- แถวต้นทุนรวมปัจจุบัน (Total Present Cost) -->
+                    <tr class="total-present-cost-row" style="background-color: #fff3cd; font-weight: bold; border-top: 3px solid #ffc107;">
+                        <td>ต้นทุนรวมปัจจุบัน (Total Present Cost)</td>
+                        <td id="total-present-cost-summary">
+                            <?php echo number_format($total_present_cost, 0) . ' บาท'; ?>
+                        </td>
+                        <?php 
+                        // แสดงเครื่องหมาย "-" ในคอลัมน์ปีอื่นๆ
+                        for ($i = 1; $i < count($available_years); $i++): ?>
+                            <td>-</td>
+                        <?php endfor; ?>
                     </tr>
                 </tbody>
             </table>
@@ -206,7 +229,16 @@ if ($pvf_years_result) {
             
             availableYears.forEach((year, index) => {
                 const costAmount = costsByYear[year] || 0;
-                const presentValue = costAmount / Math.pow(1 + (discountRate / 100), index);
+                
+                // ดึงค่า PVF จากตาราง PVF แทนการคำนวณใหม่
+                const pvfCell = document.getElementById(`pvf${index}`);
+                let pvf = 1 / Math.pow(1 + (discountRate / 100), index); // fallback
+                
+                if (pvfCell) {
+                    pvf = parseFloat(pvfCell.textContent) || pvf;
+                }
+                
+                const presentValue = costAmount * pvf;
                 
                 const cell = document.getElementById(`present-cost-${index}`);
                 if (cell && costAmount > 0) {
@@ -216,10 +248,16 @@ if ($pvf_years_result) {
                 totalPresentCost += presentValue;
             });
             
-            // อัปเดตยอดรวม
+            // อัปเดตยอดรวมในส่วน metric card
             const totalCell = document.getElementById('total-present-cost');
             if (totalCell) {
                 totalCell.textContent = totalPresentCost.toLocaleString('th-TH', {minimumFractionDigits: 0}) + ' บาท';
+            }
+            
+            // อัปเดตยอดรวมในแถว Total Present Cost
+            const totalSummaryCell = document.getElementById('total-present-cost-summary');
+            if (totalSummaryCell) {
+                totalSummaryCell.textContent = totalPresentCost.toLocaleString('th-TH', {minimumFractionDigits: 0}) + ' บาท';
             }
         }
         
@@ -231,5 +269,50 @@ if ($pvf_years_result) {
                 updatePresentCosts(parseFloat(value));
             };
         }
+        
+        // อัปเดตค่า discount rate เริ่มต้นจาก PHP
+        if (typeof window.currentDiscountRate !== 'undefined') {
+            window.currentDiscountRate = <?php echo $saved_discount_rate; ?>;
+        }
+    </script>
+    
+    <script>
+        // ตั้งค่า discount rate จากฐานข้อมูลเมื่อโหลดหน้า
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedDiscountRate = <?php echo $saved_discount_rate; ?>;
+            
+            // อัปเดตค่าใน discount rate slider/input ถ้ามี
+            const discountRateInput = document.getElementById('discountRate');
+            const discountRateSlider = document.getElementById('discountRateSlider');
+            const discountRateValue = document.getElementById('discountRateValue');
+            
+            if (discountRateInput) {
+                discountRateInput.value = savedDiscountRate;
+            }
+            if (discountRateSlider) {
+                discountRateSlider.value = savedDiscountRate;
+            }
+            if (discountRateValue) {
+                discountRateValue.textContent = savedDiscountRate.toFixed(1) + '%';
+            }
+            
+            // อัปเดต currentDiscountRate
+            if (typeof window.currentDiscountRate !== 'undefined') {
+                window.currentDiscountRate = savedDiscountRate;
+            }
+            
+            // อัปเดต PVF Table header ให้ใช้ค่าจากฐานข้อมูล (delay เล็กน้อยเพื่อให้ DOM โหลดเสร็จ)
+            setTimeout(() => {
+                const pvfHeaderCell = document.querySelector('.pvf-highlight-header');
+                if (pvfHeaderCell) {
+                    pvfHeaderCell.innerHTML = `กำหนดค่า<br>อัตราคิดลด<br>${savedDiscountRate.toFixed(1)}%`;
+                }
+                
+                // อัปเดต Present Cost ใหม่ด้วยค่าจากฐานข้อมูล
+                if (typeof updatePresentCosts === 'function') {
+                    updatePresentCosts(savedDiscountRate);
+                }
+            }, 100);
+        });
     </script>
 <?php endif; ?>

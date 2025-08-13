@@ -61,7 +61,7 @@ function getProjectCosts($conn, $project_id) {
  * ดึงข้อมูลผลประโยชน์โครงการ
  */
 function getProjectBenefits($conn, $project_id) {
-    $benefits_query = "SELECT benefit_number, benefit_detail, beneficiary, benefit_note, year 
+    $benefits_query = "SELECT benefit_number, benefit_detail, beneficiary, benefit_note, year, attribution, deadweight, displacement 
                       FROM project_impact_ratios 
                       WHERE project_id = ? AND benefit_detail IS NOT NULL AND benefit_detail != '' 
                       ORDER BY benefit_number ASC";
@@ -72,6 +72,7 @@ function getProjectBenefits($conn, $project_id) {
     
     $benefits = [];
     $benefit_notes_by_year = [];
+    $base_case_factors = []; // เก็บ attribution, deadweight, displacement
     
     while ($benefit_row = mysqli_fetch_assoc($benefits_result)) {
         $benefit_number = $benefit_row['benefit_number'];
@@ -90,12 +91,23 @@ function getProjectBenefits($conn, $project_id) {
             $benefit_notes_by_year[$benefit_number] = [];
         }
         $benefit_notes_by_year[$benefit_number][$year] = $benefit_row['benefit_note'];
+        
+        // เก็บ base case factors ตามปีและ benefit_number
+        if (!isset($base_case_factors[$benefit_number])) {
+            $base_case_factors[$benefit_number] = [];
+        }
+        $base_case_factors[$benefit_number][$year] = [
+            'attribution' => floatval($benefit_row['attribution']),
+            'deadweight' => floatval($benefit_row['deadweight']),
+            'displacement' => floatval($benefit_row['displacement'])
+        ];
     }
     mysqli_stmt_close($benefits_stmt);
     
     return [
         'benefits' => $benefits,
-        'benefit_notes_by_year' => $benefit_notes_by_year
+        'benefit_notes_by_year' => $benefit_notes_by_year,
+        'base_case_factors' => $base_case_factors
     ];
 }
 

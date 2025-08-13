@@ -1,6 +1,6 @@
 // SROI Ex-post Analysis Main JavaScript
 
-// ตัวแปรสำหรับเก็บค่าปัจจุบัน
+// ตัวแปรสำหรับเก็บค่าปัจจุบัน - จะถูกอัปเดตจาก PHP
 let currentDiscountRate = 3.0;
 let currentAnalysisPeriod = 5;
 let currentProjectData = null;
@@ -99,8 +99,9 @@ function updatePVFTable(discountRate) {
 
 // เริ่มต้น PVF Table เมื่อโหลดหน้า
 function initializePVFTable() {
-    // คำนวณ PVF ด้วยค่า discount rate เริ่มต้น
-    updatePVFTable(currentDiscountRate);
+    // ใช้ค่า discount rate จากฐานข้อมูลแทน currentDiscountRate
+    // ค่านี้จะถูกส่งมาจาก PHP ใน input-section.php
+    // ไม่ต้องเรียก updatePVFTable เพราะค่าถูกต้องอยู่แล้ว
 }
 
 // โหลดข้อมูลโครงการ
