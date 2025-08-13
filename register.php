@@ -171,14 +171,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
 
                 <div class="mb-3">
-                    <label for="email" class="form-label">อีเมล *</label>
-                    <input type="email" class="form-control" id="email" name="email" required>
-                    <div class="invalid-feedback">
-                        กรุณากรอกอีเมลให้ถูกต้อง
-                    </div>
-                </div>
-
-                <div class="mb-3">
                     <label for="department" class="form-label">คณะ *</label>
                     <select class="form-select" id="department" name="department" required>
                         <option value="">เลือกคณะ</option>
@@ -190,6 +182,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </select>
                     <div class="invalid-feedback">
                         กรุณาเลือกคณะ
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">อีเมล *</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                    <div class="invalid-feedback">
+                        กรุณากรอกอีเมลให้ถูกต้อง
                     </div>
                 </div>
 

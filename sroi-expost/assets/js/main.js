@@ -38,6 +38,9 @@ function updateDiscountRate(value) {
     document.getElementById('discountRateValue').textContent = currentDiscountRate.toFixed(1) + '%';
     document.getElementById('discountRateInput').textContent = currentDiscountRate.toFixed(1) + '%';
     
+    // อัพเดต PVF Table
+    updatePVFTable(currentDiscountRate);
+    
     // อัพเดตการคำนวณและกราฟ
     if (currentProjectData) {
         updateCalculations();
@@ -60,6 +63,44 @@ function updateCalculations() {
     // อัพเดตการแสดงผล
     console.log('Updating calculations with discount rate:', currentDiscountRate);
     console.log('Analysis period:', currentAnalysisPeriod);
+}
+
+// อัพเดต PVF Table
+function updatePVFTable(discountRate) {
+    // อัพเดตค่าใน header
+    const pvfHeaderCell = document.querySelector('.pvf-highlight-header');
+    if (pvfHeaderCell) {
+        pvfHeaderCell.innerHTML = `กำหนดค่า<br>อัตราคิดลด<br>${discountRate.toFixed(1)}%`;
+    }
+
+    // นับจำนวน PVF cells ที่มีจริง
+    let t = 0;
+    while (document.getElementById(`pvf${t}`)) {
+        const pvf = 1 / Math.pow(1 + (discountRate / 100), t);
+        const cell = document.getElementById(`pvf${t}`);
+        if (cell) {
+            cell.textContent = pvf.toFixed(2);
+
+            // เพิ่มเอฟเฟกต์แอนิเมชัน
+            cell.style.background = '#28a745';
+            cell.style.color = 'white';
+            cell.style.transform = 'scale(1.05)';
+
+            setTimeout(() => {
+                cell.style.background = '#d1ecf1';
+                cell.style.color = '#0c5460';
+                cell.style.transform = 'scale(1)';
+                cell.style.transition = 'all 0.3s ease';
+            }, 300);
+        }
+        t++;
+    }
+}
+
+// เริ่มต้น PVF Table เมื่อโหลดหน้า
+function initializePVFTable() {
+    // คำนวณ PVF ด้วยค่า discount rate เริ่มต้น
+    updatePVFTable(currentDiscountRate);
 }
 
 // โหลดข้อมูลโครงการ
@@ -208,6 +249,9 @@ function addTooltips() {
 document.addEventListener('DOMContentLoaded', function() {
     // เพิ่มปุ่ม Export และ Print
     addExportPrintButtons();
+    
+    // เริ่มต้น PVF Table
+    initializePVFTable();
     
     // เริ่มต้น animations
     setTimeout(animateMetricCards, 500);

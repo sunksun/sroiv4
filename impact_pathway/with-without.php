@@ -17,26 +17,98 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 $message = '';
 $error = '';
 
-// ดึงข้อมูl session ที่จำเป็น
+// ดึงข้อมูล session ที่จำเป็น
 $user_id = $_SESSION['user_id'];
 $username = $_SESSION['username'];
+
+// รับ project_id จาก URL
+$project_id = isset($_GET['project_id']) ? intval($_GET['project_id']) : 0;
+
+// ดึงข้อมูลผลประโยชน์จากตาราง project_impact_ratios
+$benefit_data = [];
+if ($project_id > 0) {
+    $benefit_query = "SELECT benefit_detail, benefit_number FROM project_impact_ratios WHERE project_id = ? ORDER BY benefit_number ASC";
+    $benefit_stmt = mysqli_prepare($conn, $benefit_query);
+    mysqli_stmt_bind_param($benefit_stmt, 'i', $project_id);
+    mysqli_stmt_execute($benefit_stmt);
+    $benefit_result = mysqli_stmt_get_result($benefit_stmt);
+    
+    while ($benefit_row = mysqli_fetch_assoc($benefit_result)) {
+        if (!empty($benefit_row['benefit_detail'])) {
+            $benefit_data[] = $benefit_row['benefit_detail'];
+        }
+    }
+    mysqli_stmt_close($benefit_stmt);
+}
+
+// ดึงข้อมูล with-without ที่บันทึกไว้แล้ว
+$existing_data = [];
+if ($project_id > 0) {
+    $existing_query = "SELECT benefit_detail, with_value, without_value FROM project_with_without WHERE project_id = ? ORDER BY id ASC";
+    $existing_stmt = mysqli_prepare($conn, $existing_query);
+    mysqli_stmt_bind_param($existing_stmt, 'i', $project_id);
+    mysqli_stmt_execute($existing_stmt);
+    $existing_result = mysqli_stmt_get_result($existing_stmt);
+    
+    while ($existing_row = mysqli_fetch_assoc($existing_result)) {
+        $existing_data[$existing_row['benefit_detail']] = [
+            'with' => $existing_row['with_value'],
+            'without' => $existing_row['without_value']
+        ];
+    }
+    mysqli_stmt_close($existing_stmt);
+}
 
 // จัดการการส่งฟอร์ม
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        // รับข้อมูลจากฟอร์ม
-        $beneficiaries = $_POST['beneficiary'] ?? [];
+        // ตรวจสอบสิทธิ์เข้าถึงโครงการ
+        $check_query = "SELECT id FROM projects WHERE id = ? AND created_by = ?";
+        $check_stmt = mysqli_prepare($conn, $check_query);
+        mysqli_stmt_bind_param($check_stmt, 'ii', $project_id, $user_id);
+        mysqli_stmt_execute($check_stmt);
+        $check_result = mysqli_stmt_get_result($check_stmt);
+        
+        if (mysqli_num_rows($check_result) == 0) {
+            throw new Exception("คุณไม่มีสิทธิ์เข้าถึงโครงการนี้");
+        }
+        mysqli_stmt_close($check_stmt);
 
-        // ตรวจสอบข้อมูลและบันทึก
-        foreach ($beneficiaries as $index => $beneficiary) {
-            if (!empty($beneficiary)) {
-                $with_value = $_POST['with_' . $index] ?? '';
-                $without_value = $_POST['without_' . $index] ?? '';
-                // บันทึกข้อมูลลงฐานข้อมูล (ใส่โค้ดบันทึกตรงนี้)
+        // ลบข้อมูลเดิมก่อน
+        $delete_query = "DELETE FROM project_with_without WHERE project_id = ?";
+        $delete_stmt = mysqli_prepare($conn, $delete_query);
+        mysqli_stmt_bind_param($delete_stmt, 'i', $project_id);
+        mysqli_stmt_execute($delete_stmt);
+        mysqli_stmt_close($delete_stmt);
+
+        // บันทึกข้อมูลใหม่
+        $saved_count = 0;
+        foreach ($benefit_data as $index => $benefit_detail) {
+            $with_value = $_POST['with_' . ($index + 1)] ?? '';
+            $without_value = $_POST['without_' . ($index + 1)] ?? '';
+            
+            // บันทึกข้อมูลลงฐานข้อมูล (เฉพาะที่มีข้อมูลอย่างน้อยหนึ่งช่อง)
+            if (!empty($with_value) || !empty($without_value)) {
+                $insert_query = "INSERT INTO project_with_without (project_id, benefit_detail, with_value, without_value, created_by) VALUES (?, ?, ?, ?, ?)";
+                $insert_stmt = mysqli_prepare($conn, $insert_query);
+                mysqli_stmt_bind_param($insert_stmt, 'isssi', $project_id, $benefit_detail, $with_value, $without_value, $user_id);
+                
+                if (mysqli_stmt_execute($insert_stmt)) {
+                    $saved_count++;
+                }
+                mysqli_stmt_close($insert_stmt);
             }
         }
 
-        $message = "บันทึกข้อมูลเรียบร้อยแล้ว";
+        if ($saved_count > 0) {
+            $message = "บันทึกข้อมูล " . $saved_count . " รายการเรียบร้อยแล้ว";
+        } else {
+            $message = "ไม่มีข้อมูลที่จะบันทึก";
+        }
+
+        // ลิงค์ไปยังหน้า sroi-expost/index.php พร้อมส่ง project_id
+        header("Location: ../sroi-expost/index.php?project_id=" . $project_id);
+        exit();
     } catch (Exception $e) {
         $error = $e->getMessage();
     }
@@ -455,17 +527,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php for ($i = 1; $i <= 10; $i++): ?>
+                        <?php 
+                        // แสดงเฉพาะข้อมูลผลประโยชน์ที่มีในฐานข้อมูล
+                        if (count($benefit_data) > 0) {
+                            foreach ($benefit_data as $index => $benefit_name): 
+                        ?>
                             <tr>
-                                <td class="beneficiary-header">ผลประโยชน์ <?php echo $i; ?></td>
-                                <td class="value-cell">
-                                    <input type="text" name="with_<?php echo $i; ?>" placeholder="">
+                                <td class="beneficiary-header">
+                                    <?php echo htmlspecialchars($benefit_name); ?>
                                 </td>
                                 <td class="value-cell">
-                                    <input type="text" name="without_<?php echo $i; ?>" placeholder="">
+                                    <input type="text" name="with_<?php echo $index + 1; ?>" 
+                                           value="<?php echo isset($existing_data[$benefit_name]) ? htmlspecialchars($existing_data[$benefit_name]['with']) : ''; ?>" 
+                                           placeholder="">
+                                </td>
+                                <td class="value-cell">
+                                    <input type="text" name="without_<?php echo $index + 1; ?>" 
+                                           value="<?php echo isset($existing_data[$benefit_name]) ? htmlspecialchars($existing_data[$benefit_name]['without']) : ''; ?>" 
+                                           placeholder="">
                                 </td>
                             </tr>
-                        <?php endfor; ?>
+                        <?php 
+                            endforeach;
+                        } else {
+                            // หากไม่มีข้อมูลในฐานข้อมูล แสดงข้อความแจ้ง
+                        ?>
+                            <tr>
+                                <td colspan="3" class="text-center" style="padding: 2rem; color: #6c757d;">
+                                    ไม่พบข้อมูลผลประโยชน์ กรุณาเพิ่มข้อมูลในส่วนการวิเคราะห์ Impact Pathway ก่อน
+                                </td>
+                            </tr>
+                        <?php } ?>
                     </tbody>
                 </table>
 

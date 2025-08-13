@@ -917,21 +917,48 @@ function formatThaiDate($date)
                     </div>
                     <div class="quick-actions">
                         <a href="create-project.php" class="action-button">
-                            <div class="action-icon">➕</div>
+                            <div class="action-icon">1</div>
                             <div class="action-content">
                                 <h4>สร้างโครงการใหม่</h4>
                                 <p>เริ่มต้นการประเมิน SROI</p>
                             </div>
                         </a>
-                        <a href="impact_pathway/impact_pathway.php" class="action-button">
-                            <div class="action-icon">🔗</div>
-                            <div class="action-content">
-                                <h4>สร้าง Impact Pathway</h4>
-                                <p>ห่วงโซ่ผลกระทบทางสังคม</p>
-                            </div>
-                        </a>
+                        <?php if (!empty($user_projects)): ?>
+                            <a href="impact-chain/step1-strategy.php?project_id=<?php echo $user_projects[0]['id']; ?>" class="action-button">
+                                <div class="action-icon">2</div>
+                                <div class="action-content">
+                                    <h4>สร้าง Impact Chain</h4>
+                                    <p>โครงการ: <?php echo htmlspecialchars(mb_substr($user_projects[0]['name'], 0, 25)) . (mb_strlen($user_projects[0]['name']) > 25 ? '...' : ''); ?></p>
+                                </div>
+                            </a>
+                        <?php else: ?>
+                            <a href="create-project.php" class="action-button">
+                                <div class="action-icon">2</div>
+                                <div class="action-content">
+                                    <h4>สร้าง Impact Chain</h4>
+                                    <p>สร้างโครงการก่อนเพื่อดำเนินการ</p>
+                                </div>
+                            </a>
+                        <?php endif; ?>
+                        <?php if (!empty($user_projects)): ?>
+                            <a href="impact_pathway/impact_pathway.php?project_id=<?php echo $user_projects[0]['id']; ?>" class="action-button">
+                                <div class="action-icon">3</div>
+                                <div class="action-content">
+                                    <h4>สร้าง Impact Pathway</h4>
+                                    <p>โครงการ: <?php echo htmlspecialchars(mb_substr($user_projects[0]['name'], 0, 25)) . (mb_strlen($user_projects[0]['name']) > 25 ? '...' : ''); ?></p>
+                                </div>
+                            </a>
+                        <?php else: ?>
+                            <a href="create-project.php" class="action-button">
+                                <div class="action-icon">3</div>
+                                <div class="action-content">
+                                    <h4>สร้าง Impact Pathway</h4>
+                                    <p>สร้างโครงการก่อนเพื่อดำเนินการ</p>
+                                </div>
+                            </a>
+                        <?php endif; ?>
                         <a href="sroi-expost/index.php" class="action-button">
-                            <div class="action-icon">📄</div>
+                            <div class="action-icon">4</div>
                             <div class="action-content">
                                 <h4>สร้างรายงาน</h4>
                                 <p>รายงานสรุปผลการประเมิน</p>

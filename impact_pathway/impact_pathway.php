@@ -63,14 +63,32 @@ if ($project_id > 0) {
     mysqli_stmt_close($pathway_stmt);
 }
 
-// ดึงข้อมูลกิจกรรม ผลผลิต ผลลัพธ์ และผู้ใช้ประโยชน์ของโครงการ
-$project_activities = [];
-$project_outputs = [];
-$project_outcomes = [];
-$project_beneficiaries = [];
+// ดึงข้อมูลจากทุกขั้นตอนของโครงการ
+$project_strategies = [];  // Step 1
+$project_activities = [];  // Step 2
+$project_outputs = [];     // Step 3
+$project_outcomes = [];    // Step 4
+$project_beneficiaries = [];  // จากการคำนวณ
 
 if ($project_id > 0) {
-    // ดึงกิจกรรมที่โครงการเลือกใช้
+    // Step 1: ดึงยุทธศาสตร์ที่โครงการเลือกใช้
+    $strategies_query = "
+        SELECT DISTINCT s.strategy_id, s.strategy_code, s.strategy_name, s.description
+        FROM strategies s
+        INNER JOIN project_strategies ps ON s.strategy_id = ps.strategy_id
+        WHERE ps.project_id = ?
+        ORDER BY s.strategy_code
+    ";
+    $strategies_stmt = mysqli_prepare($conn, $strategies_query);
+    mysqli_stmt_bind_param($strategies_stmt, "i", $project_id);
+    mysqli_stmt_execute($strategies_stmt);
+    $strategies_result = mysqli_stmt_get_result($strategies_stmt);
+    while ($strategy = mysqli_fetch_assoc($strategies_result)) {
+        $project_strategies[] = $strategy;
+    }
+    mysqli_stmt_close($strategies_stmt);
+
+    // Step 2: ดึงกิจกรรมที่โครงการเลือกใช้
     $activities_query = "
         SELECT DISTINCT a.activity_id, a.activity_code, a.activity_name, a.activity_description
         FROM activities a
@@ -791,18 +809,136 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             <?php endif; ?>
 
-            <!-- Step 4 Data Display -->
-            <?php if ($step4_info): ?>
-                <div class="alert alert-success">
-                    <strong>📋 ข้อมูลจากขั้นตอนที่ 4 (เก็บไว้ใน Session):</strong><br>
-                    <strong>ผลลัพธ์ที่เลือก:</strong> ID <?php echo htmlspecialchars($step4_info['selected_outcome']); ?><br>
-                    <strong>รายละเอียด:</strong> <?php echo htmlspecialchars(substr($step4_info['outcome_details'], 0, 100)); ?>
-                    <?php if (strlen($step4_info['outcome_details']) > 100) echo '...'; ?><br>
-                    <strong>ปีที่ประเมิน:</strong> <?php echo htmlspecialchars($step4_info['evaluation_year']); ?><br>
-                    <strong>ข้อมูลสัดส่วนผลกระทบ:</strong> <?php echo count($step4_info['benefit_data']); ?> รายการ<br>
-                    <small class="text-muted">เก็บข้อมูลเมื่อ: <?php echo date('d/m/Y H:i:s', $step4_info['timestamp']); ?></small>
+            <!-- Complete Project Data Display -->
+            <div class="alert alert-success">
+                <strong>📋 ข้อมูลรายละเอียดทั้งหมดที่บันทึกข้อมูลมาตั้งแต่ Step 1-4</strong>
+                
+                <!-- Step 1 Data -->
+                <div class="mt-3">
+                    <h6><span class="badge bg-primary">Step 1</span> ยุทธศาสตร์ที่เลือก (<?php echo count($project_strategies); ?> รายการ)</h6>
+                    <?php if (!empty($project_strategies)): ?>
+                        <div class="row">
+                            <?php foreach ($project_strategies as $strategy): ?>
+                                <div class="col-md-6 mb-2">
+                                    <div class="p-2 bg-light rounded">
+                                        <strong><?php echo htmlspecialchars($strategy['strategy_code']); ?></strong>: 
+                                        <?php echo htmlspecialchars($strategy['strategy_name']); ?>
+                                        <?php if (!empty($strategy['description'])): ?>
+                                            <br><small class="text-muted"><?php echo htmlspecialchars($strategy['description']); ?></small>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <small class="text-muted">ยังไม่มีการเลือกยุทธศาสตร์</small>
+                    <?php endif; ?>
                 </div>
-            <?php endif; ?>
+
+                <!-- Step 2 Data -->
+                <div class="mt-3">
+                    <h6><span class="badge bg-warning">Step 2</span> กิจกรรมที่เลือก (<?php echo count($project_activities); ?> รายการ)</h6>
+                    <?php if (!empty($project_activities)): ?>
+                        <div class="row">
+                            <?php foreach ($project_activities as $activity): ?>
+                                <div class="col-md-6 mb-2">
+                                    <div class="p-2 bg-light rounded">
+                                        <strong><?php echo htmlspecialchars($activity['activity_code']); ?></strong>: 
+                                        <?php echo htmlspecialchars($activity['activity_name']); ?>
+                                        <?php if (!empty($activity['activity_description'])): ?>
+                                            <br><small class="text-muted"><?php echo htmlspecialchars($activity['activity_description']); ?></small>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <small class="text-muted">ยังไม่มีการเลือกกิจกรรม</small>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Step 3 Data -->
+                <div class="mt-3">
+                    <h6><span class="badge bg-info">Step 3</span> ผลผลิตที่เลือก (<?php echo count($project_outputs); ?> รายการ)</h6>
+                    <?php if (!empty($project_outputs)): ?>
+                        <div class="row">
+                            <?php foreach ($project_outputs as $output): ?>
+                                <div class="col-md-6 mb-2">
+                                    <div class="p-2 bg-light rounded">
+                                        <strong><?php echo htmlspecialchars($output['output_sequence']); ?></strong>: 
+                                        <?php echo htmlspecialchars($output['output_description']); ?>
+                                        <?php if (!empty($output['project_output_details'])): ?>
+                                            <br><strong class="text-primary">รายละเอียดเพิ่มเติม:</strong> 
+                                            <small><?php echo htmlspecialchars($output['project_output_details']); ?></small>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <small class="text-muted">ยังไม่มีการเลือกผลผลิต</small>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Step 4 Data -->
+                <div class="mt-3">
+                    <h6><span class="badge bg-success">Step 4</span> ผลลัพธ์ที่เลือก (<?php echo count($project_outcomes); ?> รายการ)</h6>
+                    <?php if (!empty($project_outcomes)): ?>
+                        <div class="row">
+                            <?php foreach ($project_outcomes as $outcome): ?>
+                                <div class="col-md-6 mb-2">
+                                    <div class="p-2 bg-light rounded">
+                                        <strong><?php echo htmlspecialchars($outcome['outcome_sequence']); ?></strong>: 
+                                        <?php echo htmlspecialchars($outcome['outcome_description']); ?>
+                                        <?php if (!empty($outcome['project_outcome_details'])): ?>
+                                            <br><strong class="text-success">รายละเอียดเพิ่มเติม:</strong> 
+                                            <small><?php echo htmlspecialchars($outcome['project_outcome_details']); ?></small>
+                                        <?php endif; ?>
+                                        <br><small class="text-muted">จากผลผลิต: <?php echo htmlspecialchars($outcome['output_sequence']); ?></small>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <small class="text-muted">ยังไม่มีผลลัพธ์ที่บันทึกไว้</small>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Session Step 4 Data (if available) -->
+                <?php if ($step4_info): ?>
+                    <div class="mt-3 p-3 border rounded" style="background: rgba(255,255,0,0.1);">
+                        <h6><span class="badge bg-danger">Session Data</span> ข้อมูลจากขั้นตอนที่ 4 (รอการบันทึก)</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>ผลลัพธ์ที่เลือก:</strong> ID <?php echo htmlspecialchars($step4_info['selected_outcome']); ?><br>
+                                <strong>ปีที่ประเมิน:</strong> <?php echo htmlspecialchars($step4_info['evaluation_year']); ?>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>รายละเอียดผลลัพธ์:</strong><br>
+                                <small><?php echo htmlspecialchars($step4_info['outcome_details']); ?></small>
+                            </div>
+                        </div>
+                        <?php if (!empty($step4_info['benefit_data'])): ?>
+                            <div class="mt-2">
+                                <strong>ข้อมูลสัดส่วนผลกระทบ:</strong> <?php echo count($step4_info['benefit_data']); ?> รายการ<br>
+                                <div class="row">
+                                    <?php foreach ($step4_info['benefit_data'] as $index => $benefit): ?>
+                                        <div class="col-md-4 mb-1">
+                                            <small class="badge bg-secondary">
+                                                ผู้ใช้ประโยชน์ <?php echo ($index + 1); ?>: <?php echo htmlspecialchars($benefit['beneficiary'] ?? 'ไม่ระบุ'); ?>
+                                                <?php if (isset($benefit['impact_percentage'])): ?>
+                                                    (<?php echo $benefit['impact_percentage']; ?>%)
+                                                <?php endif; ?>
+                                            </small>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                        <small class="text-muted">เก็บข้อมูลเมื่อ: <?php echo date('d/m/Y H:i:s', $step4_info['timestamp']); ?></small>
+                    </div>
+                <?php endif; ?>
+            </div>
 
             <!-- Pathway Display Table -->
             <table class="pathway-display-table">
@@ -860,8 +996,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <div class="user-detail"><?php echo htmlspecialchars($beneficiary['beneficiary']); ?></div>
                                         <?php if (!empty($beneficiary['benefit_detail'])): ?>
                                             <div style="font-size: 0.75rem; color: #6c757d; margin-top: 0.25rem;">
-                                                รายละเอียด: <?php echo htmlspecialchars(substr($beneficiary['benefit_detail'], 0, 50)); ?>
-                                                <?php if (strlen($beneficiary['benefit_detail']) > 50) echo '...'; ?>
+                                                รายละเอียด: <?php echo htmlspecialchars($beneficiary['benefit_detail']); ?>
                                             </div>
                                         <?php endif; ?>
                                     </div>
@@ -880,8 +1015,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <?php
                                             // ใช้ข้อมูลจาก project_outcome_details เท่านั้น
                                             $display_text = $outcome['project_outcome_details'];
-                                            echo htmlspecialchars(substr($display_text, 0, 80));
-                                            if (strlen($display_text) > 80) echo '...';
+                                            echo htmlspecialchars($display_text);
                                             ?>
                                         </div>
                                         <div style="font-size: 0.75rem; color: #6c757d; margin-top: 0.25rem;">
@@ -912,13 +1046,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="row">
                                     <div class="col-md-6">
                                         <strong>📋 ปัจจัยนำเข้า:</strong><br>
-                                        <span class="text-muted"><?php echo htmlspecialchars(substr($pathway['input_description'] ?: 'ไม่ได้ระบุ', 0, 100)); ?>
-                                        <?php if (strlen($pathway['input_description']) > 100) echo '...'; ?></span>
+                                        <span class="text-muted"><?php echo htmlspecialchars($pathway['input_description'] ?: 'ไม่ได้ระบุ'); ?></span>
                                     </div>
                                     <div class="col-md-6">
                                         <strong>💥 ผลกระทบ:</strong><br>
-                                        <span class="text-muted"><?php echo htmlspecialchars(substr($pathway['impact_description'] ?: 'ไม่ได้ระบุ', 0, 100)); ?>
-                                        <?php if (strlen($pathway['impact_description']) > 100) echo '...'; ?></span>
+                                        <span class="text-muted"><?php echo htmlspecialchars($pathway['impact_description'] ?: 'ไม่ได้ระบุ'); ?></span>
                                     </div>
                                 </div>
 

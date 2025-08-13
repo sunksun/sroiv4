@@ -118,8 +118,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $message = "ไม่มีข้อมูลที่จะบันทึก";
         }
 
-        // ลิงค์ไปยังหน้า benefit.php พร้อมส่ง project_id
-        header("Location: benefit.php?project_id=" . $project_id);
+        // ลิงค์ไปยังหน้า with-without.php พร้อมส่ง project_id
+        header("Location: with-without.php?project_id=" . $project_id);
         exit();
     } catch (Exception $e) {
         $error = $e->getMessage();

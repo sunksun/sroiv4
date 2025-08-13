@@ -667,7 +667,7 @@ function getStatusBadge($status)
 
                 <div class="btn-group">
                     <a href="create-project.php" class="btn btn-success">
-                        <i class="fas fa-plus"></i> สร้าง Impact Chain ใหม่
+                        <i class="fas fa-plus"></i> สร้างโครงการใหม่
                     </a>
                     <a href="?<?php echo http_build_query(['search' => '', 'status' => '']); ?>" class="btn btn-outline">
                         <i class="fas fa-refresh"></i> รีเซ็ต
