@@ -1443,12 +1443,21 @@
             printBtn.textContent = 'พิมพ์รายงาน';
             printBtn.onclick = printReport;
 
+            // Add back to dashboard button
+            const backBtn = document.createElement('button');
+            backBtn.className = 'btn btn-secondary';
+            backBtn.textContent = 'กลับไปหน้า Dashboard';
+            backBtn.onclick = () => {
+                window.location.href = 'dashboard.php';
+            };
+
             // Add buttons to controls section
             const controlsSection = document.querySelector('.controls');
             const buttonContainer = document.createElement('div');
             buttonContainer.style.marginTop = '20px';
             buttonContainer.appendChild(exportBtn);
             buttonContainer.appendChild(printBtn);
+            buttonContainer.appendChild(backBtn);
             controlsSection.appendChild(buttonContainer);
         });
 

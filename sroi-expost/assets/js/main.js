@@ -292,8 +292,17 @@ function addExportPrintButtons() {
         printBtn.textContent = 'พิมพ์รายงาน';
         printBtn.onclick = printReport;
         
+        // ปุ่มกลับไปหน้า Dashboard
+        const backBtn = document.createElement('button');
+        backBtn.className = 'btn btn-secondary';
+        backBtn.textContent = 'กลับไปหน้า Dashboard';
+        backBtn.onclick = () => {
+            window.location.href = '../dashboard.php';
+        };
+        
         buttonContainer.appendChild(exportBtn);
         buttonContainer.appendChild(printBtn);
+        buttonContainer.appendChild(backBtn);
         controlsSection.parentNode.appendChild(buttonContainer);
     }
 }
