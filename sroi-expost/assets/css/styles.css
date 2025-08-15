@@ -475,6 +475,7 @@ body {
     }
     
     /* Section responsive - ความกว้างเท่ากันในหน้าจอเล็ก */
+    .project-info,
     .settings-section,
     .section,
     .card {
@@ -690,12 +691,13 @@ table[class*="table"] td:not(:first-child) {
 }
 
 /* Container สำหรับทุก card/section - ความกว้างเท่ากันทุก section */
+.project-info,
 .settings-section,
 .section,
 .card {
     width: 100%;
     max-width: 1200px;
-    margin: 0 auto 30px auto;
+    margin-bottom: 30px;
     box-sizing: border-box;
     padding: 20px;
     background: white;
@@ -713,6 +715,7 @@ table[class*="table"] td:not(:first-child) {
 }
 
 /* จัดตำแหน่งให้ตรงกันทุก section */
+.project-info,
 .settings-section .pvf-table-container,
 .section,
 .card {
@@ -721,6 +724,7 @@ table[class*="table"] td:not(:first-child) {
 }
 
 /* ให้เนื้อหาใน section มีการจัดตำแหน่งเท่ากัน */
+.project-info .info-grid,
 .settings-section .settings-header,
 .section .section-title,
 .card .card-title {
@@ -729,6 +733,7 @@ table[class*="table"] td:not(:first-child) {
 }
 
 /* ปรับ inner content ให้เท่ากัน */
+.project-info > *,
 .settings-section > *,
 .section > *,
 .card > * {

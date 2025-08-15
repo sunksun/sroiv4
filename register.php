@@ -173,12 +173,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="mb-3">
                     <label for="department" class="form-label">คณะ *</label>
                     <select class="form-select" id="department" name="department" required>
-                        <option value="">เลือกคณะ</option>
-                        <option value="คณะครุศาสตร์">คณะครุศาสตร์</option>
-                        <option value="คณะวิทยาศาสตร์และเทคโนโลยี">คณะวิทยาศาสตร์และเทคโนโลยี</option>
-                        <option value="คณะมนุษยศาสตร์และสังคมศาสตร์">คณะมนุษยศาสตร์และสังคมศาสตร์</option>
-                        <option value="คณะวิทยาการจัดการ">คณะวิทยาการจัดการ</option>
-                        <option value="คณะเทคโนโลยีอุตสาหกรรม">คณะเทคโนโลยีอุตสาหกรรม</option>
+                        <option value="">เลือกคณะ/หน่วยงาน</option>
+                        
+                        <optgroup label="คณะ">
+                            <option value="คณะครุศาสตร์">คณะครุศาสตร์</option>
+                            <option value="คณะวิทยาศาสตร์และเทคโนโลยี">คณะวิทยาศาสตร์และเทคโนโลยี</option>
+                            <option value="คณะมนุษยศาสตร์และสังคมศาสตร์">คณะมนุษยศาสตร์และสังคมศาสตร์</option>
+                            <option value="คณะวิทยาการจัดการ">คณะวิทยาการจัดการ</option>
+                            <option value="คณะเทคโนโลยีอุตสาหกรรม">คณะเทคโนโลยีอุตสาหกรรม</option>
+                        </optgroup>
+                        
+                        <optgroup label="หน่วยงาน">
+                            <option value="กองกลาง สำนักงานอธิการบดี">กองกลาง สำนักงานอธิการบดี</option>
+                            <option value="กองนโยบายและแผน">กองนโยบายและแผน</option>
+                            <option value="กองพัฒนานักศึกษา">กองพัฒนานักศึกษา</option>
+                            <option value="สำนักวิทยบริการและเทคโนโลยีสารสนเทศ">สำนักวิทยบริการและเทคโนโลยีสารสนเทศ</option>
+                            <option value="สำนักส่งเสริมและงานทะเบียน">สำนักส่งเสริมและงานทะเบียน</option>
+                            <option value="ศูนย์การศึกษามหาวิทยาลัยราชภัฏเลย จังหวัดขอนแก่น">ศูนย์การศึกษามหาวิทยาลัยราชภัฏเลย จังหวัดขอนแก่น</option>
+                            <option value="สำนักศิลปะและวัฒนธรรม">สำนักศิลปะและวัฒนธรรม</option>
+                            <option value="โรงเรียนสาธิตมหาวิทยาลัยราชภัฏเลย">โรงเรียนสาธิตมหาวิทยาลัยราชภัฏเลย</option>
+                            <option value="ศูนย์บ่มเพาะวิสาหกิจ (UBI)">ศูนย์บ่มเพาะวิสาหกิจ (UBI)</option>
+                        </optgroup>
                     </select>
                     <div class="invalid-feedback">
                         กรุณาเลือกคณะ

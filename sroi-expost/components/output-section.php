@@ -541,4 +541,253 @@
             </div>
         </div>
     </div>
+
+    <!-- Chart.js Script -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // ข้อมูลจาก PHP สำหรับกราฟ
+        const chartData = {
+            years: <?php echo json_encode(array_column($available_years, 'year_display')); ?>,
+            costs: <?php echo json_encode(array_values($costs_by_year)); ?>,
+            benefits: <?php echo json_encode(array_values($benefits_by_year)); ?>,
+            presentCosts: <?php echo json_encode(array_values($present_costs_by_year)); ?>,
+            presentBenefits: <?php echo json_encode(array_values($present_benefits_by_year)); ?>,
+            totalPresentCosts: <?php echo $total_present_costs; ?>,
+            totalPresentBenefits: <?php echo $total_present_benefits; ?>,
+            baseCaseImpact: <?php echo $base_case_impact; ?>,
+            sroiRatio: <?php echo $sroi_ratio; ?>,
+            npv: <?php echo $npv; ?>
+        };
+
+        // กราฟเปรียบเทียบต้นทุนและผลประโยชน์
+        function createCostBenefitChart() {
+            const ctx = document.getElementById('costBenefitChart');
+            if (!ctx) return;
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.years,
+                    datasets: [
+                        {
+                            label: 'ต้นทุน (บาท)',
+                            data: chartData.costs,
+                            backgroundColor: 'rgba(220, 53, 69, 0.8)',
+                            borderColor: 'rgba(220, 53, 69, 1)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'ผลประโยชน์ (บาท)',
+                            data: chartData.benefits,
+                            backgroundColor: 'rgba(40, 167, 69, 0.8)',
+                            borderColor: 'rgba(40, 167, 69, 1)',
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'เปรียบเทียบต้นทุนและผลประโยชน์ตามปี'
+                        },
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString('th-TH') + ' บาท';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // กราฟแยกส่วนผลประโยชน์
+        function createBenefitBreakdownChart() {
+            const ctx = document.getElementById('benefitBreakdownChart');
+            if (!ctx) return;
+
+            const netBenefit = chartData.totalPresentBenefits - chartData.baseCaseImpact;
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['ผลประโยชน์สุทธิ', 'ผลกระทบกรณีฐาน'],
+                    datasets: [{
+                        data: [netBenefit, chartData.baseCaseImpact],
+                        backgroundColor: [
+                            'rgba(40, 167, 69, 0.8)',
+                            'rgba(255, 193, 7, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(40, 167, 69, 1)',
+                            'rgba(255, 193, 7, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'การแยกส่วนผลประโยชน์'
+                        },
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.parsed;
+                                    const total = chartData.totalPresentBenefits;
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return context.label + ': ' + value.toLocaleString('th-TH') + ' บาท (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // กราฟการกระจายผลกระทบตามปี
+        function createImpactDistributionChart() {
+            const ctx = document.getElementById('impactDistributionChart');
+            if (!ctx) return;
+
+            // คำนวณ Net Impact แต่ละปี (Present Benefit - Present Cost)
+            const netImpact = chartData.presentBenefits.map((benefit, index) => 
+                benefit - (chartData.presentCosts[index] || 0)
+            );
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.years,
+                    datasets: [
+                        {
+                            label: 'ผลประโยชน์ปัจจุบันสุทธิ',
+                            data: chartData.presentBenefits,
+                            borderColor: 'rgba(40, 167, 69, 1)',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'ต้นทุนปัจจุบันสุทธิ',
+                            data: chartData.presentCosts,
+                            borderColor: 'rgba(220, 53, 69, 1)',
+                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'ผลกระทบสุทธิ',
+                            data: netImpact,
+                            borderColor: 'rgba(102, 126, 234, 1)',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            fill: false,
+                            tension: 0.4,
+                            borderWidth: 3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'การกระจายผลกระทบตามปี (Present Value)'
+                        },
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString('th-TH') + ' บาท';
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+        }
+
+        // กราห Sensitivity Analysis
+        function createSensitivityChart() {
+            const ctx = document.getElementById('sensitivityChart');
+            if (!ctx) return;
+
+            const scenarios = [
+                { name: 'เลวที่สุด', rate: 5, sroi: chartData.sroiRatio * 0.8, color: 'rgba(220, 53, 69, 0.8)' },
+                { name: 'ปัจจุบัน', rate: 3, sroi: chartData.sroiRatio, color: 'rgba(102, 126, 234, 0.8)' },
+                { name: 'ดีที่สุด', rate: 1, sroi: chartData.sroiRatio * 1.2, color: 'rgba(40, 167, 69, 0.8)' }
+            ];
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: scenarios.map(s => s.name + ' (' + s.rate + '%)'),
+                    datasets: [{
+                        label: 'SROI Ratio',
+                        data: scenarios.map(s => s.sroi),
+                        backgroundColor: scenarios.map(s => s.color),
+                        borderColor: scenarios.map(s => s.color.replace('0.8', '1')),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'การวิเคราะห์ความไว (Sensitivity Analysis)'
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toFixed(2) + ' เท่า';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // เรียกใช้ฟังก์ชันสร้างกราฟเมื่อหน้าโหลดเสร็จ
+        document.addEventListener('DOMContentLoaded', function() {
+            createCostBenefitChart();
+            createBenefitBreakdownChart();
+            createImpactDistributionChart();
+            createSensitivityChart();
+        });
+    </script>
 <?php endif; ?>
