@@ -3,6 +3,10 @@ session_start();
 require_once '../config.php';
 require_once '../includes/progress_bar.php';
 
+// เปิดการแสดง PHP errors ในโหมด development
+// ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+
 // ตรวจสอบการ login
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     header("location: ../login.php");
@@ -42,7 +46,17 @@ if (!$project) {
 // ดึงข้อมูลยุทธศาสตร์ทั้งหมด
 $strategies_query = "SELECT * FROM strategies ORDER BY strategy_id ASC";
 $strategies_result = mysqli_query($conn, $strategies_query);
+
+if (!$strategies_result) {
+    die("Database Error: " . mysqli_error($conn));
+}
+
 $strategies = mysqli_fetch_all($strategies_result, MYSQLI_ASSOC);
+
+// Debug: แสดงจำนวนยุทธศาสตร์ที่พบ
+if (empty($strategies)) {
+    error_log("No strategies found in database");
+}
 
 // ดึงยุทธศาสตร์ที่เลือกไว้แล้วจากฐานข้อมูล
 $selected_strategies = [];
@@ -95,8 +109,12 @@ $_SESSION['impact_chain_project_id'] = $project_id;
 
         <!-- Progress Steps -->
         <?php 
-        $status = getImpactChainStatus($project_id);
-        renderImpactChainProgressBar($project_id, 1, $status); 
+        try {
+            $status = getImpactChainStatus($project_id);
+            renderImpactChainProgressBar($project_id, 1, $status); 
+        } catch (Exception $e) {
+            echo "<div class='alert alert-danger'>Error in progress bar: " . $e->getMessage() . "</div>";
+        }
         ?>
 
         <!-- Main Content -->
@@ -127,8 +145,7 @@ $_SESSION['impact_chain_project_id'] = $project_id;
                                 </div>
                             <?php else: ?>
                                 <div class="row">
-                                    <?php $counter = 1;
-                                    foreach ($strategies as $strategy): ?>
+                                    <?php $counter = 1; foreach ($strategies as $strategy): ?>
                                         <div class="col-md-6 mb-3">
                                             <div class="card h-100 <?php echo in_array($strategy['strategy_id'], $selected_strategy_ids) ? 'border-primary' : ''; ?>">
                                                 <div class="card-body">
@@ -149,8 +166,7 @@ $_SESSION['impact_chain_project_id'] = $project_id;
                                                 </div>
                                             </div>
                                         </div>
-                                    <?php $counter++;
-                                    endforeach; ?>
+                                    <?php $counter++; endforeach; ?>
                                 </div>
 
                                 <!-- Action Buttons -->

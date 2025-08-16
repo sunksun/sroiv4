@@ -193,7 +193,14 @@ foreach ($activities as $activity) {
                         <li class="breadcrumb-item active">Step 2: กิจกรรม</li>
                     </ol>
                 </nav>
-                <h2>สร้าง Impact Chain: <?php echo htmlspecialchars($project['name']); ?></h2>
+                <?php if (isset($_GET['new_chain']) && $_GET['new_chain'] == '1'): ?>
+                    <h2><i class="fas fa-plus text-success"></i> สร้าง Impact Chain ใหม่: <?php echo htmlspecialchars($project['name']); ?></h2>
+                    <div class="alert alert-success">
+                        <i class="fas fa-info-circle"></i> <strong>สร้าง Impact Chain เพิ่มเติม</strong> - เลือกกิจกรรมใหม่สำหรับ Impact Chain ถัดไป
+                    </div>
+                <?php else: ?>
+                    <h2>สร้าง Impact Chain: <?php echo htmlspecialchars($project['name']); ?></h2>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -248,6 +255,9 @@ foreach ($activities as $activity) {
                         <?php else: ?>
                             <form id="activityForm" method="POST" action="process-step2.php">
                                 <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
+                                <?php if (isset($_GET['new_chain'])): ?>
+                                    <input type="hidden" name="new_chain" value="1">
+                                <?php endif; ?>
 
                                 <!-- คำแนะนำ -->
                                 <div class="alert alert-light border-primary">

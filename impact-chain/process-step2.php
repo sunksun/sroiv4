@@ -2,6 +2,7 @@
 session_start();
 require_once '../config.php';
 require_once '../includes/impact_chain_status.php';
+require_once '../includes/impact_chain_manager.php';
 
 // ตรวจสอบการ login
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
@@ -22,6 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") {
 
 $project_id = isset($_POST['project_id']) ? (int)$_POST['project_id'] : 0;
 $selected_activity = isset($_POST['selected_activity']) ? trim($_POST['selected_activity']) : '';
+$is_new_chain = isset($_POST['new_chain']) || isset($_GET['new_chain']);
 
 if ($project_id == 0) {
     $_SESSION['error_message'] = "ไม่พบข้อมูลโครงการ";
@@ -78,43 +80,62 @@ try {
         }
         mysqli_stmt_close($check_strategy_stmt);
 
-        // ลบข้อมูลการเลือกกิจกรรมเดิม (ถ้ามี)
-        $delete_query = "DELETE FROM project_activities WHERE project_id = ?";
-        $delete_stmt = mysqli_prepare($conn, $delete_query);
-        mysqli_stmt_bind_param($delete_stmt, 'i', $project_id);
-        mysqli_stmt_execute($delete_stmt);
-        mysqli_stmt_close($delete_stmt);
-
-        // ลบข้อมูลการเลือกผลผลิตเดิม (เนื่องจากเปลี่ยนกิจกรรม)
-        $delete_outputs_query = "DELETE FROM project_outputs WHERE project_id = ?";
-        $delete_outputs_stmt = mysqli_prepare($conn, $delete_outputs_query);
-        mysqli_stmt_bind_param($delete_outputs_stmt, 'i', $project_id);
-        mysqli_stmt_execute($delete_outputs_stmt);
-        mysqli_stmt_close($delete_outputs_stmt);
-
-        // บันทึกการเลือกกิจกรรมใหม่
-        $insert_query = "INSERT INTO project_activities (project_id, activity_id, created_by) VALUES (?, ?, ?)";
-        $insert_stmt = mysqli_prepare($conn, $insert_query);
-        mysqli_stmt_bind_param($insert_stmt, 'iis', $project_id, $selected_activity, $user_id);
-
-        if (mysqli_stmt_execute($insert_stmt)) {
-            // เก็บข้อมูลใน session เพื่อใช้ในการแสดงผล
-            $_SESSION['selected_activities'] = [$activity['activity_id']];
-            $_SESSION['selected_activity_detail'] = $activity;
-            $_SESSION['success_message'] = "บันทึกการเลือกกิจกรรมสำเร็จ: " . $activity['activity_name'];
-
-            // อัปเดตสถานะ Impact Chain - Step 2 เสร็จสิ้น
-            updateImpactChainStatus($project_id, 2, true);
-
-            // ไปยัง Step 3
-            header("location: step3-output.php?project_id=" . $project_id);
-            exit;
+        if ($is_new_chain) {
+            // สร้าง Impact Chain ใหม่
+            $chain_id = createImpactChain($project_id, $selected_activity, $user_id);
+            
+            if ($chain_id) {
+                $_SESSION['current_chain_id'] = $chain_id;
+                $_SESSION['success_message'] = "สร้าง Impact Chain ใหม่สำเร็จ: " . $activity['activity_name'];
+                
+                // ไปยัง Step 3 พร้อม chain_id
+                header("location: step3-output.php?project_id=" . $project_id . "&chain_id=" . $chain_id);
+                exit;
+            } else {
+                $_SESSION['error_message'] = "เกิดข้อผิดพลาดในการสร้าง Impact Chain";
+                header("location: step2-activity.php?project_id=" . $project_id);
+                exit;
+            }
         } else {
-            $_SESSION['error_message'] = "เกิดข้อผิดพลาดในการบันทึกข้อมูล";
-            header("location: step2-activity.php?project_id=" . $project_id);
-            exit;
+            // แก้ไข Impact Chain เดิม (ใช้ตารางเดิม)
+            // ลบข้อมูลการเลือกกิจกรรมเดิม (ถ้ามี)
+            $delete_query = "DELETE FROM project_activities WHERE project_id = ?";
+            $delete_stmt = mysqli_prepare($conn, $delete_query);
+            mysqli_stmt_bind_param($delete_stmt, 'i', $project_id);
+            mysqli_stmt_execute($delete_stmt);
+            mysqli_stmt_close($delete_stmt);
+
+            // ลบข้อมูลการเลือกผลผลิตเดิม (เนื่องจากเปลี่ยนกิจกรรม)
+            $delete_outputs_query = "DELETE FROM project_outputs WHERE project_id = ?";
+            $delete_outputs_stmt = mysqli_prepare($conn, $delete_outputs_query);
+            mysqli_stmt_bind_param($delete_outputs_stmt, 'i', $project_id);
+            mysqli_stmt_execute($delete_outputs_stmt);
+            mysqli_stmt_close($delete_outputs_stmt);
+
+            // บันทึกการเลือกกิจกรรมใหม่
+            $insert_query = "INSERT INTO project_activities (project_id, activity_id, created_by) VALUES (?, ?, ?)";
+            $insert_stmt = mysqli_prepare($conn, $insert_query);
+            mysqli_stmt_bind_param($insert_stmt, 'iis', $project_id, $selected_activity, $user_id);
+
+            if (mysqli_stmt_execute($insert_stmt)) {
+                // เก็บข้อมูลใน session เพื่อใช้ในการแสดงผล
+                $_SESSION['selected_activities'] = [$activity['activity_id']];
+                $_SESSION['selected_activity_detail'] = $activity;
+                $_SESSION['success_message'] = "บันทึกการเลือกกิจกรรมสำเร็จ: " . $activity['activity_name'];
+
+                // อัปเดตสถานะ Impact Chain - Step 2 เสร็จสิ้น
+                updateMultipleImpactChainStatus($project_id, null, 2, true);
+
+                // ไปยัง Step 3
+                header("location: step3-output.php?project_id=" . $project_id);
+                exit;
+            } else {
+                $_SESSION['error_message'] = "เกิดข้อผิดพลาดในการบันทึกข้อมูล";
+                header("location: step2-activity.php?project_id=" . $project_id);
+                exit;
+            }
+            mysqli_stmt_close($insert_stmt);
         }
-        mysqli_stmt_close($insert_stmt);
     } else {
         $_SESSION['error_message'] = "ไม่พบข้อมูลกิจกรรมที่เลือก";
         header("location: step2-activity.php?project_id=" . $project_id);

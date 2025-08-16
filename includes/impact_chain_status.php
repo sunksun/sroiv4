@@ -110,7 +110,7 @@ function updateImpactChainStatus($project_id, $step, $completed = true) {
 }
 
 /**
- * ตรวจสอบสถานะจากข้อมูลที่มีอยู่ในฐานข้อมูล
+ * ตรวจสอบสถานะจากข้อมูลที่มีอยู่ในฐานข้อมูล (รองรับ Multiple Impact Chains)
  * 
  * @param int $project_id รหัสโครงการ
  * @return bool ผลการอัปเดต
@@ -118,7 +118,7 @@ function updateImpactChainStatus($project_id, $step, $completed = true) {
 function refreshImpactChainStatus($project_id) {
     global $conn;
     
-    // ตรวจสอบสถานะแต่ละ step จากฐานข้อมูล
+    // ตรวจสอบสถานะแต่ละ step จากฐานข้อมูล (รองรับทั้งระบบเดิมและใหม่)
     $step1_completed = false;
     $step2_completed = false;
     $step3_completed = false;
@@ -134,35 +134,66 @@ function refreshImpactChainStatus($project_id) {
     $step1_completed = ($row1['count'] > 0);
     mysqli_stmt_close($stmt1);
     
-    // Step 2: ตรวจสอบว่ามีการเลือกกิจกรรมหรือไม่
-    $query2 = "SELECT COUNT(*) as count FROM project_activities WHERE project_id = ?";
-    $stmt2 = mysqli_prepare($conn, $query2);
-    mysqli_stmt_bind_param($stmt2, 'i', $project_id);
-    mysqli_stmt_execute($stmt2);
-    $result2 = mysqli_stmt_get_result($stmt2);
-    $row2 = mysqli_fetch_assoc($result2);
-    $step2_completed = ($row2['count'] > 0);
-    mysqli_stmt_close($stmt2);
+    // Step 2: ตรวจสอบว่ามีการเลือกกิจกรรมหรือไม่ (ตารางเดิม + ตารางใหม่)
+    $query2a = "SELECT COUNT(*) as count FROM project_activities WHERE project_id = ?";
+    $stmt2a = mysqli_prepare($conn, $query2a);
+    mysqli_stmt_bind_param($stmt2a, 'i', $project_id);
+    mysqli_stmt_execute($stmt2a);
+    $result2a = mysqli_stmt_get_result($stmt2a);
+    $row2a = mysqli_fetch_assoc($result2a);
+    mysqli_stmt_close($stmt2a);
     
-    // Step 3: ตรวจสอบว่ามีการเลือกผลผลิตหรือไม่
-    $query3 = "SELECT COUNT(*) as count FROM project_outputs WHERE project_id = ?";
-    $stmt3 = mysqli_prepare($conn, $query3);
-    mysqli_stmt_bind_param($stmt3, 'i', $project_id);
-    mysqli_stmt_execute($stmt3);
-    $result3 = mysqli_stmt_get_result($stmt3);
-    $row3 = mysqli_fetch_assoc($result3);
-    $step3_completed = ($row3['count'] > 0);
-    mysqli_stmt_close($stmt3);
+    $query2b = "SELECT COUNT(*) as count FROM impact_chains WHERE project_id = ? AND status = 'active'";
+    $stmt2b = mysqli_prepare($conn, $query2b);
+    mysqli_stmt_bind_param($stmt2b, 'i', $project_id);
+    mysqli_stmt_execute($stmt2b);
+    $result2b = mysqli_stmt_get_result($stmt2b);
+    $row2b = mysqli_fetch_assoc($result2b);
+    mysqli_stmt_close($stmt2b);
     
-    // Step 4: ตรวจสอบว่ามีการกำหนดผลลัพธ์หรือไม่
-    $query4 = "SELECT COUNT(*) as count FROM project_outcomes WHERE project_id = ?";
-    $stmt4 = mysqli_prepare($conn, $query4);
-    mysqli_stmt_bind_param($stmt4, 'i', $project_id);
-    mysqli_stmt_execute($stmt4);
-    $result4 = mysqli_stmt_get_result($stmt4);
-    $row4 = mysqli_fetch_assoc($result4);
-    $step4_completed = ($row4['count'] > 0);
-    mysqli_stmt_close($stmt4);
+    $step2_completed = ($row2a['count'] > 0 || $row2b['count'] > 0);
+    
+    // Step 3: ตรวจสอบว่ามีการเลือกผลผลิตหรือไม่ (ตารางเดิม + ตารางใหม่)
+    $query3a = "SELECT COUNT(*) as count FROM project_outputs WHERE project_id = ?";
+    $stmt3a = mysqli_prepare($conn, $query3a);
+    mysqli_stmt_bind_param($stmt3a, 'i', $project_id);
+    mysqli_stmt_execute($stmt3a);
+    $result3a = mysqli_stmt_get_result($stmt3a);
+    $row3a = mysqli_fetch_assoc($result3a);
+    mysqli_stmt_close($stmt3a);
+    
+    $query3b = "SELECT COUNT(*) as count FROM impact_chain_outputs ico 
+                JOIN impact_chains ic ON ico.impact_chain_id = ic.id 
+                WHERE ic.project_id = ? AND ic.status = 'active'";
+    $stmt3b = mysqli_prepare($conn, $query3b);
+    mysqli_stmt_bind_param($stmt3b, 'i', $project_id);
+    mysqli_stmt_execute($stmt3b);
+    $result3b = mysqli_stmt_get_result($stmt3b);
+    $row3b = mysqli_fetch_assoc($result3b);
+    mysqli_stmt_close($stmt3b);
+    
+    $step3_completed = ($row3a['count'] > 0 || $row3b['count'] > 0);
+    
+    // Step 4: ตรวจสอบว่ามีการกำหนดผลลัพธ์หรือไม่ (ตารางเดิม + ตารางใหม่)
+    $query4a = "SELECT COUNT(*) as count FROM project_outcomes WHERE project_id = ?";
+    $stmt4a = mysqli_prepare($conn, $query4a);
+    mysqli_stmt_bind_param($stmt4a, 'i', $project_id);
+    mysqli_stmt_execute($stmt4a);
+    $result4a = mysqli_stmt_get_result($stmt4a);
+    $row4a = mysqli_fetch_assoc($result4a);
+    mysqli_stmt_close($stmt4a);
+    
+    $query4b = "SELECT COUNT(*) as count FROM impact_chain_outcomes ico 
+                JOIN impact_chains ic ON ico.impact_chain_id = ic.id 
+                WHERE ic.project_id = ? AND ic.status = 'active'";
+    $stmt4b = mysqli_prepare($conn, $query4b);
+    mysqli_stmt_bind_param($stmt4b, 'i', $project_id);
+    mysqli_stmt_execute($stmt4b);
+    $result4b = mysqli_stmt_get_result($stmt4b);
+    $row4b = mysqli_fetch_assoc($result4b);
+    mysqli_stmt_close($stmt4b);
+    
+    $step4_completed = ($row4a['count'] > 0 || $row4b['count'] > 0);
     
     // กำหนด current_step
     $current_step = 1;
@@ -248,5 +279,78 @@ function canAccessStep($status, $requested_step) {
     }
     
     return true;
+}
+
+/**
+ * ดึงข้อมูลสถานะ Multiple Impact Chains ของโครงการ
+ * 
+ * @param int $project_id รหัสโครงการ
+ * @return array ข้อมูลสถานะรวม
+ */
+function getMultipleImpactChainStatus($project_id) {
+    global $conn;
+    
+    // ดึงสถานะพื้นฐาน
+    $status = getImpactChainStatus($project_id);
+    
+    // นับ Impact Chains ทั้งหมด
+    $query_chains = "SELECT COUNT(*) as total_chains FROM impact_chains WHERE project_id = ? AND status = 'active'";
+    $stmt_chains = mysqli_prepare($conn, $query_chains);
+    mysqli_stmt_bind_param($stmt_chains, 'i', $project_id);
+    mysqli_stmt_execute($stmt_chains);
+    $result_chains = mysqli_stmt_get_result($stmt_chains);
+    $row_chains = mysqli_fetch_assoc($result_chains);
+    $total_chains = $row_chains['total_chains'];
+    mysqli_stmt_close($stmt_chains);
+    
+    // นับ Impact Chains ที่เสร็จสิ้น (มีทั้ง output และ outcome)
+    $query_completed = "SELECT COUNT(DISTINCT ic.id) as completed_chains 
+                        FROM impact_chains ic
+                        WHERE ic.project_id = ? AND ic.status = 'active'
+                        AND EXISTS (SELECT 1 FROM impact_chain_outputs ico WHERE ico.impact_chain_id = ic.id)
+                        AND EXISTS (SELECT 1 FROM impact_chain_outcomes ico2 WHERE ico2.impact_chain_id = ic.id)";
+    $stmt_completed = mysqli_prepare($conn, $query_completed);
+    mysqli_stmt_bind_param($stmt_completed, 'i', $project_id);
+    mysqli_stmt_execute($stmt_completed);
+    $result_completed = mysqli_stmt_get_result($stmt_completed);
+    $row_completed = mysqli_fetch_assoc($result_completed);
+    $completed_chains = $row_completed['completed_chains'];
+    mysqli_stmt_close($stmt_completed);
+    
+    // เพิ่มข้อมูล Multiple Impact Chains
+    $status['multiple_chains'] = [
+        'total_chains' => $total_chains,
+        'completed_chains' => $completed_chains,
+        'has_old_chain' => ($status['step2_completed'] && $total_chains == 0) // มี chain เดิมหรือไม่
+    ];
+    
+    return $status;
+}
+
+/**
+ * อัปเดตสถานะ Impact Chain สำหรับ Multiple Chains
+ * 
+ * @param int $project_id รหัสโครงการ
+ * @param int $chain_id รหัส Impact Chain (สำหรับ chain ใหม่)
+ * @param int $step ขั้นตอนที่จะอัปเดต (1-4)
+ * @param bool $completed สถานะการเสร็จสิ้น
+ * @return bool ผลการอัปเดต
+ */
+function updateMultipleImpactChainStatus($project_id, $chain_id = null, $step = null, $completed = true) {
+    // รีเฟรชสถานะจากข้อมูลจริงในฐานข้อมูล
+    $result = refreshImpactChainStatus($project_id);
+    
+    // ถ้ามี chain_id แสดงว่าเป็น Impact Chain ใหม่
+    if ($chain_id && $step) {
+        // อัปเดต timestamp ของ chain
+        global $conn;
+        $update_chain = "UPDATE impact_chains SET updated_at = NOW() WHERE id = ?";
+        $stmt_update = mysqli_prepare($conn, $update_chain);
+        mysqli_stmt_bind_param($stmt_update, 'i', $chain_id);
+        mysqli_stmt_execute($stmt_update);
+        mysqli_stmt_close($stmt_update);
+    }
+    
+    return $result;
 }
 ?>

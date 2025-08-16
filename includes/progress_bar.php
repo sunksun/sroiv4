@@ -143,6 +143,28 @@ function renderImpactChainProgressBar($project_id, $current_step = 1, $status = 
                         ?>
                         <span class="badge bg-primary ms-2"><?php echo round($progress_percentage); ?>%</span>
                         
+                        <?php
+                        // แสดงข้อมูล Multiple Impact Chains ถ้ามี
+                        try {
+                            if (function_exists('getMultipleImpactChainStatus')) {
+                                $multi_status = getMultipleImpactChainStatus($project_id);
+                                if (isset($multi_status['multiple_chains']) && 
+                                    ($multi_status['multiple_chains']['total_chains'] > 0 || $multi_status['multiple_chains']['has_old_chain'])) {
+                                    echo "<br><strong>Impact Chains:</strong> ";
+                                    if ($multi_status['multiple_chains']['has_old_chain']) {
+                                        echo "Chain เดิม: 1 ";
+                                    }
+                                    if ($multi_status['multiple_chains']['total_chains'] > 0) {
+                                        echo "Chain ใหม่: " . $multi_status['multiple_chains']['completed_chains'] . "/" . $multi_status['multiple_chains']['total_chains'] . " เสร็จสิ้น";
+                                    }
+                                }
+                            }
+                        } catch (Exception $e) {
+                            // ไม่แสดง error เพื่อไม่ให้หน้าเว็บพัง
+                            error_log("Error in Multiple Impact Chain status: " . $e->getMessage());
+                        }
+                        ?>
+                        
                         <?php if ($status['last_updated']): ?>
                             <br><small class="text-muted">
                                 อัปเดตล่าสุด: <?php echo date('d/m/Y H:i:s', strtotime($status['last_updated'])); ?>

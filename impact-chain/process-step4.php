@@ -2,6 +2,7 @@
 session_start();
 require_once '../config.php';
 require_once '../includes/impact_chain_status.php';
+require_once '../includes/impact_chain_manager.php';
 
 // ตรวจสอบการ login
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
@@ -55,6 +56,7 @@ $outcome_details = isset($_POST['outcome_details']) ? trim($_POST['outcome_detai
 
 // รับค่าปีที่ต้องการประเมิน (จาก radio button)
 $evaluation_year = isset($_POST['evaluation_year']) ? trim($_POST['evaluation_year']) : '';
+$chain_id = isset($_POST['chain_id']) ? (int)$_POST['chain_id'] : (isset($_GET['chain_id']) ? (int)$_GET['chain_id'] : null);
 
 // ตรวจสอบว่าเป็นการบันทึกรายละเอียดเท่านั้นหรือไม่
 $save_details_only = isset($_POST['save_details_only']) && $_POST['save_details_only'] == '1';
@@ -90,10 +92,16 @@ if (!$project) {
 
 if ($selected_outcome == 0) {
     // อัปเดตสถานะ Impact Chain - Step 4 เสร็จสิ้น
-    updateImpactChainStatus($project_id, 4, true);
+    updateMultipleImpactChainStatus($project_id, $chain_id, 4, true);
     
-    // ถ้าไม่มีการเลือกผลลัพธ์ ให้ไปยัง Impact Pathway
-    header("location: ../impact_pathway/impact_pathway.php?project_id=" . $project_id);
+    // ไปยังหน้า completion แม้ไม่เลือกผลลัพธ์
+    $_SESSION['completed_impact_chain'] = [
+        'outcome_id' => 0,
+        'outcome_details' => 'ไม่ได้เลือกผลลัพธ์',
+        'evaluation_year' => '',
+        'completed_at' => date('Y-m-d H:i:s')
+    ];
+    header("location: step4-completion.php?project_id=" . $project_id);
     exit;
 }
 
@@ -144,43 +152,65 @@ try {
     }
     mysqli_stmt_close($verify_stmt);
 
-    // ลบข้อมูลการเลือกผลลัพธ์เดิม (ถ้ามี)
-    $delete_query = "DELETE FROM project_outcomes WHERE project_id = ?";
-    $delete_stmt = mysqli_prepare($conn, $delete_query);
-    mysqli_stmt_bind_param($delete_stmt, 'i', $project_id);
-    mysqli_stmt_execute($delete_stmt);
-    mysqli_stmt_close($delete_stmt);
+    if ($chain_id) {
+        // Impact Chain ใหม่ - ใช้ตารางใหม่
+        $result = addOutcomeToChain($chain_id, $selected_outcome, $outcome_details, $evaluation_year, $benefit_data, $user_id);
+        
+        if (!$result) {
+            throw new Exception("เกิดข้อผิดพลาดในการบันทึกผลลัพธ์: " . $outcome['outcome_description']);
+        }
+    } else {
+        // Impact Chain เดิม - ใช้ตารางเดิม
+        // ลบข้อมูลการเลือกผลลัพธ์เดิม (ถ้ามี)
+        $delete_query = "DELETE FROM project_outcomes WHERE project_id = ?";
+        $delete_stmt = mysqli_prepare($conn, $delete_query);
+        mysqli_stmt_bind_param($delete_stmt, 'i', $project_id);
+        mysqli_stmt_execute($delete_stmt);
+        mysqli_stmt_close($delete_stmt);
 
-    // บันทึกการเลือกผลลัพธ์ใหม่
-    $insert_query = "INSERT INTO project_outcomes (project_id, outcome_id, outcome_details, created_by) VALUES (?, ?, ?, ?)";
-    $insert_stmt = mysqli_prepare($conn, $insert_query);
+        // บันทึกการเลือกผลลัพธ์ใหม่
+        $insert_query = "INSERT INTO project_outcomes (project_id, outcome_id, outcome_details, created_by) VALUES (?, ?, ?, ?)";
+        $insert_stmt = mysqli_prepare($conn, $insert_query);
 
-    mysqli_stmt_bind_param($insert_stmt, 'iisi', $project_id, $selected_outcome, $outcome_details, $user_id);
-    if (!mysqli_stmt_execute($insert_stmt)) {
-        throw new Exception("เกิดข้อผิดพลาดในการบันทึกผลลัพธ์: " . $outcome['outcome_description']);
+        mysqli_stmt_bind_param($insert_stmt, 'iisi', $project_id, $selected_outcome, $outcome_details, $user_id);
+        if (!mysqli_stmt_execute($insert_stmt)) {
+            throw new Exception("เกิดข้อผิดพลาดในการบันทึกผลลัพธ์: " . $outcome['outcome_description']);
+        }
+        mysqli_stmt_close($insert_stmt);
     }
-    mysqli_stmt_close($insert_stmt);
 
     // บันทึกปีที่ต้องการประเมินในขั้นตอนบันทึกข้อมูลสัดส่วนผลกระทบเท่านั้น
     // (ไม่บันทึกตอนบันทึกรายละเอียดเพิ่มเติม)
     if (!$save_details_only) {
-        // ลบข้อมูลเก่าก่อน
-        $delete_year_query = "DELETE FROM project_impact_ratios WHERE project_id = ?";
-        $delete_year_stmt = mysqli_prepare($conn, $delete_year_query);
-        mysqli_stmt_bind_param($delete_year_stmt, 'i', $project_id);
-        mysqli_stmt_execute($delete_year_stmt);
-        mysqli_stmt_close($delete_year_stmt);
-
-        // เพิ่มข้อมูลใหม่ (รวม benefit_number และ benefit_note เป็นค่าเริ่มต้น)
-        $insert_year_query = "INSERT INTO project_impact_ratios (project_id, year, benefit_number, benefit_note) VALUES (?, ?, ?, ?)";
-        $insert_year_stmt = mysqli_prepare($conn, $insert_year_query);
-        $benefit_number = 1; // ค่าเริ่มต้นสำหรับการบันทึกข้อมูลสัดส่วนผลกระทบ
-        $benefit_note = 0;   // ค่าเริ่มต้นสำหรับจำนวนเงิน (บาท/ปี)
-        mysqli_stmt_bind_param($insert_year_stmt, 'isii', $project_id, $evaluation_year, $benefit_number, $benefit_note);
-        if (!mysqli_stmt_execute($insert_year_stmt)) {
-            throw new Exception("เกิดข้อผิดพลาดในการบันทึกปีที่ต้องการประเมิน");
+        // ตรวจสอบว่ามีข้อมูลปีนี้อยู่แล้วหรือไม่
+        $check_year_query = "SELECT id FROM project_impact_ratios WHERE project_id = ? AND year = ?";
+        $check_year_stmt = mysqli_prepare($conn, $check_year_query);
+        mysqli_stmt_bind_param($check_year_stmt, 'is', $project_id, $evaluation_year);
+        mysqli_stmt_execute($check_year_stmt);
+        $check_year_result = mysqli_stmt_get_result($check_year_stmt);
+        
+        if (mysqli_num_rows($check_year_result) > 0) {
+            // มีข้อมูลแล้ว - อัปเดตเฉพาะปี (เก็บค่า attribution, deadweight, displacement ไว้)
+            $update_year_query = "UPDATE project_impact_ratios SET year = ? WHERE project_id = ?";
+            $update_year_stmt = mysqli_prepare($conn, $update_year_query);
+            mysqli_stmt_bind_param($update_year_stmt, 'si', $evaluation_year, $project_id);
+            if (!mysqli_stmt_execute($update_year_stmt)) {
+                throw new Exception("เกิดข้อผิดพลาดในการอัปเดตปีที่ต้องการประเมิน");
+            }
+            mysqli_stmt_close($update_year_stmt);
+        } else {
+            // ไม่มีข้อมูล - เพิ่มข้อมูลใหม่
+            $insert_year_query = "INSERT INTO project_impact_ratios (project_id, year, benefit_number, benefit_note) VALUES (?, ?, ?, ?)";
+            $insert_year_stmt = mysqli_prepare($conn, $insert_year_query);
+            $benefit_number = 1; // ค่าเริ่มต้นสำหรับการบันทึกข้อมูลสัดส่วนผลกระทบ
+            $benefit_note = 0;   // ค่าเริ่มต้นสำหรับจำนวนเงิน (บาท/ปี)
+            mysqli_stmt_bind_param($insert_year_stmt, 'isii', $project_id, $evaluation_year, $benefit_number, $benefit_note);
+            if (!mysqli_stmt_execute($insert_year_stmt)) {
+                throw new Exception("เกิดข้อผิดพลาดในการบันทึกปีที่ต้องการประเมิน");
+            }
+            mysqli_stmt_close($insert_year_stmt);
         }
-        mysqli_stmt_close($insert_year_stmt);
+        mysqli_stmt_close($check_year_stmt);
     }
 
     // เก็บปีที่เลือกใน session เพื่อใช้ในหน้าอื่น
@@ -205,11 +235,24 @@ try {
     }
 
     // อัปเดตสถานะ Impact Chain - Step 4 เสร็จสิ้น
-    updateImpactChainStatus($project_id, 4, true);
+    updateMultipleImpactChainStatus($project_id, $chain_id, 4, true);
 
-    // ไปยังหน้า Impact Pathway (เฉพาะกรณีไม่ใช่การบันทึกรายละเอียดเท่านั้น)
-    error_log("Redirecting to impact_pathway.php with project_id: " . $project_id);
-    header("location: ../impact_pathway/impact_pathway.php?project_id=" . $project_id);
+    // ตรวจสอบว่าต้องการเพิ่ม Impact Chain ใหม่หรือไม่
+    if (isset($_GET['save_and_new_chain']) && $_GET['save_and_new_chain'] == '1') {
+        // บันทึกข้อมูลแล้วไป step2 เพื่อสร้าง Impact Chain ใหม่
+        $_SESSION['success_message'] = "บันทึก Impact Chain เรียบร้อยแล้ว กำลังสร้าง Impact Chain ใหม่";
+        header("location: step2-activity.php?project_id=" . $project_id . "&new_chain=1");
+        exit;
+    }
+
+    // ไปยังหน้าสรุป Impact Chain เพื่อเลือกว่าจะเพิ่มอีกหรือไปขั้นตอนต่อไป
+    $_SESSION['completed_impact_chain'] = [
+        'outcome_id' => $selected_outcome,
+        'outcome_details' => $outcome_details,
+        'evaluation_year' => $evaluation_year,
+        'completed_at' => date('Y-m-d H:i:s')
+    ];
+    header("location: step4-completion.php?project_id=" . $project_id);
     exit;
 } catch (Exception $e) {
     // ถ้าเป็นการบันทึกรายละเอียดเท่านั้น ให้ return JSON error response

@@ -2,6 +2,10 @@
 session_start();
 require_once '../config.php';
 require_once '../includes/impact_chain_status.php';
+require_once '../includes/impact_chain_manager.php';
+
+// Debug: Log form submission
+error_log("process-step3.php called with POST data: " . print_r($_POST, true));
 
 // ตรวจสอบการ login
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
@@ -14,15 +18,13 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// ตรวจสอบ POST data
-if ($_SERVER["REQUEST_METHOD"] != "POST") {
-    header("location: ../project-list.php");
-    exit;
-}
+// รับ data จาก GET หรือ POST
+$project_id = isset($_GET['project_id']) ? (int)$_GET['project_id'] : (isset($_POST['project_id']) ? (int)$_POST['project_id'] : 0);
+$selected_output_id = isset($_GET['selected_output_id']) ? (int)$_GET['selected_output_id'] : (isset($_POST['selected_output_id']) ? (int)$_POST['selected_output_id'] : 0);
+$output_details = isset($_GET['output_details']) ? trim($_GET['output_details']) : (isset($_POST['output_details']) ? trim($_POST['output_details']) : '');
+$chain_id = isset($_POST['chain_id']) ? (int)$_POST['chain_id'] : (isset($_SESSION['current_chain_id']) ? (int)$_SESSION['current_chain_id'] : null);
 
-$project_id = isset($_POST['project_id']) ? (int)$_POST['project_id'] : 0;
-$selected_output_id = isset($_POST['selected_output_id']) ? (int)$_POST['selected_output_id'] : 0;
-$output_details = isset($_POST['output_details']) ? trim($_POST['output_details']) : '';
+error_log("process-step3.php: project_id=$project_id, selected_output_id=$selected_output_id, output_details=$output_details");
 
 if ($project_id == 0) {
     $_SESSION['error_message'] = "ไม่พบข้อมูลโครงการ";
@@ -46,14 +48,18 @@ if (!$project) {
     exit;
 }
 
+error_log("Validation check: selected_output_id=$selected_output_id, output_details='$output_details'");
+
 if (empty($selected_output_id)) {
-    $_SESSION['error_message'] = "กรุณาเลือกผลผลิต";
+    error_log("process-step3.php: Empty selected_output_id - redirecting back");
+    $_SESSION['error_message'] = "กรุณาเลือกผลผลิต (ID: $selected_output_id)";
     header("location: step3-output.php?project_id=" . $project_id);
     exit;
 }
 
 if (empty($output_details)) {
-    $_SESSION['error_message'] = "กรุณากรอกรายละเอียดเพิ่มเติม";
+    error_log("process-step3.php: Empty output_details - redirecting back");
+    $_SESSION['error_message'] = "กรุณากรอกรายละเอียดเพิ่มเติม (Details: '$output_details')";
     header("location: step3-output.php?project_id=" . $project_id);
     exit;
 }
@@ -86,37 +92,44 @@ try {
     $verify_result = mysqli_stmt_get_result($verify_stmt);
 
     if ($output = mysqli_fetch_assoc($verify_result)) {
-        // ลบข้อมูลการเลือกผลผลิตเดิม (ถ้ามี)
-        $delete_query = "DELETE FROM project_outputs WHERE project_id = ?";
-        $delete_stmt = mysqli_prepare($conn, $delete_query);
-        mysqli_stmt_bind_param($delete_stmt, 'i', $project_id);
-        mysqli_stmt_execute($delete_stmt);
-        mysqli_stmt_close($delete_stmt);
+        error_log("Found output: " . $output['output_description'] . ", chain_id: " . ($chain_id ? $chain_id : 'null'));
+        
+        // ใช้ระบบเดิมเสมอ เพื่อหลีกเลี่ยง foreign key error
+        error_log("Using legacy Impact Chain system (project_outputs table)");
+        {
+            // Impact Chain เดิม - ใช้ตารางเดิม
+            // ลบข้อมูลการเลือกผลผลิตเดิม (ถ้ามี)
+            $delete_query = "DELETE FROM project_outputs WHERE project_id = ?";
+            $delete_stmt = mysqli_prepare($conn, $delete_query);
+            mysqli_stmt_bind_param($delete_stmt, 'i', $project_id);
+            mysqli_stmt_execute($delete_stmt);
+            mysqli_stmt_close($delete_stmt);
 
-        // บันทึกการเลือกผลผลิตใหม่ พร้อมรายละเอียดเพิ่มเติม
-        $insert_query = "INSERT INTO project_outputs (project_id, output_id, output_details, created_by) VALUES (?, ?, ?, ?)";
-        $insert_stmt = mysqli_prepare($conn, $insert_query);
-        mysqli_stmt_bind_param($insert_stmt, 'iiss', $project_id, $selected_output_id, $output_details, $user_id);
+            // บันทึกการเลือกผลผลิตใหม่ พร้อมรายละเอียดเพิ่มเติม
+            $insert_query = "INSERT INTO project_outputs (project_id, output_id, output_details, created_by) VALUES (?, ?, ?, ?)";
+            $insert_stmt = mysqli_prepare($conn, $insert_query);
+            mysqli_stmt_bind_param($insert_stmt, 'iiss', $project_id, $selected_output_id, $output_details, $user_id);
 
-        if (mysqli_stmt_execute($insert_stmt)) {
-            // เก็บข้อมูลใน session เพื่อใช้ในการแสดงผล
-            $_SESSION['selected_outputs'] = [$selected_output_id];
-            $_SESSION['selected_outputs_detail'] = [$output];
-            $_SESSION['selected_output_details'] = $output_details;
-            $_SESSION['success_message'] = "บันทึกการเลือกผลผลิตสำเร็จ: " . $output['output_description'];
+            if (mysqli_stmt_execute($insert_stmt)) {
+                // เก็บข้อมูลใน session เพื่อใช้ในการแสดงผล
+                $_SESSION['selected_outputs'] = [$selected_output_id];
+                $_SESSION['selected_outputs_detail'] = [$output];
+                $_SESSION['selected_output_details'] = $output_details;
+                $_SESSION['success_message'] = "บันทึกการเลือกผลผลิตสำเร็จ: " . $output['output_description'];
 
-            // อัปเดตสถานะ Impact Chain - Step 3 เสร็จสิ้น
-            updateImpactChainStatus($project_id, 3, true);
+                // อัปเดตสถานะ Impact Chain - Step 3 เสร็จสิ้น
+                updateMultipleImpactChainStatus($project_id, null, 3, true);
 
-            // ไปยัง Step 4 เพื่อเลือกผลลัพธ์
-            header("location: step4-outcome.php?project_id=" . $project_id);
-            exit;
-        } else {
-            $_SESSION['error_message'] = "เกิดข้อผิดพลาดในการบันทึกข้อมูล";
-            header("location: step3-output.php?project_id=" . $project_id);
-            exit;
+                // ไปยัง Step 4 เพื่อเลือกผลลัพธ์
+                header("location: step4-outcome.php?project_id=" . $project_id);
+                exit;
+            } else {
+                $_SESSION['error_message'] = "เกิดข้อผิดพลาดในการบันทึกข้อมูล";
+                header("location: step3-output.php?project_id=" . $project_id);
+                exit;
+            }
+            mysqli_stmt_close($insert_stmt);
         }
-        mysqli_stmt_close($insert_stmt);
     } else {
         $_SESSION['error_message'] = "ไม่พบข้อมูลผลผลิตที่เลือก";
         header("location: step3-output.php?project_id=" . $project_id);

@@ -334,6 +334,9 @@ function getProxiesForOutcome($conn, $outcome_id)
                         <?php else: ?>
                             <form action="process-step4.php" method="POST" id="outcomeForm">
                                 <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
+                                <?php if (isset($_GET['chain_id'])): ?>
+                                    <input type="hidden" name="chain_id" value="<?php echo (int)$_GET['chain_id']; ?>">
+                                <?php endif; ?>
 
                                 <div class="mb-4">
                                     <div class="alert alert-info">
@@ -386,7 +389,7 @@ function getProxiesForOutcome($conn, $outcome_id)
                                         <i class="fas fa-arrow-left"></i> ย้อนกลับ
                                     </a>
                                     <button type="submit" class="btn btn-success" id="submitBtn">
-                                        สัดส่วนผลกระทบจากโครงการ <i class="fas fa-arrow-right"></i>
+                                        บันทึกและดำเนินการต่อ <i class="fas fa-arrow-right"></i>
                                     </button>
                                 </div>
                             </form>
@@ -1497,8 +1500,56 @@ function getProxiesForOutcome($conn, $outcome_id)
             .then(data => {
                 if (data.success) {
                     console.log('Data saved to session successfully');
-                    // ไปยังหน้า Impact Pathway
-                    window.location.href = '../impact_pathway/impact_pathway.php?project_id=' + document.querySelector('input[name="project_id"]').value;
+                    
+                    // สร้าง form ใหม่เพื่อส่งข้อมูลไปยัง process-step4.php
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = 'process-step4.php';
+                    
+                    // เพิ่ม hidden inputs
+                    const projectIdInput = document.createElement('input');
+                    projectIdInput.type = 'hidden';
+                    projectIdInput.name = 'project_id';
+                    projectIdInput.value = document.querySelector('input[name="project_id"]').value;
+                    form.appendChild(projectIdInput);
+                    
+                    const outcomeInput = document.createElement('input');
+                    outcomeInput.type = 'hidden';
+                    outcomeInput.name = 'selected_outcome';
+                    outcomeInput.value = selectedRadio.value;
+                    form.appendChild(outcomeInput);
+                    
+                    const detailsInput = document.createElement('input');
+                    detailsInput.type = 'hidden';
+                    detailsInput.name = 'outcome_details';
+                    detailsInput.value = outcomeDetails;
+                    form.appendChild(detailsInput);
+                    
+                    const yearInput = document.createElement('input');
+                    yearInput.type = 'hidden';
+                    yearInput.name = 'evaluation_year';
+                    yearInput.value = selectedYear.value;
+                    form.appendChild(yearInput);
+                    
+                    const benefitDataInput = document.createElement('input');
+                    benefitDataInput.type = 'hidden';
+                    benefitDataInput.name = 'benefit_data';
+                    benefitDataInput.value = JSON.stringify(benefitData);
+                    form.appendChild(benefitDataInput);
+                    
+                    // เพิ่ม chain_id ถ้ามี
+                    const chainIdField = document.querySelector('input[name="chain_id"]');
+                    if (chainIdField) {
+                        const chainIdInput = document.createElement('input');
+                        chainIdInput.type = 'hidden';
+                        chainIdInput.name = 'chain_id';
+                        chainIdInput.value = chainIdField.value;
+                        form.appendChild(chainIdInput);
+                    }
+                    
+                    // เพิ่ม form ไปยัง body และ submit
+                    document.body.appendChild(form);
+                    form.submit();
                 } else {
                     alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' + (data.message || 'Unknown error'));
                 }
@@ -1758,6 +1809,7 @@ function getProxiesForOutcome($conn, $outcome_id)
             // เพิ่มแถวใหม่
             addNewBenefitRow();
         }
+
     </script>
 </body>
 

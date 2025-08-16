@@ -185,6 +185,15 @@ ksort($grouped_outputs);
             </div>
         </div>
 
+        <!-- Error Messages -->
+        <?php if (isset($_SESSION['error_message'])): ?>
+            <div class="alert alert-danger alert-dismissible fade show">
+                <i class="fas fa-exclamation-circle"></i> 
+                <strong>Error:</strong> <?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
         <!-- Progress Steps -->
         <?php 
         $status = getImpactChainStatus($project_id);
@@ -349,6 +358,9 @@ ksort($grouped_outputs);
                 <form id="outputForm" action="process-step3.php" method="POST">
                     <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
                     <input type="hidden" name="selected_output_id" id="selected_output_id" value="">
+                    <?php if (isset($_GET['chain_id'])): ?>
+                        <input type="hidden" name="chain_id" value="<?php echo (int)$_GET['chain_id']; ?>">
+                    <?php endif; ?>
 
                     <div class="modal-header">
                         <h5 class="modal-title" id="outputModalLabel">
@@ -384,7 +396,7 @@ ksort($grouped_outputs);
                         <button type="button" class="btn btn-outline-primary" onclick="goBack()">
                             <i class="fas fa-arrow-left"></i> ย้อนกลับ
                         </button>
-                        <button type="submit" class="btn btn-success">
+                        <button type="button" class="btn btn-success" onclick="handleSubmit();">
                             <i class="fas fa-arrow-right"></i> ถัดไป: เลือกผลลัพธ์ (Step 4)
                         </button>
                     </div>
@@ -434,7 +446,8 @@ ksort($grouped_outputs);
             const outputDescription = radioElement.getAttribute('data-output-description');
 
             // เซ็ต ID ของผลผลิตที่เลือก
-            document.getElementById('selected_output_id').value = outputId;
+            const hiddenInput = document.getElementById('selected_output_id');
+            hiddenInput.value = outputId;
 
             // เซ็ตข้อความของผลผลิตที่เลือก
             document.getElementById('selectedOutputText').textContent = outputDescription;
@@ -444,20 +457,32 @@ ksort($grouped_outputs);
             modal.show();
         }
 
+        // ฟังก์ชันจัดการการส่งข้อมูล
+        function handleSubmit() {
+            const outputDetails = document.getElementById('output_details').value.trim();
+            const selectedOutputId = document.getElementById('selected_output_id').value;
+            const projectId = <?php echo $project_id; ?>;
+            
+            if (outputDetails === '') {
+                alert('กรุณากรอกรายละเอียดเพิ่มเติม');
+                return false;
+            }
+            
+            if (selectedOutputId === '' || selectedOutputId === null) {
+                alert('กรุณาเลือกผลผลิตก่อน');
+                return false;
+            }
+            
+            // ส่งข้อมูลไปยัง process-step3.php
+            const url = `process-step3.php?project_id=${projectId}&selected_output_id=${selectedOutputId}&output_details=${encodeURIComponent(outputDetails)}`;
+            window.location.href = url;
+        }
+
         // ฟังก์ชันย้อนกลับ
         function goBack() {
             window.location.href = 'step2-activity.php?project_id=<?php echo $project_id; ?>';
         }
 
-        // ตรวจสอบการ submit form
-        document.getElementById('outputForm').addEventListener('submit', function(e) {
-            const outputDetails = document.getElementById('output_details').value.trim();
-            if (outputDetails === '') {
-                e.preventDefault();
-                alert('กรุณากรอกรายละเอียดเพิ่มเติม');
-                return false;
-            }
-        });
     </script>
 </body>
 
