@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../config.php';
+require_once '../includes/impact_chain_status.php';
 
 // ตรวจสอบการ login
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
@@ -88,6 +89,9 @@ if (!$project) {
 }
 
 if ($selected_outcome == 0) {
+    // อัปเดตสถานะ Impact Chain - Step 4 เสร็จสิ้น
+    updateImpactChainStatus($project_id, 4, true);
+    
     // ถ้าไม่มีการเลือกผลลัพธ์ ให้ไปยัง Impact Pathway
     header("location: ../impact_pathway/impact_pathway.php?project_id=" . $project_id);
     exit;
@@ -199,6 +203,9 @@ try {
         ]);
         exit;
     }
+
+    // อัปเดตสถานะ Impact Chain - Step 4 เสร็จสิ้น
+    updateImpactChainStatus($project_id, 4, true);
 
     // ไปยังหน้า Impact Pathway (เฉพาะกรณีไม่ใช่การบันทึกรายละเอียดเท่านั้น)
     error_log("Redirecting to impact_pathway.php with project_id: " . $project_id);

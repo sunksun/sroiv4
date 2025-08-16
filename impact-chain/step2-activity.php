@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../config.php';
+require_once '../includes/progress_bar.php';
 
 // ตรวจสอบการ login
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
@@ -197,22 +198,10 @@ foreach ($activities as $activity) {
         </div>
 
         <!-- Progress Steps -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="progress" style="height: 30px;">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemax="100"></div>
-                    <div class="progress-bar bg-primary" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemax="100">
-                        Step 2: กิจกรรม
-                    </div>
-                </div>
-                <div class="d-flex justify-content-between mt-2">
-                    <small class="text-success">✓ 1. ยุทธศาสตร์</small>
-                    <small class="text-primary fw-bold">2. กิจกรรม</small>
-                    <small class="text-muted">3. ผลผลิต</small>
-                    <small class="text-muted">4. ผลลัพธ์</small>
-                </div>
-            </div>
-        </div>
+        <?php 
+        $status = getImpactChainStatus($project_id);
+        renderImpactChainProgressBar($project_id, 2, $status); 
+        ?>
 
         <!-- Selected Strategies Info -->
         <div class="row mb-4">

@@ -4,6 +4,7 @@ ini_set('display_errors', 1);
 
 session_start();
 require_once '../config.php';
+require_once '../includes/progress_bar.php';
 
 // ตรวจสอบการ login
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
@@ -251,28 +252,11 @@ function getProxiesForOutcome($conn, $outcome_id)
             </div>
         </div>
 
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="progress" style="height: 30px;">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemax="100"></div>
-                    <div class="progress-bar bg-success" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemax="100"></div>
-                    <div class="progress-bar bg-success" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemax="100"></div>
-                    <div class="progress-bar bg-primary" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemax="100">
-                        Step 4: ผลลัพธ์
-                    </div>
-                    <div class="progress-bar bg-light border" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemax="100">
-                        <span class="text-dark">สรุป</span>
-                    </div>
-                </div>
-                <div class="d-flex justify-content-between mt-2">
-                    <small class="text-success">✓ 1. ยุทธศาสตร์</small>
-                    <small class="text-success">✓ 2. กิจกรรม</small>
-                    <small class="text-success">✓ 3. ผลผลิต</small>
-                    <small class="text-primary fw-bold">4. ผลลัพธ์</small>
-                    <small class="text-muted">5. สรุป</small>
-                </div>
-            </div>
-        </div>
+        <!-- Progress Steps -->
+        <?php 
+        $status = getImpactChainStatus($project_id);
+        renderImpactChainProgressBar($project_id, 4, $status); 
+        ?>
 
         <div class="row mb-4">
             <div class="col-12">

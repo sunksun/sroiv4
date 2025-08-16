@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../config.php';
+require_once '../includes/impact_chain_status.php';
 
 // ตรวจสอบการ login
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
@@ -103,6 +104,9 @@ try {
             $_SESSION['selected_outputs_detail'] = [$output];
             $_SESSION['selected_output_details'] = $output_details;
             $_SESSION['success_message'] = "บันทึกการเลือกผลผลิตสำเร็จ: " . $output['output_description'];
+
+            // อัปเดตสถานะ Impact Chain - Step 3 เสร็จสิ้น
+            updateImpactChainStatus($project_id, 3, true);
 
             // ไปยัง Step 4 เพื่อเลือกผลลัพธ์
             header("location: step4-outcome.php?project_id=" . $project_id);

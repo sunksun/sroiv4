@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../config.php';
+require_once '../includes/impact_chain_status.php';
 
 // ตรวจสอบการ login
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
@@ -101,6 +102,9 @@ try {
             $_SESSION['selected_activities'] = [$activity['activity_id']];
             $_SESSION['selected_activity_detail'] = $activity;
             $_SESSION['success_message'] = "บันทึกการเลือกกิจกรรมสำเร็จ: " . $activity['activity_name'];
+
+            // อัปเดตสถานะ Impact Chain - Step 2 เสร็จสิ้น
+            updateImpactChainStatus($project_id, 2, true);
 
             // ไปยัง Step 3
             header("location: step3-output.php?project_id=" . $project_id);
