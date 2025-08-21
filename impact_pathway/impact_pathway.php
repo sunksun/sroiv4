@@ -88,60 +88,158 @@ if ($project_id > 0) {
     }
     mysqli_stmt_close($strategies_stmt);
 
-    // Step 2: ดึงกิจกรรมที่โครงการเลือกใช้
-    $activities_query = "
-        SELECT DISTINCT a.activity_id, a.activity_code, a.activity_name, a.activity_description
+    // Step 2: ดึงกิจกรรมที่โครงการเลือกใช้ (ทั้งระบบเดิมและใหม่)
+    // ระบบเดิม - จาก project_activities
+    $activities_query_legacy = "
+        SELECT DISTINCT a.activity_id, a.activity_code, a.activity_name, a.activity_description, 'legacy' as source_type
         FROM activities a
         INNER JOIN project_activities pa ON a.activity_id = pa.activity_id
         WHERE pa.project_id = ?
-        ORDER BY a.activity_code
     ";
-    $activities_stmt = mysqli_prepare($conn, $activities_query);
-    mysqli_stmt_bind_param($activities_stmt, "i", $project_id);
+    
+    // ระบบใหม่ - จาก impact_chains
+    $activities_query_new = "
+        SELECT DISTINCT a.activity_id, a.activity_code, a.activity_name, a.activity_description, 'new_chain' as source_type
+        FROM activities a
+        INNER JOIN impact_chains ic ON a.activity_id = ic.activity_id
+        WHERE ic.project_id = ?
+    ";
+    
+    // รวมกิจกรรมทั้งหมด
+    $combined_activities_query = "
+        ($activities_query_legacy)
+        UNION ALL
+        ($activities_query_new)
+        ORDER BY activity_code
+    ";
+    
+    $activities_stmt = mysqli_prepare($conn, $combined_activities_query);
+    mysqli_stmt_bind_param($activities_stmt, "ii", $project_id, $project_id);
     mysqli_stmt_execute($activities_stmt);
     $activities_result = mysqli_stmt_get_result($activities_stmt);
+    
+    // เก็บกิจกรรมไม่ให้ซ้ำ
+    $activity_ids_seen = [];
     while ($activity = mysqli_fetch_assoc($activities_result)) {
-        $project_activities[] = $activity;
+        // หากเป็น activity_id เดียวกัน ให้แสดงเฉพาะครั้งแรก
+        if (!in_array($activity['activity_id'], $activity_ids_seen)) {
+            $project_activities[] = $activity;
+            $activity_ids_seen[] = $activity['activity_id'];
+        }
     }
     mysqli_stmt_close($activities_stmt);
 
-    // ดึงผลผลิตที่โครงการเลือกใช้
-    $outputs_query = "
-        SELECT DISTINCT o.output_id, o.output_sequence, o.output_description, o.target_details,
-               po.output_details as project_output_details
+    // ดึงผลผลิตและผลลัพธ์ที่เกี่ยวข้องกับแต่ละกิจกรรม (ทั้งระบบเดิมและใหม่)
+    $project_outputs = [];
+    $project_outcomes = [];
+    
+    // ดึงผลผลิตจากระบบเดิม (project_outputs)
+    $outputs_query_legacy = "
+        SELECT DISTINCT o.output_id, o.output_sequence, o.output_description, o.target_details, o.activity_id,
+               po.output_details as project_output_details, a.activity_code, a.activity_name,
+               'legacy' as source_type
         FROM outputs o
         INNER JOIN project_outputs po ON o.output_id = po.output_id
+        INNER JOIN activities a ON o.activity_id = a.activity_id
         WHERE po.project_id = ?
-        ORDER BY o.output_sequence
+        ORDER BY a.activity_code, o.output_sequence
     ";
-    $outputs_stmt = mysqli_prepare($conn, $outputs_query);
-    mysqli_stmt_bind_param($outputs_stmt, "i", $project_id);
-    mysqli_stmt_execute($outputs_stmt);
-    $outputs_result = mysqli_stmt_get_result($outputs_stmt);
-    while ($output = mysqli_fetch_assoc($outputs_result)) {
+    
+    $outputs_stmt_legacy = mysqli_prepare($conn, $outputs_query_legacy);
+    mysqli_stmt_bind_param($outputs_stmt_legacy, "i", $project_id);
+    mysqli_stmt_execute($outputs_stmt_legacy);
+    $outputs_result_legacy = mysqli_stmt_get_result($outputs_stmt_legacy);
+    while ($output = mysqli_fetch_assoc($outputs_result_legacy)) {
         $project_outputs[] = $output;
     }
-    mysqli_stmt_close($outputs_stmt);
+    mysqli_stmt_close($outputs_stmt_legacy);
+    
+    // ดึงผลผลิตจากระบบใหม่ (impact_chain_outputs)
+    $outputs_query_new = "
+        SELECT DISTINCT o.output_id, o.output_sequence, o.output_description, o.target_details, o.activity_id,
+               ico.output_details as project_output_details, a.activity_code, a.activity_name,
+               'new_chain' as source_type, ic.id as chain_id
+        FROM outputs o
+        INNER JOIN impact_chain_outputs ico ON o.output_id = ico.output_id
+        INNER JOIN impact_chains ic ON ico.impact_chain_id = ic.id
+        INNER JOIN activities a ON ic.activity_id = a.activity_id
+        WHERE ic.project_id = ?
+        ORDER BY a.activity_code, o.output_sequence
+    ";
+    
+    $outputs_stmt_new = mysqli_prepare($conn, $outputs_query_new);
+    mysqli_stmt_bind_param($outputs_stmt_new, "i", $project_id);
+    mysqli_stmt_execute($outputs_stmt_new);
+    $outputs_result_new = mysqli_stmt_get_result($outputs_stmt_new);
+    while ($output = mysqli_fetch_assoc($outputs_result_new)) {
+        // ตรวจสอบไม่ให้ซ้ำ
+        $found = false;
+        foreach ($project_outputs as $existing_output) {
+            if ($existing_output['output_id'] == $output['output_id']) {
+                $found = true;
+                break;
+            }
+        }
+        if (!$found) {
+            $project_outputs[] = $output;
+        }
+    }
+    mysqli_stmt_close($outputs_stmt_new);
 
-    // ดึงผลลัพธ์ที่โครงการเลือกใช้ (เฉพาะจาก project_outcomes ที่มีข้อมูลจริง)
-    $outcomes_query = "
+    // ดึงผลลัพธ์จากระบบเดิม (project_outcomes)
+    $outcomes_query_legacy = "
         SELECT DISTINCT oc.outcome_id, oc.outcome_sequence, oc.outcome_description, 
-               o.output_sequence, o.output_description as output_desc,
-               po_custom.outcome_details as project_outcome_details
+               o.output_sequence, o.output_description as output_desc, o.activity_id,
+               po_custom.outcome_details as project_outcome_details,
+               a.activity_code, a.activity_name, 'legacy' as source_type
         FROM project_outcomes po_custom
         INNER JOIN outcomes oc ON po_custom.outcome_id = oc.outcome_id
         INNER JOIN outputs o ON oc.output_id = o.output_id
+        INNER JOIN activities a ON o.activity_id = a.activity_id
         WHERE po_custom.project_id = ?
-        ORDER BY o.output_sequence, oc.outcome_sequence
     ";
-    $outcomes_stmt = mysqli_prepare($conn, $outcomes_query);
-    mysqli_stmt_bind_param($outcomes_stmt, "i", $project_id);
-    mysqli_stmt_execute($outcomes_stmt);
-    $outcomes_result = mysqli_stmt_get_result($outcomes_stmt);
-    while ($outcome = mysqli_fetch_assoc($outcomes_result)) {
+    
+    $outcomes_stmt_legacy = mysqli_prepare($conn, $outcomes_query_legacy);
+    mysqli_stmt_bind_param($outcomes_stmt_legacy, "i", $project_id);
+    mysqli_stmt_execute($outcomes_stmt_legacy);
+    $outcomes_result_legacy = mysqli_stmt_get_result($outcomes_stmt_legacy);
+    while ($outcome = mysqli_fetch_assoc($outcomes_result_legacy)) {
         $project_outcomes[] = $outcome;
     }
-    mysqli_stmt_close($outcomes_stmt);
+    mysqli_stmt_close($outcomes_stmt_legacy);
+    
+    // ดึงผลลัพธ์จากระบบใหม่ (impact_chain_outcomes)
+    $outcomes_query_new = "
+        SELECT DISTINCT oc.outcome_id, oc.outcome_sequence, oc.outcome_description, 
+               o.output_sequence, o.output_description as output_desc, o.activity_id,
+               ico.outcome_details as project_outcome_details,
+               a.activity_code, a.activity_name, 'new_chain' as source_type, ic.id as chain_id
+        FROM impact_chain_outcomes ico
+        INNER JOIN outcomes oc ON ico.outcome_id = oc.outcome_id
+        INNER JOIN outputs o ON oc.output_id = o.output_id
+        INNER JOIN impact_chains ic ON ico.impact_chain_id = ic.id
+        INNER JOIN activities a ON ic.activity_id = a.activity_id
+        WHERE ic.project_id = ?
+    ";
+    
+    $outcomes_stmt_new = mysqli_prepare($conn, $outcomes_query_new);
+    mysqli_stmt_bind_param($outcomes_stmt_new, "i", $project_id);
+    mysqli_stmt_execute($outcomes_stmt_new);
+    $outcomes_result_new = mysqli_stmt_get_result($outcomes_stmt_new);
+    while ($outcome = mysqli_fetch_assoc($outcomes_result_new)) {
+        // ตรวจสอบไม่ให้ซ้ำ
+        $found = false;
+        foreach ($project_outcomes as $existing_outcome) {
+            if ($existing_outcome['outcome_id'] == $outcome['outcome_id']) {
+                $found = true;
+                break;
+            }
+        }
+        if (!$found) {
+            $project_outcomes[] = $outcome;
+        }
+    }
+    mysqli_stmt_close($outcomes_stmt_new);
 
     // ดึงผู้ใช้ประโยชน์จากตาราง project_impact_ratios
     $beneficiaries_query = "
@@ -953,82 +1051,157 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td></td>
-                        <td>
-                            <!-- แสดงกิจกรรมของโครงการ -->
-                            <?php if (!empty($project_activities)): ?>
-                                <?php foreach ($project_activities as $activity): ?>
+                    <?php if (!empty($project_activities)): ?>
+                        <?php foreach ($project_activities as $activity_index => $activity): ?>
+                            <tr>
+                                <!-- ปัจจัยนำเข้า - แสดงเฉพาะแถวแรก -->
+                                <?php if ($activity_index == 0): ?>
+                                    <td rowspan="<?php echo count($project_activities); ?>">
+                                        <div class="input-item">
+                                            <div class="input-budget">งบประมาณโครงการ</div>
+                                            <div class="input-detail">
+                                                <?php if ($selected_project): ?>
+                                                    <?php echo htmlspecialchars($selected_project['name']); ?>
+                                                <?php else: ?>
+                                                    ทรัพยากรและปัจจัยนำเข้า
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </td>
+                                <?php endif; ?>
+                                
+                                <!-- กิจกรรม - แสดงแต่ละกิจกรรมในแถวต่างกัน -->
+                                <td>
                                     <div class="activity-item">
                                         <div class="activity-code"><?php echo htmlspecialchars($activity['activity_code']); ?></div>
                                         <div class="activity-name"><?php echo htmlspecialchars($activity['activity_name']); ?></div>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <small class="text-muted">ยังไม่มีการเลือกกิจกรรม</small>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <!-- แสดงผลผลิตของโครงการ -->
-                            <?php if (!empty($project_outputs)): ?>
-                                <?php foreach ($project_outputs as $output): ?>
-                                    <div class="output-item">
-                                        <div class="output-sequence"><?php echo htmlspecialchars($output['output_sequence']); ?></div>
-                                        <div class="output-description">
-                                            <?php echo htmlspecialchars(
-                                                !empty($output['project_output_details'])
-                                                    ? $output['project_output_details']
-                                                    : $output['output_description']
-                                            ); ?>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <small class="text-muted">ยังไม่มีการเลือกผลผลิต</small>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <!-- แสดงผู้ใช้ประโยชน์จากตาราง project_impact_ratios -->
-                            <?php if (!empty($project_beneficiaries)): ?>
-                                <?php foreach ($project_beneficiaries as $beneficiary): ?>
-                                    <div class="user-item">
-                                        <div class="user-info">ผลประโยชน์ <?php echo htmlspecialchars($beneficiary['benefit_number']); ?></div>
-                                        <div class="user-detail"><?php echo htmlspecialchars($beneficiary['beneficiary']); ?></div>
-                                        <?php if (!empty($beneficiary['benefit_detail'])): ?>
+                                        <?php if (!empty($activity['activity_description'])): ?>
                                             <div style="font-size: 0.75rem; color: #6c757d; margin-top: 0.25rem;">
-                                                รายละเอียด: <?php echo htmlspecialchars($beneficiary['benefit_detail']); ?>
+                                                <?php echo htmlspecialchars($activity['activity_description']); ?>
+                                            </div>
+                                        <?php endif; ?>
+                                        <?php if (isset($activity['source_type'])): ?>
+                                            <div style="font-size: 0.7rem; color: #007bff; margin-top: 0.25rem;">
+                                                <i class="fas fa-info-circle"></i> 
+                                                <?php echo $activity['source_type'] == 'legacy' ? 'ระบบเดิม' : 'Impact Chain'; ?>
                                             </div>
                                         <?php endif; ?>
                                     </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <small class="text-muted">ยังไม่มีข้อมูลผู้ใช้ประโยชน์</small>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <!-- แสดงผลลัพธ์ของโครงการ (เฉพาะที่มีใน project_outcomes) -->
-                            <?php if (!empty($project_outcomes)): ?>
-                                <?php foreach ($project_outcomes as $outcome): ?>
-                                    <div class="outcome-item">
-                                        <div class="outcome-sequence"><?php echo htmlspecialchars($outcome['outcome_sequence']); ?></div>
-                                        <div class="outcome-description">
-                                            <?php
-                                            // ใช้ข้อมูลจาก project_outcome_details เท่านั้น
-                                            $display_text = $outcome['project_outcome_details'];
-                                            echo htmlspecialchars($display_text);
-                                            ?>
+                                </td>
+                                
+                                <!-- ผลผลิต - ดึงผลผลิตที่เกี่ยวข้องกับกิจกรรมนี้ -->
+                                <td>
+                                    <?php
+                                    // ค้นหาผลผลิตที่เกี่ยวข้องกับกิจกรรมนี้โดยตรง
+                                    $activity_outputs = [];
+                                    foreach ($project_outputs as $output) {
+                                        // ตรวจสอบว่าผลผลิตนี้มาจากกิจกรรมที่กำลังแสดง
+                                        if ($output['activity_id'] == $activity['activity_id']) {
+                                            $activity_outputs[] = $output;
+                                        }
+                                    }
+                                    ?>
+                                    <?php if (!empty($activity_outputs)): ?>
+                                        <?php foreach ($activity_outputs as $output): ?>
+                                            <div class="output-item">
+                                                <div class="output-sequence"><?php echo htmlspecialchars($output['output_sequence']); ?></div>
+                                                <div class="output-description">
+                                                    <?php echo htmlspecialchars(
+                                                        !empty($output['project_output_details'])
+                                                            ? $output['project_output_details']
+                                                            : $output['output_description']
+                                                    ); ?>
+                                                </div>
+                                                <?php if (isset($output['source_type'])): ?>
+                                                    <div style="font-size: 0.7rem; color: #28a745; margin-top: 0.25rem;">
+                                                        <i class="fas fa-link"></i> 
+                                                        <?php echo $output['source_type'] == 'legacy' ? 'ระบบเดิม' : 'Impact Chain'; ?>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <small class="text-muted">ไม่มีผลผลิตสำหรับกิจกรรม <?php echo htmlspecialchars($activity['activity_code']); ?></small>
+                                    <?php endif; ?>
+                                </td>
+                                
+                                <!-- ผู้ใช้ประโยชน์ - แสดงเฉพาะแถวแรก -->
+                                <?php if ($activity_index == 0): ?>
+                                    <td rowspan="<?php echo count($project_activities); ?>">
+                                        <?php if (!empty($project_beneficiaries)): ?>
+                                            <?php foreach ($project_beneficiaries as $beneficiary): ?>
+                                                <div class="user-item">
+                                                    <div class="user-info">ผลประโยชน์ <?php echo htmlspecialchars($beneficiary['benefit_number']); ?></div>
+                                                    <div class="user-detail"><?php echo htmlspecialchars($beneficiary['beneficiary']); ?></div>
+                                                    <?php if (!empty($beneficiary['benefit_detail'])): ?>
+                                                        <div style="font-size: 0.75rem; color: #6c757d; margin-top: 0.25rem;">
+                                                            รายละเอียด: <?php echo htmlspecialchars($beneficiary['benefit_detail']); ?>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <small class="text-muted">ยังไม่มีข้อมูลผู้ใช้ประโยชน์</small>
+                                        <?php endif; ?>
+                                    </td>
+                                <?php endif; ?>
+                                
+                                <!-- ผลลัพธ์ - ดึงผลลัพธ์ที่เกี่ยวข้องกับกิจกรรมนี้ -->
+                                <td>
+                                    <?php
+                                    // ค้นหาผลลัพธ์ที่เกี่ยวข้องกับกิจกรรมนี้โดยตรง
+                                    $activity_outcomes = [];
+                                    foreach ($project_outcomes as $outcome) {
+                                        // ตรวจสอบว่าผลลัพธ์นี้มาจากกิจกรรมที่กำลังแสดง
+                                        if ($outcome['activity_id'] == $activity['activity_id']) {
+                                            $activity_outcomes[] = $outcome;
+                                        }
+                                    }
+                                    ?>
+                                    <?php if (!empty($activity_outcomes)): ?>
+                                        <?php foreach ($activity_outcomes as $outcome): ?>
+                                            <div class="outcome-item">
+                                                <div class="outcome-sequence"><?php echo htmlspecialchars($outcome['outcome_sequence']); ?></div>
+                                                <div class="outcome-description">
+                                                    <?php
+                                                    // ใช้ข้อมูลจาก project_outcome_details เท่านั้น
+                                                    $display_text = $outcome['project_outcome_details'];
+                                                    echo htmlspecialchars($display_text);
+                                                    ?>
+                                                </div>
+                                                <div style="font-size: 0.75rem; color: #6c757d; margin-top: 0.25rem;">
+                                                    จากผลผลิต: <?php echo htmlspecialchars($outcome['output_sequence']); ?>
+                                                    <?php if (isset($outcome['source_type'])): ?>
+                                                        | <span style="color: #17a2b8;">
+                                                            <?php echo $outcome['source_type'] == 'legacy' ? 'ระบบเดิม' : 'Impact Chain'; ?>
+                                                        </span>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <small class="text-muted">ไม่มีผลลัพธ์สำหรับกิจกรรม <?php echo htmlspecialchars($activity['activity_code']); ?></small>
+                                    <?php endif; ?>
+                                </td>
+                                
+                                <!-- ผลกระทบ - แสดงเฉพาะแถวแรก -->
+                                <?php if ($activity_index == 0): ?>
+                                    <td rowspan="<?php echo count($project_activities); ?>">
+                                        <div class="impact-item">
+                                            <div class="impact-benefit">ผลกระทบทางสังคม</div>
+                                            <div class="impact-detail">รอการบันทึกข้อมูล Impact</div>
                                         </div>
-                                        <div style="font-size: 0.75rem; color: #6c757d; margin-top: 0.25rem;">
-                                            จาก: <?php echo htmlspecialchars($outcome['output_sequence']); ?>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <small class="text-muted">ยังไม่มีผลลัพธ์ที่บันทึกไว้</small>
-                            <?php endif; ?>
-                        </td>
-                        <td></td>
-                    </tr>
+                                    </td>
+                                <?php endif; ?>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">
+                                ยังไม่มีการเลือกกิจกรรมสำหรับโครงการนี้
+                            </td>
+                        </tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
 

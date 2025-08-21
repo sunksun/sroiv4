@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 13, 2025 at 06:14 PM
+-- Generation Time: Aug 21, 2025 at 05:00 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -127,7 +127,275 @@ INSERT INTO `audit_logs` (`id`, `table_name`, `record_id`, `action`, `old_values
 (26, 'project_outputs', '3', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 2, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-13 12:08:42'),
 (27, 'project_strategies', '1', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-13 16:06:43'),
 (28, 'project_activities', '1', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 10, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-13 16:06:55'),
-(29, 'project_outputs', '1', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 19, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-13 16:07:11');
+(29, 'project_outputs', '1', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 19, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-13 16:07:11'),
+(30, 'project_strategies', '2', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 11:36:03'),
+(31, 'project_strategies', '3', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 11:36:24'),
+(32, 'project_activities', '2', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 11:36:43'),
+(33, 'project_outputs', '2', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 2, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 11:37:20'),
+(34, 'project_strategies', '4', 'INSERT', NULL, '{\"project_id\": 7, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 12:04:59'),
+(35, 'project_activities', '3', 'INSERT', NULL, '{\"project_id\": 7, \"activity_id\": 3, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 12:05:16'),
+(36, 'project_outputs', '3', 'INSERT', NULL, '{\"project_id\": 7, \"output_id\": 7, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 12:05:28'),
+(37, 'project_strategies', '5', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:35:12'),
+(38, 'project_activities', '4', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:35:15'),
+(39, 'project_outputs', '4', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 2, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:35:21'),
+(40, 'project_strategies', '6', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:37:10'),
+(41, 'project_activities', '5', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:37:13'),
+(42, 'project_outputs', '5', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 4, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:37:19'),
+(43, 'project_strategies', '7', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:37:58'),
+(44, 'project_activities', '6', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 11, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:38:28'),
+(45, 'project_outputs', '6', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 24, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:38:36'),
+(46, 'project_strategies', '8', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:48:05'),
+(47, 'project_activities', '7', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 3, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:48:08'),
+(48, 'project_outputs', '7', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 7, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:48:16'),
+(49, 'project_strategies', '9', 'INSERT', NULL, '{\"project_id\": 4, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 04:39:15'),
+(50, 'project_activities', '8', 'INSERT', NULL, '{\"project_id\": 4, \"activity_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 04:40:05'),
+(51, 'project_outputs', '8', 'INSERT', NULL, '{\"project_id\": 4, \"output_id\": 2, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 04:40:25'),
+(52, 'project_strategies', '10', 'INSERT', NULL, '{\"project_id\": 4, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 10:01:45'),
+(53, 'project_activities', '9', 'INSERT', NULL, '{\"project_id\": 4, \"activity_id\": 10, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 10:02:01'),
+(54, 'project_outputs', '9', 'INSERT', NULL, '{\"project_id\": 4, \"output_id\": 22, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 10:02:46'),
+(55, 'project_strategies', '11', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 11:35:34'),
+(56, 'project_activities', '10', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 13, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 11:35:40'),
+(57, 'project_outputs', '10', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 29, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 11:35:49'),
+(58, 'project_activities', '11', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 13, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 11:38:03'),
+(59, 'project_outputs', '11', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 29, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 11:38:12'),
+(60, 'projects', '1', 'INSERT', NULL, '{\"project_code\": \"681234567\", \"name\": \"การพัฒนานวัตกรการศึกษาด้วย Mobile Application: เสริมสร้างทักษะการสร้างแอปพลิเคชันการเรียนรู้ด้วย React Native\", \"status\": \"incompleted\", \"budget\": 70000.00, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 12:22:45'),
+(61, 'project_strategies', '12', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 12:24:00'),
+(62, 'project_activities', '12', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 12:24:32'),
+(63, 'project_outputs', '12', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 12:25:31'),
+(64, 'project_strategies', '13', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 12:33:43'),
+(65, 'project_activities', '13', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 12:33:51'),
+(66, 'project_outputs', '13', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 12:34:02'),
+(67, 'project_strategies', '14', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 12:36:47'),
+(68, 'project_activities', '14', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 16, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 12:36:54'),
+(69, 'project_outputs', '14', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 36, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 12:37:06'),
+(70, 'project_strategies', '15', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 14:24:30'),
+(71, 'project_activities', '15', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 16, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 14:24:40'),
+(72, 'project_outputs', '15', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 36, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 14:24:45'),
+(73, 'project_strategies', '16', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 14:25:27'),
+(74, 'project_activities', '16', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 3, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 14:25:39'),
+(75, 'project_outputs', '16', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 7, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 14:25:46'),
+(76, 'project_strategies', '1', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 14:53:49'),
+(77, 'project_activities', '1', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 14:56:23'),
+(78, 'project_outputs', '1', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 14:58:20'),
+(79, 'project_strategies', '2', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 15:43:28'),
+(80, 'project_activities', '2', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 15:43:32'),
+(81, 'project_activities', '3', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 18, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 16:22:50'),
+(82, 'project_activities', '4', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 19, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 16:42:39'),
+(83, 'project_outputs', '2', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 39, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 16:42:55'),
+(84, 'project_outputs', '3', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 38, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 16:43:10'),
+(85, 'project_outputs', '4', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 39, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 16:44:31'),
+(86, 'project_strategies', '3', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 16:58:51'),
+(87, 'project_activities', '5', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 18, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 16:58:55'),
+(88, 'project_outputs', '5', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 38, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 16:59:09'),
+(89, 'project_outputs', '6', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 38, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 17:06:02'),
+(90, 'project_strategies', '4', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 06:19:19'),
+(91, 'project_strategies', '5', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 06:19:43'),
+(92, 'project_strategies', '6', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 06:20:17'),
+(93, 'project_strategies', '7', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 06:21:05'),
+(94, 'project_activities', '6', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 07:43:07'),
+(95, 'project_activities', '7', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 07:44:38'),
+(96, 'project_activities', '8', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 16, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 07:46:39'),
+(97, 'project_activities', '9', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 14, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 07:47:15'),
+(98, 'project_outputs', '7', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 30, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 07:48:04'),
+(99, 'project_outputs', '8', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 30, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 07:50:14'),
+(100, 'project_strategies', '8', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 08:08:44'),
+(101, 'project_activities', '10', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 13, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 08:08:52'),
+(102, 'project_outputs', '9', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 29, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 08:08:58'),
+(103, 'project_strategies', '9', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 08:48:19'),
+(104, 'project_activities', '11', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 08:48:23'),
+(105, 'project_outputs', '10', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 08:48:29'),
+(106, 'project_activities', '12', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 18, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 08:48:42'),
+(107, 'project_outputs', '11', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 38, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 08:49:00'),
+(108, 'project_activities', '13', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 08:49:06'),
+(109, 'project_strategies', '10', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:02:20'),
+(110, 'project_activities', '14', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:02:24'),
+(111, 'project_outputs', '12', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:02:33'),
+(112, 'project_strategies', '11', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:06:57'),
+(113, 'project_activities', '15', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:07:01'),
+(114, 'project_outputs', '13', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:07:08'),
+(115, 'project_outputs', '14', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:07:40'),
+(116, 'project_outputs', '15', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:08:40'),
+(117, 'project_strategies', '12', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:12:48'),
+(118, 'project_activities', '16', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:12:53'),
+(119, 'project_activities', '17', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:17:24'),
+(120, 'project_strategies', '13', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:18:07'),
+(121, 'project_activities', '18', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:18:12'),
+(122, 'project_outputs', '16', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:19:32'),
+(123, 'project_strategies', '14', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:20:55'),
+(124, 'project_activities', '19', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:21:00'),
+(125, 'project_outputs', '17', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:21:24'),
+(126, 'project_outputs', '18', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 35, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:22:07'),
+(127, 'project_strategies', '15', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 02:40:00'),
+(128, 'project_activities', '20', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 02:40:05'),
+(129, 'project_outputs', '19', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 02:43:10'),
+(130, 'project_outputs', '20', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 3, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 02:48:18'),
+(131, 'project_outputs', '21', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 4, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 02:52:13'),
+(132, 'project_strategies', '16', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 03:05:40'),
+(133, 'project_activities', '21', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 03:05:48'),
+(134, 'project_strategies', '17', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 03:38:55'),
+(135, 'project_activities', '22', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 03:39:04'),
+(136, 'project_outputs', '22', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 03:39:15'),
+(137, 'project_outputs', '23', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 3, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 03:40:48'),
+(138, 'project_strategies', '18', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:07:29'),
+(139, 'project_activities', '23', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:07:41'),
+(140, 'project_outputs', '24', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:07:55'),
+(141, 'project_outputs', '25', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 3, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:09:34'),
+(142, 'project_outputs', '26', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 4, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:22:40'),
+(143, 'projects', '2', 'INSERT', NULL, '{\"project_code\": \"681234568\", \"name\": \"พัฒนาศูนย์เรียนรู้ผู้สูงอายุ\", \"status\": \"incompleted\", \"budget\": 70000.00, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:26:07'),
+(144, 'project_strategies', '19', 'INSERT', NULL, '{\"project_id\": 2, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:26:35'),
+(145, 'project_activities', '24', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:26:49'),
+(146, 'project_outputs', '27', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 2, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:26:56'),
+(147, 'project_outputs', '28', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 3, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:28:42'),
+(148, 'project_outputs', '29', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 4, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:33:57'),
+(149, 'project_strategies', '20', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:42:23'),
+(150, 'project_activities', '25', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:42:40'),
+(151, 'project_outputs', '30', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:43:19'),
+(152, 'project_strategies', '21', 'INSERT', NULL, '{\"project_id\": 2, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-21 02:10:57'),
+(153, 'project_activities', '26', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-21 02:11:02'),
+(154, 'project_outputs', '31', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 2, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-21 02:11:12');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `impact_chains`
+--
+
+CREATE TABLE `impact_chains` (
+  `id` int(11) NOT NULL,
+  `project_id` int(11) NOT NULL,
+  `chain_name` varchar(500) NOT NULL COMMENT 'ชื่อ Impact Chain (ใช้ชื่อกิจกรรม)',
+  `activity_id` int(11) NOT NULL COMMENT 'กิจกรรมหลักของ Chain นี้',
+  `sequence_order` int(11) DEFAULT 1 COMMENT 'ลำดับการสร้าง',
+  `status` enum('active','inactive') DEFAULT 'active',
+  `created_by` varchar(50) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `impact_chains`
+--
+
+INSERT INTO `impact_chains` (`id`, `project_id`, `chain_name`, `activity_id`, `sequence_order`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
+(31, 2, 'Impact Chain 1: พัฒนาความรู้/ทักษะ/ศักยภาพ/ทักษะอาชีพ', 1, 1, 'active', '3', '2025-08-21 02:12:22', '2025-08-21 02:13:20'),
+(32, 2, 'Impact Chain 2: พัฒนาความรู้/ทักษะ/ศักยภาพ/ทักษะอาชีพ', 1, 2, 'active', '3', '2025-08-21 02:14:39', '2025-08-21 02:16:54'),
+(33, 2, 'Impact Chain 3: พัฒนาความรู้/ทักษะ/ศักยภาพ/ทักษะอาชีพ', 1, 3, 'active', '3', '2025-08-21 02:17:22', '2025-08-21 02:18:26'),
+(34, 2, 'Impact Chain 4: แปรรูปผลิตภัณฑ์/พัฒนาผลิตภัณฑ์ใหม่/ผลิตภัณฑ์สร้างสรรค์ (พัฒนาบรรจุภัณฑ์ โลโก้แบรนด์)', 3, 4, 'inactive', '3', '2025-08-21 02:19:17', '2025-08-21 02:38:42');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `impact_chain_activities`
+--
+
+CREATE TABLE `impact_chain_activities` (
+  `id` int(11) NOT NULL,
+  `impact_chain_id` int(11) NOT NULL,
+  `activity_id` int(11) NOT NULL,
+  `created_by` varchar(50) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `impact_chain_activities`
+--
+
+INSERT INTO `impact_chain_activities` (`id`, `impact_chain_id`, `activity_id`, `created_by`, `created_at`) VALUES
+(26, 31, 1, '3', '2025-08-21 02:12:22'),
+(27, 32, 1, '3', '2025-08-21 02:14:39'),
+(28, 33, 1, '3', '2025-08-21 02:17:22'),
+(29, 34, 3, '3', '2025-08-21 02:19:17');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `impact_chain_outcomes`
+--
+
+CREATE TABLE `impact_chain_outcomes` (
+  `id` int(11) NOT NULL,
+  `impact_chain_id` int(11) NOT NULL,
+  `outcome_id` int(11) NOT NULL,
+  `outcome_details` text DEFAULT NULL COMMENT 'รายละเอียดเพิ่มเติมของผลลัพธ์',
+  `evaluation_year` varchar(10) DEFAULT NULL COMMENT 'ปีที่ประเมิน',
+  `benefit_data` longtext DEFAULT NULL COMMENT 'ข้อมูลผลประโยชน์ในรูปแบบ JSON',
+  `created_by` varchar(50) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `impact_chain_outcomes`
+--
+
+INSERT INTO `impact_chain_outcomes` (`id`, `impact_chain_id`, `outcome_id`, `outcome_details`, `evaluation_year`, `benefit_data`, `created_by`, `created_at`) VALUES
+(21, 31, 5, '1.2.2: กลุ่มเป้าหมาย จำนวน..........คน สามารถนำความรู้ความสามารถที่เกิดจากศักยภาพ ด้าน.......................มา....(ใช้ประโยชน์อย่างไร)....ทำให้สร้างรายได้เพิ่มขึ้น', '2568', NULL, '3', '2025-08-21 02:13:20'),
+(23, 32, 9, '1.3.3: กลุ่มเป้าหมาย จำนวน..........คน สามารถนำสรรถนะ ด้าน.......................มา....(ใช้ประโยชน์อย่างไร)....ทำให้ต้นทุนลดลง', '2568', NULL, '3', '2025-08-21 02:16:54'),
+(25, 33, 7, '1.3.1: กลุ่มเป้าหมาย จำนวน..........คน สามารถถ่ายทอดสมรรถนะ ด้าน.......................ให้กับ..................จำนวน..........คน (กลุ่ม/ชุมชน)', '2568', NULL, '3', '2025-08-21 02:18:26'),
+(27, 34, 11, '1.1: รายได้เพิ่มขึ้นจาการขายผลิตภัณฑ์ใหม่ที่มีการพัฒนาบรรจุภัณฑ์ใหม่/โลโก้แบรนด์ใหม่ ได้แก่..........................................', '2568', NULL, '3', '2025-08-21 02:20:18');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `impact_chain_outputs`
+--
+
+CREATE TABLE `impact_chain_outputs` (
+  `id` int(11) NOT NULL,
+  `impact_chain_id` int(11) NOT NULL,
+  `output_id` int(11) NOT NULL,
+  `output_details` text DEFAULT NULL COMMENT 'รายละเอียดเพิ่มเติมของผลผลิต',
+  `created_by` varchar(50) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `impact_chain_outputs`
+--
+
+INSERT INTO `impact_chain_outputs` (`id`, `impact_chain_id`, `output_id`, `output_details`, `created_by`, `created_at`) VALUES
+(51, 31, 3, 'กลุ่มเป้าหมาย จำนวน.....2....คน มีศักยภาพ ด้าน..........2...........', '3', '2025-08-21 02:12:37'),
+(52, 32, 4, 'กลุ่มเป้าหมาย จำนวน.....3....คน มีสมรรถนะ ด้าน...........3..........', '3', '2025-08-21 02:15:01'),
+(53, 33, 4, 'กลุ่มเป้าหมาย จำนวน.........คน มีสมรรถนะ ด้าน.....................', '3', '2025-08-21 02:17:31'),
+(54, 34, 6, 'ผลิตภัณฑ์ใหม่ จำนวน...................ผลิตภัณฑ์ ได้แก่.......................', '3', '2025-08-21 02:19:35');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `impact_chain_ratios`
+--
+
+CREATE TABLE `impact_chain_ratios` (
+  `id` int(11) NOT NULL,
+  `impact_chain_id` int(11) NOT NULL,
+  `outcome_id` int(11) DEFAULT NULL,
+  `deadweight` decimal(5,2) DEFAULT 0.00 COMMENT 'สัดส่วน Deadweight (%)',
+  `attribution` decimal(5,2) DEFAULT 0.00 COMMENT 'สัดส่วน Attribution (%)',
+  `displacement` decimal(5,2) DEFAULT 0.00 COMMENT 'สัดส่วน Displacement (%)',
+  `drop_off` decimal(5,2) DEFAULT 0.00 COMMENT 'สัดส่วน Drop-off (%)',
+  `created_by` varchar(50) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `benefit_number` int(11) DEFAULT 1,
+  `benefit_detail` text DEFAULT NULL,
+  `beneficiary` text DEFAULT NULL,
+  `benefit_note` text DEFAULT NULL,
+  `year` varchar(20) DEFAULT NULL,
+  `impact_ratio` decimal(10,4) DEFAULT 0.0000
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `impact_chain_ratios`
+--
+
+INSERT INTO `impact_chain_ratios` (`id`, `impact_chain_id`, `outcome_id`, `deadweight`, `attribution`, `displacement`, `drop_off`, `created_by`, `created_at`, `updated_at`, `benefit_number`, `benefit_detail`, `beneficiary`, `benefit_note`, `year`, `impact_ratio`) VALUES
+(16, 31, NULL, 20.00, 10.00, 30.00, 0.00, '3', '2025-08-21 02:13:08', '2025-08-21 02:13:08', 1, '0', 'ผู้รับผลประโยชน์ 2', '2000', '2568', 0.4000),
+(17, 31, 5, 0.00, 0.00, 0.00, 0.00, '3', '2025-08-21 02:13:20', '2025-08-21 02:13:20', 1, NULL, NULL, NULL, NULL, 0.0000),
+(18, 32, NULL, 30.00, 30.00, 30.00, 0.00, '3', '2025-08-21 02:16:10', '2025-08-21 02:16:10', 1, '0', 'ผู้รับผลประโยชน์ 3', '3000', '2568', 0.1000),
+(19, 32, 9, 0.00, 0.00, 0.00, 0.00, '3', '2025-08-21 02:16:54', '2025-08-21 02:16:54', 1, NULL, NULL, NULL, NULL, 0.0000),
+(20, 33, NULL, 1.00, 1.00, 1.00, 0.00, '3', '2025-08-21 02:18:23', '2025-08-21 02:18:23', 1, '0', 'ผู้รับผลประโยชน์', '100', '2568', 0.9700),
+(21, 33, 7, 0.00, 0.00, 0.00, 0.00, '3', '2025-08-21 02:18:26', '2025-08-21 02:18:26', 1, NULL, NULL, NULL, NULL, 0.0000),
+(22, 34, NULL, 11.00, 11.00, 11.00, 0.00, '3', '2025-08-21 02:20:12', '2025-08-21 02:20:12', 1, '0', 'ผู้รับผลประโยชน์ 11', '1100', '2568', 0.6700),
+(23, 34, 11, 0.00, 0.00, 0.00, 0.00, '3', '2025-08-21 02:20:18', '2025-08-21 02:20:18', 1, NULL, NULL, NULL, NULL, 0.0000);
 
 -- --------------------------------------------------------
 
@@ -307,10 +575,10 @@ CREATE TABLE `present_value_factors` (
 --
 
 INSERT INTO `present_value_factors` (`pvf_id`, `pvf_name`, `discount_rate`, `year_id`, `time_period`, `pvf_value`, `created_by`, `created_at`, `updated_at`, `is_active`) VALUES
-(31, 'current', 2.00, 1, 0, 1.000000, NULL, '2025-08-13 16:12:06', '2025-08-13 16:12:06', 1),
-(32, 'current', 2.00, 2, 1, 0.980000, NULL, '2025-08-13 16:12:06', '2025-08-13 16:12:06', 1),
-(33, 'current', 2.00, 3, 2, 0.960000, NULL, '2025-08-13 16:12:06', '2025-08-13 16:12:06', 1),
-(34, 'current', 2.00, 4, 3, 0.940000, NULL, '2025-08-13 16:12:06', '2025-08-13 16:12:06', 1);
+(35, 'current', 2.50, 1, 0, 1.000000, NULL, '2025-08-13 16:25:38', '2025-08-13 16:25:38', 1),
+(36, 'current', 2.50, 2, 1, 0.980000, NULL, '2025-08-13 16:25:38', '2025-08-13 16:25:38', 1),
+(37, 'current', 2.50, 3, 2, 0.950000, NULL, '2025-08-13 16:25:38', '2025-08-13 16:25:38', 1),
+(38, 'current', 2.50, 4, 3, 0.930000, NULL, '2025-08-13 16:25:38', '2025-08-13 16:25:38', 1);
 
 -- --------------------------------------------------------
 
@@ -332,18 +600,19 @@ CREATE TABLE `projects` (
   `status` enum('incompleted','completed') DEFAULT 'incompleted' COMMENT 'สถานะโครงการ',
   `created_by` varchar(100) DEFAULT NULL COMMENT 'ผู้สร้าง',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `impact_chain_status` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`impact_chain_status`)),
+  `total_impact_chains` int(11) DEFAULT 0 COMMENT 'จำนวน Impact Chain ทั้งหมด',
+  `current_chain_id` int(11) DEFAULT NULL COMMENT 'Impact Chain ที่กำลังทำอยู่'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='ตารางเก็บข้อมูลโครงการ';
 
 --
 -- Dumping data for table `projects`
 --
 
-INSERT INTO `projects` (`id`, `project_code`, `name`, `description`, `objective`, `start_date`, `end_date`, `budget`, `organization`, `project_manager`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
-(3, '681234567', 'การพัฒนานวัตกรการศึกษาด้วย Mobile Application: เสริมสร้างทักษะการสร้างแอปพลิเคชันการเรียนรู้ด้วย React Native', NULL, NULL, NULL, NULL, 70000.00, 'คณะวิทยาศาสตร์และเทคโนโลยี', 'สังสรรค์ หล้าพันธ์', 'incompleted', '3', '2025-07-31 13:14:49', '2025-08-08 16:00:03'),
-(4, '681234568', 'โครงการพัฒนาศูนย์การเรียนรู้ด้านพลังงานเพื่อการพัฒนาการบริหารจัดการทรัพยากรชุมชนอย่าง', NULL, NULL, NULL, NULL, 70000.00, 'คณะวิทยาศาสตร์และเทคโนโลยี', 'สังสรรค์ หล้าพันธ์', 'incompleted', '3', '2025-07-31 13:44:42', '2025-07-31 13:44:42'),
-(7, '681234569', 'ส่งเสริมการปลูกผักปลอดสารพิษด้วยระบบน้ำพลังงานแสงอาทิตย์และเกษตรอัจฉริยะ', NULL, NULL, NULL, NULL, 72000.00, 'คณะวิทยาศาสตร์และเทคโนโลยี', 'มัลลิกา พุดแดง', 'incompleted', '3', '2025-08-01 14:05:46', '2025-08-01 14:05:46'),
-(8, '681234587', 'การสร้างทักษะการเรียนรู้ด้วย React Native สำหรับครูและบุคลากรทางการศึกษา', NULL, NULL, NULL, NULL, 70000.00, 'คณะครุศาสตร์', 'นางมานัตตา แสงสุวรรณ', 'incompleted', '5', '2025-08-09 07:32:27', '2025-08-09 07:32:27');
+INSERT INTO `projects` (`id`, `project_code`, `name`, `description`, `objective`, `start_date`, `end_date`, `budget`, `organization`, `project_manager`, `status`, `created_by`, `created_at`, `updated_at`, `impact_chain_status`, `total_impact_chains`, `current_chain_id`) VALUES
+(1, '681234567', 'การพัฒนานวัตกรการศึกษาด้วย Mobile Application: เสริมสร้างทักษะการสร้างแอปพลิเคชันการเรียนรู้ด้วย React Native', NULL, NULL, NULL, NULL, 70000.00, 'คณะครุศาสตร์', 'มัลลิกา พุดแดง', 'incompleted', '6', '2025-08-16 12:22:45', '2025-08-21 02:10:44', NULL, 0, NULL),
+(2, '681234568', 'พัฒนาศูนย์เรียนรู้ผู้สูงอายุ', NULL, NULL, NULL, NULL, 70000.00, 'คณะวิทยาศาสตร์และเทคโนโลยี', 'สังสรรค์ หล้าพันธ์', 'incompleted', '3', '2025-08-20 04:26:07', '2025-08-21 02:38:42', '{\"step1_completed\":true,\"step2_completed\":true,\"step3_completed\":true,\"step4_completed\":true,\"current_step\":4,\"last_updated\":\"2025-08-21 04:20:18\",\"total_chains\":3,\"current_chain\":3}', 3, 34);
 
 --
 -- Triggers `projects`
@@ -394,7 +663,7 @@ CREATE TABLE `project_activities` (
 --
 
 INSERT INTO `project_activities` (`id`, `project_id`, `activity_id`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 3, 10, '3', '2025-08-13 16:06:55', '2025-08-13 16:06:55');
+(26, 2, 1, '3', '2025-08-21 02:11:02', '2025-08-21 02:11:02');
 
 --
 -- Triggers `project_activities`
@@ -427,13 +696,6 @@ CREATE TABLE `project_costs` (
   `created_by` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='ตารางเก็บข้อมูลต้นทุน/งบประมาณโครงการ';
 
---
--- Dumping data for table `project_costs`
---
-
-INSERT INTO `project_costs` (`id`, `project_id`, `cost_name`, `yearly_amounts`, `created_at`, `updated_at`, `created_by`) VALUES
-(1, 3, 'ต้นทุน 1', '{\"2568\":300}', '2025-08-13 16:10:30', '2025-08-13 16:10:30', 3);
-
 -- --------------------------------------------------------
 
 --
@@ -461,7 +723,7 @@ CREATE TABLE `project_impact_ratios` (
 --
 
 INSERT INTO `project_impact_ratios` (`id`, `project_id`, `benefit_number`, `attribution`, `deadweight`, `displacement`, `impact_ratio`, `created_at`, `updated_at`, `benefit_detail`, `beneficiary`, `benefit_note`, `year`) VALUES
-(1, 3, 1, 20.00, 10.00, 30.00, 0.4000, '2025-08-13 16:09:34', '2025-08-13 16:09:34', 'ผลประโยชน์ 1', 'ผู้เข้าร่วมอบรม', 300, '2568');
+(32, 2, 1, 20.00, 10.00, 30.00, 0.4000, '2025-08-21 02:11:49', '2025-08-21 02:11:49', 'ผลประโยชน์ 1', 'ผู้รับผลประโยชน์ 1', 1000, '2568');
 
 -- --------------------------------------------------------
 
@@ -484,7 +746,7 @@ CREATE TABLE `project_outcomes` (
 --
 
 INSERT INTO `project_outcomes` (`id`, `project_id`, `outcome_id`, `outcome_details`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 3, 24, 'กลุ่มเป้าหมายจำนวน........คน สามารถใช้ประโยชน์จากหลักสูตรในการจัดอบรมพัฒนาทักษะและทำให้เกิดรายได้จากค่าตอบแทนในการจัดอบรมหลักสูตร', 3, '2025-08-13 16:07:27', '2025-08-13 16:07:27');
+(41, 2, 1, '1.1.1: กลุ่มเป้าหมาย จำนวน....1......คน สามารถถ่ายทอดความรู้ เกี่ยวกับ...........1............ให้กับ...........1.......จำนวน..........คน (กลุ่ม/ชุมชน)', 3, '2025-08-21 02:12:09', '2025-08-21 02:12:09');
 
 -- --------------------------------------------------------
 
@@ -507,7 +769,7 @@ CREATE TABLE `project_outputs` (
 --
 
 INSERT INTO `project_outputs` (`id`, `project_id`, `output_id`, `output_details`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 3, 19, 'หลักสูตรใหม่ จำนวน............หลักสูตร ได้แก่...................', '3', '2025-08-13 16:07:11', '2025-08-13 16:07:11');
+(31, 2, 2, 'กลุ่มเป้าหมาย จำนวน....1.....คน มีความรู้ ความเข้าใจ และทักษะ เกี่ยวกับ.....................', '3', '2025-08-21 02:11:12', '2025-08-21 02:11:12');
 
 --
 -- Triggers `project_outputs`
@@ -544,7 +806,7 @@ CREATE TABLE `project_strategies` (
 --
 
 INSERT INTO `project_strategies` (`id`, `project_id`, `strategy_id`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 3, 1, '3', '2025-08-13 16:06:43', '2025-08-13 16:06:43');
+(21, 2, 1, '3', '2025-08-21 02:10:57', '2025-08-21 02:10:57');
 
 --
 -- Triggers `project_strategies`
@@ -577,13 +839,6 @@ CREATE TABLE `project_with_without` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `project_with_without`
---
-
-INSERT INTO `project_with_without` (`id`, `project_id`, `benefit_detail`, `with_value`, `without_value`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 3, 'ผลประโยชน์ 1', 'มีการสร้างรายได้', 'ไม่เกิดรายได้', 3, '2025-08-13 16:10:40', '2025-08-13 16:10:40');
 
 -- --------------------------------------------------------
 
@@ -745,7 +1000,8 @@ CREATE TABLE `pvf_sets` (
 
 INSERT INTO `pvf_sets` (`set_id`, `set_name`, `description`, `discount_rate`, `total_years`, `created_by`, `created_at`, `updated_at`, `is_active`, `is_default`) VALUES
 (1, 'current', NULL, 2.00, 6, NULL, '2025-08-13 16:06:19', '2025-08-13 16:06:19', 1, 1),
-(2, 'current', NULL, 2.00, 6, NULL, '2025-08-13 16:12:06', '2025-08-13 16:12:06', 1, 1);
+(2, 'current', NULL, 2.00, 6, NULL, '2025-08-13 16:12:06', '2025-08-13 16:12:06', 1, 1),
+(3, 'current', NULL, 2.50, 6, NULL, '2025-08-13 16:25:38', '2025-08-13 16:25:38', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -796,13 +1052,6 @@ CREATE TABLE `social_impact_pathway` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='ตารางเก็บข้อมูลห่วงโซ่ผลกระทบทางสังคม (Social Impact Pathway)';
 
---
--- Dumping data for table `social_impact_pathway`
---
-
-INSERT INTO `social_impact_pathway` (`pathway_id`, `project_id`, `pathway_sequence`, `input_description`, `input_amount`, `input_unit`, `activities_description`, `activity_id`, `output_description`, `output_id`, `output_quantity`, `output_unit`, `user_description`, `user_type`, `user_quantity`, `adoption_description`, `adoption_rate`, `adoption_method`, `outcome_description`, `outcome_id`, `outcome_value`, `outcome_unit`, `impact_description`, `selected_outcome`, `outcome_details`, `evaluation_year`, `benefit_data`, `impact_type`, `impact_category`, `impact_value`, `impact_unit`, `measurement_period`, `data_source`, `assumptions`, `risks`, `verification_method`, `notes`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 3, '1', 'ปัจจัยนำเข้า (Input) 03', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ผลกระทบ (Impact) 03', 24, 'กลุ่มเป้าหมายจำนวน........คน สามารถใช้ประโยชน์จากหลักสูตรในการจัดอบรมพัฒนาทักษะและทำให้เกิดรายได้จากค่าตอบแทนในการจัดอบรมหลักสูตร', '2568', '[{\"benefit_number\":1,\"benefit_detail\":\"ผลประโยชน์ 1\",\"beneficiary\":\"ผู้เข้าร่วมอบรม\",\"benefit_note\":\"300\",\"attribution\":\"20.00\",\"deadweight\":\"10.00\",\"displacement\":\"30.00\",\"impact_ratio\":0.4}]', 'positive', 'social', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '3', '2025-08-13 16:10:07', '2025-08-13 16:10:07');
-
 -- --------------------------------------------------------
 
 --
@@ -848,7 +1097,12 @@ CREATE TABLE `system_logs` (
 --
 
 INSERT INTO `system_logs` (`id`, `log_level`, `module`, `message`, `context`, `user_id`, `project_id`, `ip_address`, `timestamp`) VALUES
-(1, 'INFO', 'PROJECT', 'สร้างโครงการใหม่: การสร้างทักษะการเรียนรู้ด้วย React Native สำหรับครูและบุคลากรทางการศึกษา (รหัส: 681234587)', NULL, 5, 8, NULL, '2025-08-09 07:32:27');
+(1, 'INFO', 'PROJECT', 'สร้างโครงการใหม่: การสร้างทักษะการเรียนรู้ด้วย React Native สำหรับครูและบุคลากรทางการศึกษา (รหัส: 681234587)', NULL, 5, 8, NULL, '2025-08-09 07:32:27'),
+(2, 'INFO', 'PROJECT', 'ลบโครงการ: ส่งเสริมการปลูกผักปลอดสารพิษด้วยระบบน้ำพลังงานแสงอาทิตย์และเกษตรอัจฉริยะ (ID: 7)', NULL, 3, NULL, NULL, '2025-08-16 12:18:34'),
+(3, 'INFO', 'PROJECT', 'ลบโครงการ: โครงการพัฒนาศูนย์การเรียนรู้ด้านพลังงานเพื่อการพัฒนาการบริหารจัดการทรัพยากรชุมชนอย่าง (ID: 4)', NULL, 3, NULL, NULL, '2025-08-16 12:18:39'),
+(4, 'INFO', 'PROJECT', 'ลบโครงการ: การพัฒนานวัตกรการศึกษาด้วย Mobile Application: เสริมสร้างทักษะการสร้างแอปพลิเคชันการเรียนรู้ด้วย React Native (ID: 3)', NULL, 3, NULL, NULL, '2025-08-16 12:18:49'),
+(5, 'INFO', 'PROJECT', 'สร้างโครงการใหม่: การพัฒนานวัตกรการศึกษาด้วย Mobile Application: เสริมสร้างทักษะการสร้างแอปพลิเคชันการเรียนรู้ด้วย React Native (รหัส: 681234567)', NULL, 5, 1, NULL, '2025-08-16 12:22:45'),
+(6, 'INFO', 'PROJECT', 'สร้างโครงการใหม่: พัฒนาศูนย์เรียนรู้ผู้สูงอายุ (รหัส: 681234568)', NULL, 3, 2, NULL, '2025-08-20 04:26:07');
 
 -- --------------------------------------------------------
 
@@ -885,7 +1139,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `username`, `email`, `password_hash`, `first_name`, `last_name`, `full_name_th`, `title`, `position`, `department`, `organization`, `phone`, `role`, `is_active`, `email_verified`, `last_login`, `login_count`, `created_at`, `updated_at`, `created_by`) VALUES
 (3, 'sunksun.lap', 'sunksun.lap@lru.ac.th', '$2y$10$8uas62T9NwlsSlIYJmU15.svZQYZcnz9jYc6PmocsJsPMm5.NndPm', NULL, NULL, 'นายสังสรรค์ หล้าพันธ์', NULL, NULL, 'คณะวิทยาศาสตร์และเทคโนโลยี', NULL, NULL, 'teacher', 1, 0, NULL, 0, '2025-07-30 16:33:27', '2025-07-30 16:33:27', NULL),
-(5, 'manuttra.san', 'manuttra.san@lru.ac.th', '$2y$10$AW.YIZqZD62eL5y3SQhqLOlHawfp1kL4tkwNFvVxYp6u4XMk0YnZK', NULL, NULL, 'มานัตตา แสงสุวรรณ', NULL, NULL, 'คณะครุศาสตร์', NULL, NULL, 'teacher', 1, 0, NULL, 0, '2025-08-09 07:30:25', '2025-08-09 07:30:25', NULL);
+(5, 'manuttra.san', 'manuttra.san@lru.ac.th', '$2y$10$AW.YIZqZD62eL5y3SQhqLOlHawfp1kL4tkwNFvVxYp6u4XMk0YnZK', NULL, NULL, 'มานัตตา แสงสุวรรณ', NULL, NULL, 'คณะครุศาสตร์', NULL, NULL, 'teacher', 1, 0, NULL, 0, '2025-08-09 07:30:25', '2025-08-09 07:30:25', NULL),
+(6, 'test', 'test@test.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'ผู้ใช้ทดสอบ', NULL, NULL, NULL, NULL, NULL, 'teacher', 1, 0, NULL, 0, '2025-08-16 14:41:34', '2025-08-16 14:41:34', NULL);
 
 -- --------------------------------------------------------
 
@@ -937,6 +1192,48 @@ ALTER TABLE `audit_logs`
   ADD KEY `idx_action` (`action`);
 
 --
+-- Indexes for table `impact_chains`
+--
+ALTER TABLE `impact_chains`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `activity_id` (`activity_id`),
+  ADD KEY `idx_project_chains` (`project_id`,`status`),
+  ADD KEY `idx_chain_sequence` (`project_id`,`sequence_order`);
+
+--
+-- Indexes for table `impact_chain_activities`
+--
+ALTER TABLE `impact_chain_activities`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `activity_id` (`activity_id`),
+  ADD KEY `idx_chain_activities` (`impact_chain_id`);
+
+--
+-- Indexes for table `impact_chain_outcomes`
+--
+ALTER TABLE `impact_chain_outcomes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `outcome_id` (`outcome_id`),
+  ADD KEY `idx_chain_outcomes` (`impact_chain_id`);
+
+--
+-- Indexes for table `impact_chain_outputs`
+--
+ALTER TABLE `impact_chain_outputs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `output_id` (`output_id`),
+  ADD KEY `idx_chain_outputs` (`impact_chain_id`);
+
+--
+-- Indexes for table `impact_chain_ratios`
+--
+ALTER TABLE `impact_chain_ratios`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_chain_outcome` (`impact_chain_id`,`outcome_id`),
+  ADD KEY `outcome_id` (`outcome_id`),
+  ADD KEY `idx_chain_ratios` (`impact_chain_id`);
+
+--
 -- Indexes for table `outcomes`
 --
 ALTER TABLE `outcomes`
@@ -973,7 +1270,9 @@ ALTER TABLE `projects`
   ADD KEY `idx_status` (`status`),
   ADD KEY `idx_date_range` (`start_date`,`end_date`),
   ADD KEY `idx_organization` (`organization`),
-  ADD KEY `idx_project_status_date` (`status`,`start_date`,`end_date`);
+  ADD KEY `idx_project_status_date` (`status`,`start_date`,`end_date`),
+  ADD KEY `idx_projects_impact_chain_status` (`impact_chain_status`(768)),
+  ADD KEY `idx_current_chain` (`current_chain_id`);
 
 --
 -- Indexes for table `project_activities`
@@ -1113,7 +1412,37 @@ ALTER TABLE `activities`
 -- AUTO_INCREMENT for table `audit_logs`
 --
 ALTER TABLE `audit_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=155;
+
+--
+-- AUTO_INCREMENT for table `impact_chains`
+--
+ALTER TABLE `impact_chains`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+
+--
+-- AUTO_INCREMENT for table `impact_chain_activities`
+--
+ALTER TABLE `impact_chain_activities`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+
+--
+-- AUTO_INCREMENT for table `impact_chain_outcomes`
+--
+ALTER TABLE `impact_chain_outcomes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+
+--
+-- AUTO_INCREMENT for table `impact_chain_outputs`
+--
+ALTER TABLE `impact_chain_outputs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+
+--
+-- AUTO_INCREMENT for table `impact_chain_ratios`
+--
+ALTER TABLE `impact_chain_ratios`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `outcomes`
@@ -1131,55 +1460,55 @@ ALTER TABLE `outputs`
 -- AUTO_INCREMENT for table `present_value_factors`
 --
 ALTER TABLE `present_value_factors`
-  MODIFY `pvf_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `pvf_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `projects`
 --
 ALTER TABLE `projects`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `project_activities`
 --
 ALTER TABLE `project_activities`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `project_costs`
 --
 ALTER TABLE `project_costs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `project_impact_ratios`
 --
 ALTER TABLE `project_impact_ratios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT for table `project_outcomes`
 --
 ALTER TABLE `project_outcomes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `project_outputs`
 --
 ALTER TABLE `project_outputs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `project_strategies`
 --
 ALTER TABLE `project_strategies`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `project_with_without`
 --
 ALTER TABLE `project_with_without`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `proxies`
@@ -1191,13 +1520,13 @@ ALTER TABLE `proxies`
 -- AUTO_INCREMENT for table `pvf_sets`
 --
 ALTER TABLE `pvf_sets`
-  MODIFY `set_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `set_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `social_impact_pathway`
 --
 ALTER TABLE `social_impact_pathway`
-  MODIFY `pathway_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `pathway_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `strategies`
@@ -1209,13 +1538,13 @@ ALTER TABLE `strategies`
 -- AUTO_INCREMENT for table `system_logs`
 --
 ALTER TABLE `system_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `years`
@@ -1232,6 +1561,41 @@ ALTER TABLE `years`
 --
 ALTER TABLE `activities`
   ADD CONSTRAINT `activities_ibfk_1` FOREIGN KEY (`strategy_id`) REFERENCES `strategies` (`strategy_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `impact_chains`
+--
+ALTER TABLE `impact_chains`
+  ADD CONSTRAINT `impact_chains_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `impact_chains_ibfk_2` FOREIGN KEY (`activity_id`) REFERENCES `activities` (`activity_id`);
+
+--
+-- Constraints for table `impact_chain_activities`
+--
+ALTER TABLE `impact_chain_activities`
+  ADD CONSTRAINT `impact_chain_activities_ibfk_1` FOREIGN KEY (`impact_chain_id`) REFERENCES `impact_chains` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `impact_chain_activities_ibfk_2` FOREIGN KEY (`activity_id`) REFERENCES `activities` (`activity_id`);
+
+--
+-- Constraints for table `impact_chain_outcomes`
+--
+ALTER TABLE `impact_chain_outcomes`
+  ADD CONSTRAINT `impact_chain_outcomes_ibfk_1` FOREIGN KEY (`impact_chain_id`) REFERENCES `impact_chains` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `impact_chain_outcomes_ibfk_2` FOREIGN KEY (`outcome_id`) REFERENCES `outcomes` (`outcome_id`);
+
+--
+-- Constraints for table `impact_chain_outputs`
+--
+ALTER TABLE `impact_chain_outputs`
+  ADD CONSTRAINT `impact_chain_outputs_ibfk_1` FOREIGN KEY (`impact_chain_id`) REFERENCES `impact_chains` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `impact_chain_outputs_ibfk_2` FOREIGN KEY (`output_id`) REFERENCES `outputs` (`output_id`);
+
+--
+-- Constraints for table `impact_chain_ratios`
+--
+ALTER TABLE `impact_chain_ratios`
+  ADD CONSTRAINT `impact_chain_ratios_ibfk_1` FOREIGN KEY (`impact_chain_id`) REFERENCES `impact_chains` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `impact_chain_ratios_ibfk_2` FOREIGN KEY (`outcome_id`) REFERENCES `outcomes` (`outcome_id`);
 
 --
 -- Constraints for table `outcomes`

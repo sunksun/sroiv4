@@ -21,6 +21,7 @@ if (!$conn) {
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
     $project_id = isset($_GET['project_id']) ? (int)$_GET['project_id'] : 0;
+    $chain_id = isset($_GET['chain_id']) ? (int)$_GET['chain_id'] : 0;
     $user_id = $_SESSION['user_id'];
 
     if ($project_id == 0) {
@@ -44,14 +45,40 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     }
     mysqli_stmt_close($check_stmt);
 
-    // ดึงข้อมูลสัดส่วนผลกระทบที่บันทึกไว้
-    $query = "SELECT benefit_number, attribution, deadweight, displacement, impact_ratio, benefit_detail, beneficiary, benefit_note 
-              FROM project_impact_ratios 
-              WHERE project_id = ? 
-              ORDER BY benefit_number ASC";
+    // ตรวจสอบว่าเป็นระบบเดิม (legacy) หรือระบบใหม่ (new chain)
+    $is_legacy_system = true;
+    if ($chain_id && $chain_id > 0) {
+        // ตรวจสอบว่า chain_id นี้มีอยู่ในระบบใหม่หรือไม่
+        $check_new_chain = "SELECT id FROM impact_chains WHERE id = ?";
+        $check_stmt = mysqli_prepare($conn, $check_new_chain);
+        if ($check_stmt) {
+            mysqli_stmt_bind_param($check_stmt, 'i', $chain_id);
+            mysqli_stmt_execute($check_stmt);
+            $check_result = mysqli_stmt_get_result($check_stmt);
+            $is_legacy_system = (mysqli_num_rows($check_result) == 0);
+            mysqli_stmt_close($check_stmt);
+        }
+    }
 
-    $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, 'i', $project_id);
+    // ดึงข้อมูลสัดส่วนผลกระทบที่บันทึกไว้
+    if (!$is_legacy_system && $chain_id) {
+        // New Chain - ดึงจาก impact_chain_ratios
+        $query = "SELECT benefit_number, attribution, deadweight, displacement, impact_ratio, benefit_detail, beneficiary, benefit_note 
+                  FROM impact_chain_ratios 
+                  WHERE impact_chain_id = ? 
+                  ORDER BY benefit_number ASC";
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, 'i', $chain_id);
+    } else {
+        // Legacy - ดึงจาก project_impact_ratios
+        $query = "SELECT benefit_number, attribution, deadweight, displacement, impact_ratio, benefit_detail, beneficiary, benefit_note 
+                  FROM project_impact_ratios 
+                  WHERE project_id = ? 
+                  ORDER BY benefit_number ASC";
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, 'i', $project_id);
+    }
+
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
 

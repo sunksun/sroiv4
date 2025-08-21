@@ -17,8 +17,32 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// รับ project_id จาก URL
+// รับ project_id และ chain_id จาก URL
 $project_id = isset($_GET['project_id']) ? (int)$_GET['project_id'] : 0;
+$chain_id = isset($_GET['chain_id']) ? (int)$_GET['chain_id'] : 0;
+
+// Debug: แสดง chain_id ที่ได้รับ
+if ($chain_id > 0) {
+    echo "<!-- DEBUG: step4-outcome.php loaded with chain_id = $chain_id, project_id = $project_id -->\n";
+}
+
+// ตรวจสอบว่าเป็นระบบเดิม (legacy) หรือระบบใหม่ (new chain)
+$is_legacy_system = true;
+if ($chain_id && $chain_id > 0) {
+    // ตรวจสอบว่า chain_id นี้มีอยู่ในระบบใหม่หรือไม่
+    $check_new_chain = "SELECT id FROM impact_chains WHERE id = ?";
+    $check_stmt = mysqli_prepare($conn, $check_new_chain);
+    if ($check_stmt) {
+        mysqli_stmt_bind_param($check_stmt, 'i', $chain_id);
+        mysqli_stmt_execute($check_stmt);
+        $check_result = mysqli_stmt_get_result($check_stmt);
+        $is_legacy_system = (mysqli_num_rows($check_result) == 0);
+        mysqli_stmt_close($check_stmt);
+        error_log("step4-outcome.php: chain_id=$chain_id, is_legacy_system=" . ($is_legacy_system ? 'true' : 'false'));
+    } else {
+        error_log("step4-outcome.php: Failed to prepare chain check query: " . mysqli_error($conn));
+    }
+}
 
 if ($project_id == 0) {
     $_SESSION['error_message'] = "ไม่พบข้อมูลโครงการ";
@@ -43,29 +67,56 @@ if (!$project) {
 }
 
 // ดึงข้อมูลกิจกรรมที่เลือก
-$activity_query = "SELECT pa.activity_id, a.activity_name, a.activity_code, a.activity_description, s.strategy_id, s.strategy_name
-                   FROM project_activities pa
-                   JOIN activities a ON pa.activity_id = a.activity_id
-                   JOIN strategies s ON a.strategy_id = s.strategy_id
-                   WHERE pa.project_id = ?
-                   ORDER BY pa.created_at DESC
-                   LIMIT 1";
-$activity_stmt = mysqli_prepare($conn, $activity_query);
-mysqli_stmt_bind_param($activity_stmt, 'i', $project_id);
+if (!$is_legacy_system && $chain_id > 0) {
+    // กรณี New Chain - ดึงข้อมูลจาก impact_chains
+    $activity_query = "SELECT ic.activity_id, a.activity_name, a.activity_code, a.activity_description, s.strategy_id, s.strategy_name
+                       FROM impact_chains ic
+                       JOIN activities a ON ic.activity_id = a.activity_id
+                       JOIN strategies s ON a.strategy_id = s.strategy_id
+                       WHERE ic.id = ?";
+} else {
+    // กรณี Impact Chain เดิม - ดึงข้อมูลจาก project_activities
+    $activity_query = "SELECT pa.activity_id, a.activity_name, a.activity_code, a.activity_description, s.strategy_id, s.strategy_name
+                       FROM project_activities pa
+                       JOIN activities a ON pa.activity_id = a.activity_id
+                       JOIN strategies s ON a.strategy_id = s.strategy_id
+                       WHERE pa.project_id = ?";
+}
+if (!$is_legacy_system && $chain_id > 0) {
+    $activity_stmt = mysqli_prepare($conn, $activity_query);
+    mysqli_stmt_bind_param($activity_stmt, 'i', $chain_id);
+} else {
+    $activity_query .= " ORDER BY pa.created_at DESC LIMIT 1";
+    $activity_stmt = mysqli_prepare($conn, $activity_query);
+    mysqli_stmt_bind_param($activity_stmt, 'i', $project_id);
+}
 mysqli_stmt_execute($activity_stmt);
 $activity_result = mysqli_stmt_get_result($activity_stmt);
 $selected_activity = mysqli_fetch_assoc($activity_result);
 mysqli_stmt_close($activity_stmt);
 
 // ดึงข้อมูลผลผลิตที่เลือก
-$outputs_query = "SELECT po.output_id, o.output_description, o.output_sequence, po.output_details, a.activity_name, s.strategy_name
-                  FROM project_outputs po
-                  JOIN outputs o ON po.output_id = o.output_id
-                  JOIN activities a ON o.activity_id = a.activity_id
-                  JOIN strategies s ON a.strategy_id = s.strategy_id
-                  WHERE po.project_id = ?";
-$outputs_stmt = mysqli_prepare($conn, $outputs_query);
-mysqli_stmt_bind_param($outputs_stmt, 'i', $project_id);
+if (!$is_legacy_system && $chain_id > 0) {
+    // ระบบใหม่ - ดึงจาก impact_chain_outputs
+    $outputs_query = "SELECT ico.output_id, o.output_description, o.output_sequence, ico.output_details, a.activity_name, s.strategy_name
+                      FROM impact_chain_outputs ico
+                      JOIN outputs o ON ico.output_id = o.output_id
+                      JOIN activities a ON o.activity_id = a.activity_id
+                      JOIN strategies s ON a.strategy_id = s.strategy_id
+                      WHERE ico.impact_chain_id = ?";
+    $outputs_stmt = mysqli_prepare($conn, $outputs_query);
+    mysqli_stmt_bind_param($outputs_stmt, 'i', $chain_id);
+} else {
+    // ระบบเดิม - ดึงจาก project_outputs
+    $outputs_query = "SELECT po.output_id, o.output_description, o.output_sequence, po.output_details, a.activity_name, s.strategy_name
+                      FROM project_outputs po
+                      JOIN outputs o ON po.output_id = o.output_id
+                      JOIN activities a ON o.activity_id = a.activity_id
+                      JOIN strategies s ON a.strategy_id = s.strategy_id
+                      WHERE po.project_id = ?";
+    $outputs_stmt = mysqli_prepare($conn, $outputs_query);
+    mysqli_stmt_bind_param($outputs_stmt, 'i', $project_id);
+}
 mysqli_stmt_execute($outputs_stmt);
 $outputs_result = mysqli_stmt_get_result($outputs_stmt);
 $selected_outputs = mysqli_fetch_all($outputs_result, MYSQLI_ASSOC);
@@ -74,13 +125,23 @@ mysqli_stmt_close($outputs_stmt);
 // ตรวจสอบว่ามีข้อมูลครบถ้วน
 if (!$selected_activity) {
     $_SESSION['error_message'] = "กรุณาเลือกกิจกรรมก่อน";
-    header("location: step2-activity.php?project_id=" . $project_id);
+    if ($chain_id > 0) {
+        // New Chain - กลับไป step2 พร้อม new_chain=1
+        header("location: step2-activity.php?project_id=" . $project_id . "&new_chain=1");
+    } else {
+        // ระบบเดิม - กลับไป step2 ปกติ
+        header("location: step2-activity.php?project_id=" . $project_id);
+    }
     exit;
 }
 
 if (empty($selected_outputs)) {
     $_SESSION['error_message'] = "กรุณาเลือกผลผลิตก่อน";
-    header("location: step3-output.php?project_id=" . $project_id);
+    $step3_url = "step3-output.php?project_id=" . $project_id;
+    if ($chain_id > 0) {
+        $step3_url .= "&chain_id=" . $chain_id;
+    }
+    header("location: " . $step3_url);
     exit;
 }
 
@@ -108,12 +169,22 @@ if (!empty($output_ids)) {
     mysqli_stmt_close($outcomes_stmt);
 }
 
-// ดึงผลลัพธ์ที่เลือกไว้แล้ว (ถ้ามี)
+// ดึงผลลัพธ์ที่เลือกไว้แล้ว (ถ้ามี) รองรับทั้ง legacy และ new chain
 $selected_outcomes = [];
 $existing_outcome_details = '';
-$selected_outcomes_query = "SELECT outcome_id, outcome_details FROM project_outcomes WHERE project_id = ?";
-$selected_stmt = mysqli_prepare($conn, $selected_outcomes_query);
-mysqli_stmt_bind_param($selected_stmt, 'i', $project_id);
+
+if (!$is_legacy_system && $chain_id) {
+    // New Chain - ดึงจาก impact_chain_outcomes
+    $selected_outcomes_query = "SELECT outcome_id, outcome_details FROM impact_chain_outcomes WHERE impact_chain_id = ?";
+    $selected_stmt = mysqli_prepare($conn, $selected_outcomes_query);
+    mysqli_stmt_bind_param($selected_stmt, 'i', $chain_id);
+} else {
+    // Legacy - ดึงจาก project_outcomes
+    $selected_outcomes_query = "SELECT outcome_id, outcome_details FROM project_outcomes WHERE project_id = ?";
+    $selected_stmt = mysqli_prepare($conn, $selected_outcomes_query);
+    mysqli_stmt_bind_param($selected_stmt, 'i', $project_id);
+}
+
 mysqli_stmt_execute($selected_stmt);
 $selected_result = mysqli_stmt_get_result($selected_stmt);
 while ($row = mysqli_fetch_assoc($selected_result)) {
@@ -244,7 +315,7 @@ function getProxiesForOutcome($conn, $outcome_id)
                         <li class="breadcrumb-item"><a href="../project-list.php">โครงการ</a></li>
                         <li class="breadcrumb-item"><a href="step1-strategy.php?project_id=<?php echo $project_id; ?>">Step 1</a></li>
                         <li class="breadcrumb-item"><a href="step2-activity.php?project_id=<?php echo $project_id; ?>">Step 2</a></li>
-                        <li class="breadcrumb-item"><a href="step3-output.php?project_id=<?php echo $project_id; ?>">Step 3</a></li>
+                        <li class="breadcrumb-item"><a href="step3-output.php?project_id=<?php echo $project_id; ?><?php echo ($chain_id > 0 ? '&chain_id='.$chain_id : ''); ?>">Step 3</a></li>
                         <li class="breadcrumb-item active">Step 4: ผลลัพธ์</li>
                     </ol>
                 </nav>
@@ -324,7 +395,7 @@ function getProxiesForOutcome($conn, $outcome_id)
                                 <?php endforeach; ?>
                             </div>
                             <div class="d-flex justify-content-between">
-                                <a href="step3-output.php?project_id=<?php echo $project_id; ?>" class="btn btn-outline-secondary">
+                                <a href="step3-output.php?project_id=<?php echo $project_id; ?><?php echo ($chain_id > 0 ? '&chain_id='.$chain_id : ''); ?>" class="btn btn-outline-secondary">
                                     <i class="fas fa-arrow-left"></i> ย้อนกลับ
                                 </a>
                                 <a href="summary.php?project_id=<?php echo $project_id; ?>" class="btn btn-outline-primary">
@@ -385,7 +456,7 @@ function getProxiesForOutcome($conn, $outcome_id)
                                 <?php endforeach; ?>
 
                                 <div class="d-flex justify-content-between mt-4">
-                                    <a href="step3-output.php?project_id=<?php echo $project_id; ?>" class="btn btn-outline-secondary">
+                                    <a href="step3-output.php?project_id=<?php echo $project_id; ?><?php echo ($chain_id > 0 ? '&chain_id='.$chain_id : ''); ?>" class="btn btn-outline-secondary">
                                         <i class="fas fa-arrow-left"></i> ย้อนกลับ
                                     </a>
                                     <button type="submit" class="btn btn-success" id="submitBtn">
@@ -658,6 +729,9 @@ function getProxiesForOutcome($conn, $outcome_id)
                     <form id="basecaseForm" method="POST">
                         <input type="hidden" name="from_modal" value="1">
                         <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
+                        <?php if (isset($_GET['chain_id'])): ?>
+                            <input type="hidden" name="chain_id" value="<?php echo (int)$_GET['chain_id']; ?>">
+                        <?php endif; ?>
                     </form>
                 </div>
 
@@ -1120,6 +1194,15 @@ function getProxiesForOutcome($conn, $outcome_id)
             basecaseData.append('project_id', document.querySelector('input[name="project_id"]').value);
             basecaseData.append('from_modal', '1');
             
+            // เพิ่ม chain_id ถ้ามี (สำหรับ New Chain system)
+            const chainIdField = document.querySelector('input[name="chain_id"]');
+            if (chainIdField && chainIdField.value) {
+                console.log('saveBestPracticeData: Sending chain_id =', chainIdField.value);
+                basecaseData.append('chain_id', chainIdField.value);
+            } else {
+                console.log('saveBestPracticeData: No chain_id field found or empty value');
+            }
+            
             // เพิ่มปีที่เลือกในข้อมูลสัดส่วนผลกระทบ
             const selectedYear = document.querySelector('input[name="evaluation_year"]:checked');
             if (selectedYear) {
@@ -1324,6 +1407,15 @@ function getProxiesForOutcome($conn, $outcome_id)
             const basecaseData = new FormData();
             basecaseData.append('project_id', document.querySelector('input[name="project_id"]').value);
             basecaseData.append('from_modal', '1');
+            
+            // เพิ่ม chain_id ถ้ามี (สำหรับ New Chain system)
+            const chainIdField2 = document.querySelector('input[name="chain_id"]');
+            if (chainIdField2 && chainIdField2.value) {
+                console.log('goToNextStep: Sending chain_id =', chainIdField2.value);
+                basecaseData.append('chain_id', chainIdField2.value);
+            } else {
+                console.log('goToNextStep: No chain_id field found or empty value');
+            }
             
             // เพิ่มปีที่เลือกในข้อมูลสัดส่วนผลกระทบ (ใช้ selectedYear ที่ declare แล้วข้างบน)
             if (selectedYear) {
@@ -1600,6 +1692,12 @@ function getProxiesForOutcome($conn, $outcome_id)
             formData.append('outcome_details', outcomeDetails);
             formData.append('evaluation_year', selectedYear.value);
             formData.append('save_details_only', '1'); // เพิ่ม flag เพื่อบอกว่าเป็นการบันทึกรายละเอียดเท่านั้น
+            
+            // เพิ่ม chain_id ถ้ามี
+            const chainIdField = document.querySelector('input[name="chain_id"]');
+            if (chainIdField && chainIdField.value) {
+                formData.append('chain_id', chainIdField.value);
+            }
 
             // ส่งข้อมูลไปยัง process-step4.php
             fetch('process-step4.php', {

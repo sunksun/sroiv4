@@ -61,35 +61,61 @@ try {
     $verify_result = mysqli_stmt_get_result($verify_stmt);
 
     if ($strategy = mysqli_fetch_assoc($verify_result)) {
-        // ลบข้อมูลการเลือกยุทธศาสตร์เดิม (ถ้ามี)
-        $delete_query = "DELETE FROM project_strategies WHERE project_id = ?";
-        $delete_stmt = mysqli_prepare($conn, $delete_query);
-        mysqli_stmt_bind_param($delete_stmt, 'i', $project_id);
-        mysqli_stmt_execute($delete_stmt);
-        mysqli_stmt_close($delete_stmt);
+        // ตรวจสอบยุทธศาสตร์เดิมก่อนแก้ไข
+        $check_existing_query = "SELECT strategy_id FROM project_strategies WHERE project_id = ?";
+        $check_existing_stmt = mysqli_prepare($conn, $check_existing_query);
+        mysqli_stmt_bind_param($check_existing_stmt, 'i', $project_id);
+        mysqli_stmt_execute($check_existing_stmt);
+        $existing_result = mysqli_stmt_get_result($check_existing_stmt);
+        $existing_strategy = mysqli_fetch_assoc($existing_result);
+        mysqli_stmt_close($check_existing_stmt);
 
-        // ลบข้อมูลการเลือกกิจกรรมและผลผลิตเดิม (เนื่องจากเปลี่ยนยุทธศาสตร์)
-        $delete_activities_query = "DELETE FROM project_activities WHERE project_id = ?";
-        $delete_activities_stmt = mysqli_prepare($conn, $delete_activities_query);
-        mysqli_stmt_bind_param($delete_activities_stmt, 'i', $project_id);
-        mysqli_stmt_execute($delete_activities_stmt);
-        mysqli_stmt_close($delete_activities_stmt);
+        $strategy_changed = false;
+        
+        if ($existing_strategy) {
+            // มียุทธศาสตร์เดิมอยู่แล้ว - ตรวจสอบว่าเปลี่ยนหรือไม่
+            if ($existing_strategy['strategy_id'] != $selected_strategy) {
+                $strategy_changed = true;
+            }
+            
+            // อัปเดตยุทธศาสตร์
+            $update_query = "UPDATE project_strategies SET strategy_id = ? WHERE project_id = ?";
+            $update_stmt = mysqli_prepare($conn, $update_query);
+            mysqli_stmt_bind_param($update_stmt, 'ii', $selected_strategy, $project_id);
+            $update_success = mysqli_stmt_execute($update_stmt);
+            mysqli_stmt_close($update_stmt);
+        } else {
+            // ไม่มียุทธศาสตร์เดิม - เพิ่มใหม่
+            $insert_query = "INSERT INTO project_strategies (project_id, strategy_id, created_by) VALUES (?, ?, ?)";
+            $insert_stmt = mysqli_prepare($conn, $insert_query);
+            mysqli_stmt_bind_param($insert_stmt, 'iis', $project_id, $selected_strategy, $user_id);
+            $update_success = mysqli_stmt_execute($insert_stmt);
+            mysqli_stmt_close($insert_stmt);
+        }
 
-        $delete_outputs_query = "DELETE FROM project_outputs WHERE project_id = ?";
-        $delete_outputs_stmt = mysqli_prepare($conn, $delete_outputs_query);
-        mysqli_stmt_bind_param($delete_outputs_stmt, 'i', $project_id);
-        mysqli_stmt_execute($delete_outputs_stmt);
-        mysqli_stmt_close($delete_outputs_stmt);
+        // ลบข้อมูล step2-4 เฉพาะเมื่อยุทธศาสตร์เปลี่ยน
+        if ($strategy_changed) {
+            // ลบข้อมูลการเลือกกิจกรรมและผลผลิตเดิม (เนื่องจากเปลี่ยนยุทธศาสตร์)
+            $delete_activities_query = "DELETE FROM project_activities WHERE project_id = ?";
+            $delete_activities_stmt = mysqli_prepare($conn, $delete_activities_query);
+            mysqli_stmt_bind_param($delete_activities_stmt, 'i', $project_id);
+            mysqli_stmt_execute($delete_activities_stmt);
+            mysqli_stmt_close($delete_activities_stmt);
 
-        // บันทึกการเลือกยุทธศาสตร์ใหม่
-        $insert_query = "INSERT INTO project_strategies (project_id, strategy_id, created_by) VALUES (?, ?, ?)";
-        $insert_stmt = mysqli_prepare($conn, $insert_query);
-        mysqli_stmt_bind_param($insert_stmt, 'iis', $project_id, $selected_strategy, $user_id);
+            $delete_outputs_query = "DELETE FROM project_outputs WHERE project_id = ?";
+            $delete_outputs_stmt = mysqli_prepare($conn, $delete_outputs_query);
+            mysqli_stmt_bind_param($delete_outputs_stmt, 'i', $project_id);
+            mysqli_stmt_execute($delete_outputs_stmt);
+            mysqli_stmt_close($delete_outputs_stmt);
 
-        if (mysqli_stmt_execute($insert_stmt)) {
+            $_SESSION['success_message'] = "อัปเดตยุทธศาสตร์สำเร็จ: " . $strategy['strategy_name'] . " (ข้อมูลกิจกรรมและผลผลิตถูกรีเซ็ต)";
+        } else {
+            $_SESSION['success_message'] = "อัปเดตยุทธศาสตร์สำเร็จ: " . $strategy['strategy_name'];
+        }
+
+        if ($update_success) {
             // เก็บข้อมูลใน session เพื่อใช้ในการแสดงผล
             $_SESSION['selected_strategies'] = [$strategy];
-            $_SESSION['success_message'] = "บันทึกการเลือกยุทธศาสตร์สำเร็จ: " . $strategy['strategy_name'];
 
             // อัปเดตสถานะ Impact Chain - Step 1 เสร็จสิ้น
             updateImpactChainStatus($project_id, 1, true);
@@ -102,7 +128,6 @@ try {
             header("location: step1-strategy.php?project_id=" . $project_id);
             exit;
         }
-        mysqli_stmt_close($insert_stmt);
     } else {
         $_SESSION['error_message'] = "ยุทธศาสตร์ที่เลือกไม่ถูกต้อง";
         header("location: step1-strategy.php?project_id=" . $project_id);

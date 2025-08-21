@@ -14,8 +14,12 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// รับ project_id จาก URL
+// รับ project_id และ chain_id จาก URL
 $project_id = isset($_GET['project_id']) ? (int)$_GET['project_id'] : 0;
+$chain_id = isset($_GET['chain_id']) ? (int)$_GET['chain_id'] : 0;
+
+// Debug: log chain_id value
+error_log("step3-output.php: project_id=$project_id, chain_id=$chain_id");
 
 if ($project_id == 0) {
     $_SESSION['error_message'] = "ไม่พบข้อมูลโครงการ";
@@ -41,28 +45,59 @@ if (!$project) {
 
 // ตรวจสอบว่าได้เลือกกิจกรรมแล้วหรือยัง
 $selected_activity = null;
-$activity_query = "SELECT pa.activity_id, a.activity_name, a.activity_code, a.activity_description, s.strategy_id, s.strategy_name 
-                   FROM project_activities pa 
-                   JOIN activities a ON pa.activity_id = a.activity_id 
-                   JOIN strategies s ON a.strategy_id = s.strategy_id 
-                   WHERE pa.project_id = ?";
-$activity_stmt = mysqli_prepare($conn, $activity_query);
-mysqli_stmt_bind_param($activity_stmt, 'i', $project_id);
+
+if ($chain_id > 0) {
+    // กรณี New Chain - ดึงข้อมูลจาก impact_chains
+    $activity_query = "SELECT ic.activity_id, a.activity_name, a.activity_code, a.activity_description, s.strategy_id, s.strategy_name 
+                       FROM impact_chains ic
+                       JOIN activities a ON ic.activity_id = a.activity_id 
+                       JOIN strategies s ON a.strategy_id = s.strategy_id 
+                       WHERE ic.id = ?";
+    $activity_stmt = mysqli_prepare($conn, $activity_query);
+    mysqli_stmt_bind_param($activity_stmt, 'i', $chain_id);
+} else {
+    // กรณี Impact Chain เดิม - ดึงข้อมูลจาก project_activities
+    $activity_query = "SELECT pa.activity_id, a.activity_name, a.activity_code, a.activity_description, s.strategy_id, s.strategy_name 
+                       FROM project_activities pa 
+                       JOIN activities a ON pa.activity_id = a.activity_id 
+                       JOIN strategies s ON a.strategy_id = s.strategy_id 
+                       WHERE pa.project_id = ?";
+    $activity_stmt = mysqli_prepare($conn, $activity_query);
+    mysqli_stmt_bind_param($activity_stmt, 'i', $project_id);
+    error_log("step3-output.php: Legacy system query: " . $activity_query . " with project_id=$project_id");
+}
+
 mysqli_stmt_execute($activity_stmt);
 $activity_result = mysqli_stmt_get_result($activity_stmt);
 
 if (mysqli_num_rows($activity_result) > 0) {
     $selected_activity = mysqli_fetch_assoc($activity_result);
+    error_log("step3-output.php: Found activity: " . $selected_activity['activity_name']);
 } else {
+    error_log("step3-output.php: No activity found, chain_id=$chain_id");
     $_SESSION['error_message'] = "กรุณาเลือกกิจกรรมก่อน";
-    header("location: step2-activity.php?project_id=" . $project_id);
+    if ($chain_id > 0) {
+        // New Chain - กลับไป step2 พร้อม new_chain=1
+        error_log("step3-output.php: Redirecting to step2 with new_chain=1");
+        header("location: step2-activity.php?project_id=" . $project_id . "&new_chain=1");
+    } else {
+        // ระบบเดิม - กลับไป step2 ปกติ
+        error_log("step3-output.php: Redirecting to step2 (legacy system)");
+        header("location: step2-activity.php?project_id=" . $project_id);
+    }
     exit;
 }
 mysqli_stmt_close($activity_stmt);
 
 if (!$selected_activity) {
     $_SESSION['error_message'] = "กรุณาเลือกกิจกรรมก่อน";
-    header("location: step2-activity.php?project_id=" . $project_id);
+    if ($chain_id > 0) {
+        // New Chain - กลับไป step2 พร้อม new_chain=1
+        header("location: step2-activity.php?project_id=" . $project_id . "&new_chain=1");
+    } else {
+        // ระบบเดิม - กลับไป step2 ปกติ
+        header("location: step2-activity.php?project_id=" . $project_id);
+    }
     exit;
 }
 
@@ -177,7 +212,7 @@ ksort($grouped_outputs);
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="../project-list.php">โครงการ</a></li>
                         <li class="breadcrumb-item"><a href="step1-strategy.php?project_id=<?php echo $project_id; ?>">Step 1</a></li>
-                        <li class="breadcrumb-item"><a href="step2-activity.php?project_id=<?php echo $project_id; ?>">Step 2</a></li>
+                        <li class="breadcrumb-item"><a href="step2-activity.php?project_id=<?php echo $project_id; ?><?php echo ($chain_id > 0 ? '&new_chain=1' : ''); ?>">Step 2</a></li>
                         <li class="breadcrumb-item active">Step 3: ผลผลิต</li>
                     </ol>
                 </nav>
@@ -245,7 +280,7 @@ ksort($grouped_outputs);
                                 <i class="fas fa-exclamation-triangle"></i> ไม่พบข้อมูลผลผลิตที่เกี่ยวข้องกับกิจกรรมที่เลือก
                             </div>
                             <div class="d-flex justify-content-between">
-                                <a href="step2-activity.php?project_id=<?php echo $project_id; ?>" class="btn btn-outline-secondary">
+                                <a href="step2-activity.php?project_id=<?php echo $project_id; ?><?php echo ($chain_id > 0 ? '&new_chain=1' : ''); ?>" class="btn btn-outline-secondary">
                                     <i class="fas fa-arrow-left"></i> ย้อนกลับ
                                 </a>
                             </div>
@@ -462,6 +497,8 @@ ksort($grouped_outputs);
             const outputDetails = document.getElementById('output_details').value.trim();
             const selectedOutputId = document.getElementById('selected_output_id').value;
             const projectId = <?php echo $project_id; ?>;
+            const chainId = <?php echo $chain_id ? $chain_id : 'null'; ?>;
+            console.log('Debug: chainId =', chainId, 'project_id =', projectId);
             
             if (outputDetails === '') {
                 alert('กรุณากรอกรายละเอียดเพิ่มเติม');
@@ -473,14 +510,17 @@ ksort($grouped_outputs);
                 return false;
             }
             
-            // ส่งข้อมูลไปยัง process-step3.php
-            const url = `process-step3.php?project_id=${projectId}&selected_output_id=${selectedOutputId}&output_details=${encodeURIComponent(outputDetails)}`;
+            // ส่งข้อมูลไปยัง process-step3.php พร้อม chain_id
+            let url = `process-step3.php?project_id=${projectId}&selected_output_id=${selectedOutputId}&output_details=${encodeURIComponent(outputDetails)}`;
+            if (chainId && chainId > 0) {
+                url += `&chain_id=${chainId}`;
+            }
             window.location.href = url;
         }
 
         // ฟังก์ชันย้อนกลับ
         function goBack() {
-            window.location.href = 'step2-activity.php?project_id=<?php echo $project_id; ?>';
+            window.location.href = 'step2-activity.php?project_id=<?php echo $project_id; ?><?php echo ($chain_id > 0 ? '&new_chain=1' : ''); ?>';
         }
 
     </script>

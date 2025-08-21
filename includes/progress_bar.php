@@ -50,15 +50,12 @@ function renderImpactChainProgressBar($project_id, $current_step = 1, $status = 
     <div class="impact-chain-progress mb-4">
         <!-- Progress Bar -->
         <div class="progress" style="height: 35px; background-color: #f8f9fa;">
-            <div class="progress-bar bg-gradient-primary d-flex align-items-center justify-content-center" 
+            <div class="progress-bar bg-gradient-primary" 
                  role="progressbar" 
-                 style="width: <?php echo $progress_percentage; ?>%; color: white; font-weight: 600; font-size: 14px;"
+                 style="width: <?php echo $progress_percentage; ?>%;"
                  aria-valuenow="<?php echo $progress_percentage; ?>" 
                  aria-valuemin="0" 
                  aria-valuemax="100">
-                <i class="<?php echo $steps[$current_step]['icon']; ?> me-2"></i>
-                Step <?php echo $current_step; ?>: <?php echo $steps[$current_step]['name']; ?>
-                <span class="ms-2">(<?php echo round($progress_percentage); ?>%)</span>
             </div>
         </div>
         

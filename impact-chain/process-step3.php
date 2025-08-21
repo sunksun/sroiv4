@@ -6,6 +6,7 @@ require_once '../includes/impact_chain_manager.php';
 
 // Debug: Log form submission
 error_log("process-step3.php called with POST data: " . print_r($_POST, true));
+error_log("process-step3.php: Starting processing...");
 
 // ตรวจสอบการ login
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
@@ -22,9 +23,28 @@ if (!$conn) {
 $project_id = isset($_GET['project_id']) ? (int)$_GET['project_id'] : (isset($_POST['project_id']) ? (int)$_POST['project_id'] : 0);
 $selected_output_id = isset($_GET['selected_output_id']) ? (int)$_GET['selected_output_id'] : (isset($_POST['selected_output_id']) ? (int)$_POST['selected_output_id'] : 0);
 $output_details = isset($_GET['output_details']) ? trim($_GET['output_details']) : (isset($_POST['output_details']) ? trim($_POST['output_details']) : '');
-$chain_id = isset($_POST['chain_id']) ? (int)$_POST['chain_id'] : (isset($_SESSION['current_chain_id']) ? (int)$_SESSION['current_chain_id'] : null);
+$chain_id = isset($_POST['chain_id']) ? (int)$_POST['chain_id'] : (isset($_GET['chain_id']) ? (int)$_GET['chain_id'] : null);
+
+// ตรวจสอบว่าเป็นระบบเดิม (legacy) หรือระบบใหม่ (new chain)
+$is_legacy_system = true;
+if ($chain_id && $chain_id > 0) {
+    // ตรวจสอบว่า chain_id นี้มีอยู่ในระบบใหม่หรือไม่
+    $check_new_chain = "SELECT id FROM impact_chains WHERE id = ?";
+    $check_stmt = mysqli_prepare($conn, $check_new_chain);
+    if ($check_stmt) {
+        mysqli_stmt_bind_param($check_stmt, 'i', $chain_id);
+        mysqli_stmt_execute($check_stmt);
+        $check_result = mysqli_stmt_get_result($check_stmt);
+        $is_legacy_system = (mysqli_num_rows($check_result) == 0);
+        mysqli_stmt_close($check_stmt);
+    } else {
+        error_log("process-step3.php: Failed to prepare chain check query: " . mysqli_error($conn));
+    }
+}
 
 error_log("process-step3.php: project_id=$project_id, selected_output_id=$selected_output_id, output_details=$output_details");
+error_log("process-step3.php: chain_id=" . ($chain_id ?: 'null'));
+error_log("process-step3.php: is_legacy_system=" . ($is_legacy_system ? 'true' : 'false'));
 
 if ($project_id == 0) {
     $_SESSION['error_message'] = "ไม่พบข้อมูลโครงการ";
@@ -66,19 +86,40 @@ if (empty($output_details)) {
 
 // บันทึกข้อมูลการเลือกผลผลิตลงฐานข้อมูล
 try {
-    // ตรวจสอบว่าโครงการนี้ได้เลือกกิจกรรมแล้วหรือไม่
-    $check_activity_query = "SELECT activity_id FROM project_activities WHERE project_id = ?";
-    $check_activity_stmt = mysqli_prepare($conn, $check_activity_query);
-    mysqli_stmt_bind_param($check_activity_stmt, 'i', $project_id);
-    mysqli_stmt_execute($check_activity_stmt);
-    $activity_result = mysqli_stmt_get_result($check_activity_stmt);
-
-    if (mysqli_num_rows($activity_result) == 0) {
+    // ตรวจสอบว่าได้เลือกกิจกรรมแล้วหรือไม่ (รองรับทั้งระบบเดิมและ new chain)
+    $activity_found = false;
+    
+    if (!$is_legacy_system && $chain_id > 0) {
+        // New Chain - ตรวจสอบใน impact_chains
+        $check_activity_query = "SELECT activity_id FROM impact_chains WHERE id = ?";
+        $check_activity_stmt = mysqli_prepare($conn, $check_activity_query);
+        mysqli_stmt_bind_param($check_activity_stmt, 'i', $chain_id);
+        mysqli_stmt_execute($check_activity_stmt);
+        $activity_result = mysqli_stmt_get_result($check_activity_stmt);
+        $activity_found = (mysqli_num_rows($activity_result) > 0);
+        error_log("process-step3.php: New Chain system check - chain_id=$chain_id, activity_found=" . ($activity_found ? 'true' : 'false'));
+        mysqli_stmt_close($check_activity_stmt);
+    } else {
+        // ระบบเดิม - ตรวจสอบใน project_activities
+        $check_activity_query = "SELECT activity_id FROM project_activities WHERE project_id = ?";
+        $check_activity_stmt = mysqli_prepare($conn, $check_activity_query);
+        mysqli_stmt_bind_param($check_activity_stmt, 'i', $project_id);
+        mysqli_stmt_execute($check_activity_stmt);
+        $activity_result = mysqli_stmt_get_result($check_activity_stmt);
+        $activity_found = (mysqli_num_rows($activity_result) > 0);
+        error_log("process-step3.php: Legacy system check - project_id=$project_id, activity_found=" . ($activity_found ? 'true' : 'false'));
+        mysqli_stmt_close($check_activity_stmt);
+    }
+    
+    if (!$activity_found) {
         $_SESSION['error_message'] = "กรุณาเลือกกิจกรรมก่อน";
-        header("location: step2-activity.php?project_id=" . $project_id);
+        if (!$is_legacy_system && $chain_id > 0) {
+            header("location: step2-activity.php?project_id=" . $project_id . "&new_chain=1");
+        } else {
+            header("location: step2-activity.php?project_id=" . $project_id);
+        }
         exit;
     }
-    mysqli_stmt_close($check_activity_stmt);
 
     // ตรวจสอบว่า output_id ที่เลือกมีจริงในฐานข้อมูล
     $verify_query = "SELECT o.output_id, o.output_description, o.output_sequence, a.activity_name, s.strategy_name
@@ -94,10 +135,35 @@ try {
     if ($output = mysqli_fetch_assoc($verify_result)) {
         error_log("Found output: " . $output['output_description'] . ", chain_id: " . ($chain_id ? $chain_id : 'null'));
         
-        // ใช้ระบบเดิมเสมอ เพื่อหลีกเลี่ยง foreign key error
-        error_log("Using legacy Impact Chain system (project_outputs table)");
-        {
+        if (!$is_legacy_system && $chain_id) {
+            // Impact Chain ใหม่ - ใช้ตารางใหม่
+            error_log("Using new Impact Chain system (impact_chain_outputs table)");
+            $result = addOutputToChain($chain_id, $selected_output_id, $output_details, $user_id);
+            
+            if ($result) {
+                // เก็บข้อมูลใน session เพื่อใช้ในการแสดงผล
+                $_SESSION['selected_outputs'] = [$output];
+                $_SESSION['selected_output_detail'] = $output;
+                $_SESSION['success_message'] = "บันทึกการเลือกผลผลิตสำเร็จ: " . $output['output_description'];
+
+                // อัปเดตสถานะ Impact Chain - Step 3 เสร็จสิ้น
+                updateMultipleImpactChainStatus($project_id, $chain_id, 3, true);
+
+                // ไปยัง Step 4 เพื่อเลือกผลลัพธ์
+                $step4_url = "step4-outcome.php?project_id=" . $project_id;
+                if ($chain_id) {
+                    $step4_url .= "&chain_id=" . $chain_id;
+                }
+                header("location: " . $step4_url);
+                exit;
+            } else {
+                $_SESSION['error_message'] = "เกิดข้อผิดพลาดในการบันทึกข้อมูล";
+                header("location: step3-output.php?project_id=" . $project_id . "&chain_id=" . $chain_id);
+                exit;
+            }
+        } else {
             // Impact Chain เดิม - ใช้ตารางเดิม
+            error_log("Using legacy Impact Chain system (project_outputs table)");
             // ลบข้อมูลการเลือกผลผลิตเดิม (ถ้ามี)
             $delete_query = "DELETE FROM project_outputs WHERE project_id = ?";
             $delete_stmt = mysqli_prepare($conn, $delete_query);
@@ -121,7 +187,11 @@ try {
                 updateMultipleImpactChainStatus($project_id, null, 3, true);
 
                 // ไปยัง Step 4 เพื่อเลือกผลลัพธ์
-                header("location: step4-outcome.php?project_id=" . $project_id);
+                $step4_url = "step4-outcome.php?project_id=" . $project_id;
+                if ($chain_id) {
+                    $step4_url .= "&chain_id=" . $chain_id;
+                }
+                header("location: " . $step4_url);
                 exit;
             } else {
                 $_SESSION['error_message'] = "เกิดข้อผิดพลาดในการบันทึกข้อมูล";

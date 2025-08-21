@@ -25,6 +25,11 @@ $project_id = isset($_POST['project_id']) ? (int)$_POST['project_id'] : 0;
 $selected_activity = isset($_POST['selected_activity']) ? trim($_POST['selected_activity']) : '';
 $is_new_chain = isset($_POST['new_chain']) || isset($_GET['new_chain']);
 
+// Debug logging
+error_log("process-step2.php: project_id=$project_id, selected_activity=$selected_activity, is_new_chain=" . ($is_new_chain ? 'true' : 'false'));
+error_log("process-step2.php: POST new_chain=" . (isset($_POST['new_chain']) ? $_POST['new_chain'] : 'not set'));
+error_log("process-step2.php: GET new_chain=" . (isset($_GET['new_chain']) ? $_GET['new_chain'] : 'not set'));
+
 if ($project_id == 0) {
     $_SESSION['error_message'] = "ไม่พบข้อมูลโครงการ";
     header("location: ../project-list.php");
