@@ -128,6 +128,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <div class="container">
         <div class="register-container">
+            <!-- Logo -->
+            <div class="text-center mb-4">
+                <img src="assets/imgs/lru.png" alt="LRU Logo" class="img-fluid" style="max-height: 100px;">
+            </div>
             <h2 class="text-center mb-4">ลงทะเบียนผู้ใช้งาน</h2>
 
             <?php

@@ -58,6 +58,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <div class="container">
         <div class="login-container">
+            <!-- Logo -->
+            <div class="text-center mb-4">
+                <img src="assets/imgs/lru.png" alt="LRU Logo" class="img-fluid" style="max-height: 100px;">
+            </div>
             <h2 class="text-center mb-4">เข้าสู่ระบบ</h2>
 
             <?php
