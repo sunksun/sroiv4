@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบประเมิน SROI - Social Return on Investment</title>
+    <title>การประเมินผลกระทบทางสังคม สำหรับโครงการยุทธศาสตร์ มหาวิทยาลัยราชภัฏเลย</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -317,7 +317,7 @@
         <div class="container">
             <a class="navbar-brand" href="#home">
                 <i class="bi bi-graph-up-arrow me-2"></i>
-                ระบบประเมิน SROI
+                การประเมินผลกระทบทางสังคม สำหรับโครงการยุทธศาสตร์ มหาวิทยาลัยราชภัฏเลย
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -354,8 +354,8 @@
                 <div class="col-lg-6">
                     <div class="hero-content">
                         <h1 class="hero-title fade-in">
-                            ระบบประเมิน<br>
-                            <span style="color: #ffd700;">SROI</span>
+                            การประเมินผลกระทบทางสังคม<br>
+                            <span style="color: #ffd700;">สำหรับโครงการยุทธศาสตร์<br>มหาวิทยาลัยราชภัฏเลย</span>
                         </h1>
                         <p class="hero-subtitle fade-in">
                             ระบบสนับสนุนการประเมินผลตอบแทนทางสังคม (Social Return on Investment) 
@@ -522,7 +522,7 @@
                     <div class="col-lg-4 col-md-6 mb-4">
                         <div class="footer-title">
                             <i class="bi bi-graph-up-arrow me-2"></i>
-                            ระบบประเมิน SROI
+                            การประเมินผลกระทบทางสังคม สำหรับโครงการยุทธศาสตร์ มหาวิทยาลัยราชภัฏเลย
                         </div>
                         <p class="text-muted">
                             เครื่องมือสำหรับการประเมินผลตอบแทนทางสังคมอย่างเป็นระบบและมีประสิทธิภาพ
@@ -563,7 +563,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p class="mb-0">&copy; 2024 ระบบประเมิน SROI. สงวนลิขสิทธิ์.</p>
+                <p class="mb-0">&copy; 2024 การประเมินผลกระทบทางสังคม สำหรับโครงการยุทธศาสตร์ มหาวิทยาลัยราชภัฏเลย. สงวนลิขสิทธิ์.</p>
             </div>
         </div>
     </footer>
