@@ -878,21 +878,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body>
     <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="../index.php" class="logo">
-                🎯 SROI System
-            </a>
-            <ul class="nav-menu">
-                <li><a href="../dashboard.php" class="nav-link">📊 Dashboard</a></li>
-                <li><a href="../project-list.php" class="nav-link">📋 โครงการ</a></li>
-                <li><a href="impact_pathway.php" class="nav-link active">📈 การวิเคราะห์</a></li>
-                <li><a href="../reports.php" class="nav-link">📄 รายงาน</a></li>
-                <li><a href="../settings.php" class="nav-link">⚙️ ตั้งค่า</a></li>
-            </ul>
-            <?php include '../user-menu.php'; ?>
-        </div>
-    </nav>
+    <?php 
+    $navbar_root = '../';
+    include '../navbar.php'; 
+    ?>
 
     <!-- Main Content -->
     <div class="main-container">
@@ -1057,16 +1046,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <!-- ปัจจัยนำเข้า - แสดงเฉพาะแถวแรก -->
                                 <?php if ($activity_index == 0): ?>
                                     <td rowspan="<?php echo count($project_activities); ?>">
-                                        <div class="input-item">
-                                            <div class="input-budget">งบประมาณโครงการ</div>
-                                            <div class="input-detail">
-                                                <?php if ($selected_project): ?>
-                                                    <?php echo htmlspecialchars($selected_project['name']); ?>
-                                                <?php else: ?>
-                                                    ทรัพยากรและปัจจัยนำเข้า
-                                                <?php endif; ?>
-                                            </div>
-                                        </div>
+                                        <!-- เอาข้อมูล input-item ออก -->
                                     </td>
                                 <?php endif; ?>
                                 
@@ -1187,10 +1167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <!-- ผลกระทบ - แสดงเฉพาะแถวแรก -->
                                 <?php if ($activity_index == 0): ?>
                                     <td rowspan="<?php echo count($project_activities); ?>">
-                                        <div class="impact-item">
-                                            <div class="impact-benefit">ผลกระทบทางสังคม</div>
-                                            <div class="impact-detail">รอการบันทึกข้อมูล Impact</div>
-                                        </div>
+                                        <!-- เอาข้อมูล impact-item ออก -->
                                     </td>
                                 <?php endif; ?>
                             </tr>

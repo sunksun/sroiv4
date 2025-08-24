@@ -23,7 +23,7 @@ $system_stats_query = "SELECT
                          (SELECT COUNT(*) FROM users WHERE is_active = 1) as active_users,
                          (SELECT COUNT(*) FROM projects) as total_projects,
                          (SELECT COUNT(*) FROM projects WHERE status = 'completed') as completed_projects,
-                         (SELECT COUNT(*) FROM impact_chains) as total_chains,
+                         (SELECT COUNT(*) FROM social_impact_pathway) as total_chains,
                          (SELECT COUNT(*) FROM projects WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)) as projects_this_week";
 
 $system_stats_result = mysqli_query($conn, $system_stats_query);
@@ -301,7 +301,7 @@ $user_full_name = $_SESSION['full_name_th'] ?? $_SESSION['username'];
                         <i class="fas fa-link"></i>
                     </div>
                     <div class="stat-number"><?php echo number_format($system_stats['total_chains']); ?></div>
-                    <div class="stat-label">Impact Chains</div>
+                    <div class="stat-label">Impact Pathways</div>
                     <small class="text-muted">
                         <i class="fas fa-calendar-week me-1"></i><?php echo $system_stats['projects_this_week']; ?> โครงการสัปดาห์นี้
                     </small>

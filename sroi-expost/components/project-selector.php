@@ -7,16 +7,16 @@ $selected_project = $selected_project_id ? getProjectById($conn, $selected_proje
 
 <div class="controls">
     <div class="control-group">
-        <label for="projectSelect">เลือกโครงการ:</label>
-        <select id="projectSelect" onchange="selectProject(this.value)">
-            <option value="">-- เลือกโครงการ --</option>
-            <?php foreach ($projects as $project): ?>
-                <option value="<?php echo $project['id']; ?>" 
-                        <?php echo $selected_project_id == $project['id'] ? 'selected' : ''; ?>>
-                    <?php echo htmlspecialchars($project['project_code'] . ' - ' . $project['name']); ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
+        <label>โครงการที่เลือก:</label>
+        <?php if ($selected_project): ?>
+            <div class="project-display">
+                <strong><?php echo htmlspecialchars($selected_project['project_code'] . ' - ' . $selected_project['name']); ?></strong>
+            </div>
+        <?php else: ?>
+            <div class="project-display">
+                <em>ไม่พบโครงการ</em>
+            </div>
+        <?php endif; ?>
         <button class="btn" onclick="generateReport()">สร้างรายงาน</button>
     </div>
 </div>
