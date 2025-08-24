@@ -111,6 +111,7 @@ function formatThaiDate($date)
         body {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             min-height: 100vh;
+            padding-top: 80px;
         }
 
         .main-container {
@@ -153,6 +154,7 @@ function formatThaiDate($date)
 </head>
 
 <body>
+    <?php include 'navbar.php'; ?>
     <div class="main-container">
         <!-- Project Header -->
         <div class="project-header">

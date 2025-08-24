@@ -747,22 +747,7 @@ function formatThaiDate($date)
 </head>
 
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="index.php" class="logo">
-                🎯 SROI System
-            </a>
-            <ul class="nav-menu">
-                <li><a href="dashboard.php" class="nav-link active">📊 Dashboard</a></li>
-                <li><a href="project-list.php" class="nav-link">📋 โครงการ</a></li>
-                <li><a href="impact_pathway/impact_pathway.php" class="nav-link">📈 การวิเคราะห์</a></li>
-                <li><a href="reports.php" class="nav-link">📄 รายงาน</a></li>
-                <li><a href="settings.php" class="nav-link">⚙️ ตั้งค่า</a></li>
-            </ul>
-            <?php include 'user-menu.php'; ?>
-        </div>
-    </nav>
+    <?php include 'navbar.php'; ?>
 
     <!-- Main Content -->
     <div class="main-container">
@@ -957,13 +942,23 @@ function formatThaiDate($date)
                                 </div>
                             </a>
                         <?php endif; ?>
-                        <a href="sroi-expost/index.php" class="action-button">
-                            <div class="action-icon">4</div>
-                            <div class="action-content">
-                                <h4>สร้างรายงาน</h4>
-                                <p>รายงานสรุปผลการประเมิน</p>
-                            </div>
-                        </a>
+                        <?php if (!empty($user_projects)): ?>
+                            <a href="sroi-expost/report-sroi.php?project_id=<?php echo $user_projects[0]['id']; ?>" class="action-button">
+                                <div class="action-icon">4</div>
+                                <div class="action-content">
+                                    <h4>สร้างรายงาน</h4>
+                                    <p>โครงการ: <?php echo htmlspecialchars(mb_substr($user_projects[0]['name'], 0, 25)) . (mb_strlen($user_projects[0]['name']) > 25 ? '...' : ''); ?></p>
+                                </div>
+                            </a>
+                        <?php else: ?>
+                            <a href="create-project.php" class="action-button">
+                                <div class="action-icon">4</div>
+                                <div class="action-content">
+                                    <h4>สร้างรายงาน</h4>
+                                    <p>สร้างโครงการก่อนเพื่อดำเนินการ</p>
+                                </div>
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </div>
 

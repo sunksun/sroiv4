@@ -1,4 +1,5 @@
 <?php
+session_start();
 // เชื่อมต่อฐานข้อมูล
 require_once '../config.php';
 
@@ -127,6 +128,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>รายงานผลการประเมินผลตอบแทนทางสังคม (SROI)</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
     <style>
                                 body {
                                     font-family: 'Sarabun', Arial, sans-serif;
@@ -134,7 +141,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     margin: 0;
                                     padding: 20px;
                                     background-color: #f5f5f5;
+                                    padding-top: 80px;
                                 }
+
 
                                 .container {
                                     max-width: 1200px;
@@ -267,6 +276,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </head>
 
                         <body>
+                            <?php 
+                            // กำหนด root path สำหรับ navbar
+                            $navbar_root = '../';
+                            include '../navbar.php'; 
+                            ?>
                             <div class="container">
                                 <div class="header">
                                     <h1>รายงานผลการประเมินผลตอบแทนทางสังคม</h1>
@@ -287,29 +301,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <div class="section">
                                             <h3>ข้อมูลทั่วไปของโครงการ</h3>
                                             
-                                            <!-- เลือกโครงการ -->
-                                            <div class="form-group">
-                                                <label for="select_project">เลือกโครงการ:</label>
-                                                <div style="display: flex; gap: 10px; align-items: center;">
-                                                    <select id="select_project" onchange="loadProjectData(this.value)" style="padding: 10px; flex: 1; border: 2px solid #ddd; border-radius: 5px;">
-                                                        <option value="">-- เลือกโครงการ --</option>
-                                                        <?php foreach ($projects as $project): ?>
-                                                            <option value="<?php echo $project['id']; ?>" <?php echo ($project_id == $project['id']) ? 'selected' : ''; ?>>
-                                                                [<?php echo htmlspecialchars($project['project_code']); ?>] <?php echo htmlspecialchars($project['name']); ?>
-                                                            </option>
-                                                        <?php endforeach; ?>
-                                                    </select>
-                                                    <?php if ($project_id): ?>
-                                                        <button type="button" onclick="clearProject()" class="btn" style="padding: 8px 15px; font-size: 14px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">เปลี่ยนโครงการ</button>
-                                                    <?php endif; ?>
-                                                </div>
-                                                <?php if ($selected_project): ?>
-                                                    <div style="margin-top: 10px; padding: 10px; background: #e8f5e8; border-left: 4px solid #28a745; border-radius: 5px;">
-                                                        <strong>โครงการที่เลือก:</strong> [<?php echo htmlspecialchars($selected_project['project_code']); ?>] <?php echo htmlspecialchars($selected_project['name']); ?>
-                                                        <br><small><strong>หน่วยงาน:</strong> <?php echo htmlspecialchars($selected_project['organization']); ?></small>
-                                                    </div>
-                                                <?php endif; ?>
-                                            </div>
 
                                             <div class="two-column">
                                                 <div class="form-group">

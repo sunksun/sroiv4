@@ -30,7 +30,7 @@
         .navbar-brand {
             font-weight: 700;
             color: #667eea !important;
-            font-size: 1.5rem;
+            font-size: 1.1rem;
         }
 
         .nav-link {
@@ -354,11 +354,11 @@
                 <div class="col-lg-6">
                     <div class="hero-content">
                         <h1 class="hero-title fade-in">
-                            การประเมินผลกระทบทางสังคม<br>
+                            SROI<br>
                             <span style="color: #ffd700;">สำหรับโครงการยุทธศาสตร์<br>มหาวิทยาลัยราชภัฏเลย</span>
                         </h1>
                         <p class="hero-subtitle fade-in">
-                            ระบบสนับสนุนการประเมินผลตอบแทนทางสังคม (Social Return on Investment) 
+                            ระบบสนับสนุนการประเมินผลตอบแทนทางสังคม (Social Return on Investment)
                             เพื่อวัดผลกระทบทางสังคมของโครงการอย่างเป็นระบบ
                         </p>
                         <div class="fade-in">
@@ -520,7 +520,7 @@
             <div class="footer-content">
                 <div class="row">
                     <div class="col-lg-4 col-md-6 mb-4">
-                        <div class="footer-title">
+                        <div class="footer-title" style="font-size: 1.1rem;">
                             <i class="bi bi-graph-up-arrow me-2"></i>
                             การประเมินผลกระทบทางสังคม สำหรับโครงการยุทธศาสตร์ มหาวิทยาลัยราชภัฏเลย
                         </div>
@@ -582,7 +582,7 @@
 
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
+            anchor.addEventListener('click', function(e) {
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {

@@ -177,67 +177,9 @@ function getStatusBadge($status)
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             min-height: 100vh;
             color: var(--text-dark);
+            padding-top: 80px;
         }
 
-        /* Navigation */
-        .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1rem 0;
-            box-shadow: var(--shadow-light);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1.5rem;
-            font-weight: bold;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-decoration: none;
-        }
-
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .nav-link {
-            color: var(--text-dark);
-            text-decoration: none;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-link:hover {
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .nav-link.active {
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            color: white;
-        }
 
         /* Main Content */
         .main-container {
@@ -590,22 +532,7 @@ function getStatusBadge($status)
 </head>
 
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="index.php" class="logo">
-                🎯 SROI System
-            </a>
-            <ul class="nav-menu">
-                <li><a href="dashboard.php" class="nav-link">📊 Dashboard</a></li>
-                <li><a href="project-list.php" class="nav-link active">📋 โครงการ</a></li>
-                <li><a href="impact_pathway/impact_pathway.php" class="nav-link">📈 การวิเคราะห์</a></li>
-                <li><a href="reports.php" class="nav-link">📄 รายงาน</a></li>
-                <li><a href="settings.php" class="nav-link">⚙️ ตั้งค่า</a></li>
-            </ul>
-            <?php include 'user-menu.php'; ?>
-        </div>
-    </nav>
+    <?php include 'navbar.php'; ?>
 
     <!-- Main Content -->
     <div class="main-container">

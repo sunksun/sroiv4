@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 12, 2025 at 06:29 PM
+-- Generation Time: Aug 23, 2025 at 03:29 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -41,7 +41,9 @@ CREATE TABLE `strategies` (
 
 INSERT INTO `strategies` (`strategy_id`, `strategy_code`, `strategy_name`, `description`, `created_at`) VALUES
 (1, 'ยุทธศาสตร์ที่ 1', 'พัฒนาท้องถิ่น', 'ยุทธศาสตร์การพัฒนาท้องถิ่นแบบบูรณาการ', '2025-08-01 03:58:14'),
-(2, 'ยุทธศาสตร์ที่ 2', 'ผลิตและพัฒนาครู', 'พัฒนาครูและบุคลากรทางการศึกษา', '2025-08-01 03:58:14');
+(2, 'ยุทธศาสตร์ที่ 2', 'ผลิตและพัฒนาครู', 'พัฒนาครูและบุคลากรทางการศึกษา', '2025-08-01 03:58:14'),
+(3, 'ยุทธศาสตร์ที่ 3', 'ยกระดับคุณภาพการศึกษา', 'ยกระดับคุณภาพการศึกษาแบบบูรณาการ', '2025-08-22 15:55:47'),
+(4, 'ยุทธศาสตร์ที่ 4', 'พัฒนาระบบบริหารจัดการ', 'พัฒนาระบบบริหารจัดการแบบบูรณาการ', '2025-08-22 15:55:47');
 
 --
 -- Indexes for dumped tables
@@ -61,7 +63,7 @@ ALTER TABLE `strategies`
 -- AUTO_INCREMENT for table `strategies`
 --
 ALTER TABLE `strategies`
-  MODIFY `strategy_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `strategy_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

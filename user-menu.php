@@ -28,10 +28,6 @@ if (!empty($user_full_name)) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <div class="user-menu">
-    <div class="user-info">
-        <div class="user-name"><?php echo htmlspecialchars($user_full_name); ?></div>
-        <div class="user-role"><?php echo htmlspecialchars($user_role); ?></div>
-    </div>
     <div class="dropdown">
         <button class="user-avatar" type="button" id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false" title="<?php echo htmlspecialchars($user_full_name); ?>">
             <?php echo $initials; ?>
@@ -76,25 +72,6 @@ if (!empty($user_full_name)) {
         gap: 1rem;
     }
 
-    .user-info {
-        text-align: right;
-        line-height: 1.2;
-        display: none;
-        /* ซ่อนในหน้าจอเล็ก */
-    }
-
-    .user-name {
-        font-weight: 600;
-        color: var(--text-dark, #333);
-        font-size: 0.9rem;
-        margin-bottom: 2px;
-    }
-
-    .user-role {
-        font-size: 0.75rem;
-        color: var(--text-muted, #666);
-        text-transform: capitalize;
-    }
 
     .user-avatar {
         width: 40px;
@@ -165,19 +142,8 @@ if (!empty($user_full_name)) {
         text-align: center;
     }
 
-    /* แสดง user info ในหน้าจอใหญ่ */
-    @media (min-width: 768px) {
-        .user-info {
-            display: block;
-        }
-    }
-
     /* ปรับแต่งสำหรับ mobile */
     @media (max-width: 767px) {
-        .user-menu {
-            gap: 0.5rem;
-        }
-
         .dropdown-menu {
             min-width: 200px;
         }
