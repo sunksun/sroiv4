@@ -82,21 +82,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $attribution = isset($_POST["attribution_$i"]) ? (float)$_POST["attribution_$i"] : 0;
             $deadweight = isset($_POST["deadweight_$i"]) ? (float)$_POST["deadweight_$i"] : 0;
             $displacement = isset($_POST["displacement_$i"]) ? (float)$_POST["displacement_$i"] : 0;
+            $drop_off = isset($_POST["drop_off_$i"]) ? (float)$_POST["drop_off_$i"] : 0;
             $benefit_detail = isset($_POST["benefit_detail_$i"]) ? trim($_POST["benefit_detail_$i"]) : '';
             $beneficiary = isset($_POST["beneficiary_$i"]) ? trim($_POST["beneficiary_$i"]) : '';
             $benefit_note = isset($_POST["benefit_note_$i"]) ? trim($_POST["benefit_note_$i"]) : '';
 
             // คำนวณสัดส่วนผลกระทบ
-            $impact_ratio = 1 - ($attribution + $deadweight + $displacement) / 100;
+            $impact_ratio = 1 - ($attribution + $deadweight + $displacement + $drop_off) / 100;
             $impact_ratio = max(0, $impact_ratio); // ไม่ให้ต่ำกว่า 0
 
             // บันทึกเฉพาะรายการที่มีข้อมูล
-            if ($attribution > 0 || $deadweight > 0 || $displacement > 0 || !empty($benefit_detail) || !empty($beneficiary) || !empty($benefit_note)) {
+            if ($attribution > 0 || $deadweight > 0 || $displacement > 0 || $drop_off > 0 || !empty($benefit_detail) || !empty($beneficiary) || !empty($benefit_note)) {
                 $impact_data[] = array(
                     'benefit_number' => $i,
                     'attribution' => $attribution,
                     'deadweight' => $deadweight,
                     'displacement' => $displacement,
+                    'drop_off' => $drop_off,
                     'impact_ratio' => $impact_ratio,
                     'benefit_detail' => $benefit_detail,
                     'beneficiary' => $beneficiary,
@@ -117,18 +119,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mysqli_stmt_close($delete_stmt);
 
         // เตรียม SQL สำหรับ insert (outcome_id = NULL สำหรับ basecase data)
-        $insert_query = "INSERT INTO impact_chain_ratios (impact_chain_id, outcome_id, deadweight, attribution, displacement, drop_off, created_by, benefit_number, benefit_detail, beneficiary, benefit_note, year, impact_ratio) VALUES (?, NULL, ?, ?, ?, 0.00, ?, ?, ?, ?, ?, ?, ?)";
+        $insert_query = "INSERT INTO impact_chain_ratios (impact_chain_id, outcome_id, deadweight, attribution, displacement, drop_off, created_by, benefit_number, benefit_detail, beneficiary, benefit_note, year, impact_ratio) VALUES (?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $insert_stmt = mysqli_prepare($conn, $insert_query);
 
         $success_count = 0;
         foreach ($impact_data as $data) {
             mysqli_stmt_bind_param(
                 $insert_stmt,
-                'idddsissssd',
+                'iddddsissssd',
                 $chain_id,
                 $data['deadweight'],
                 $data['attribution'],
                 $data['displacement'],
+                $data['drop_off'],
                 $user_id,
                 $data['benefit_number'],
                 $data['benefit_detail'],

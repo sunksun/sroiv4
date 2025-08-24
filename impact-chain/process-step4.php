@@ -284,7 +284,7 @@ try {
             
             if (mysqli_num_rows($check_ratio_result) == 0) {
                 // ไม่มีข้อมูล - เพิ่มข้อมูลใหม่
-                $insert_ratio_query = "INSERT INTO impact_chain_ratios (impact_chain_id, outcome_id, deadweight, attribution, displacement, drop_off, benefit_number, benefit_detail, created_by) VALUES (?, ?, 0.00, 0.00, 0.00, 0.00, 1, 0, ?)";
+                $insert_ratio_query = "INSERT INTO impact_chain_ratios (impact_chain_id, outcome_id, deadweight, attribution, displacement, drop_off, benefit_number, benefit_detail, created_by) VALUES (?, ?, 0.00, 0.00, 0.00, 0.00, 1, NULL, ?)";
                 $insert_ratio_stmt = mysqli_prepare($conn, $insert_ratio_query);
                 mysqli_stmt_bind_param($insert_ratio_stmt, 'iis', $chain_id, $selected_outcome, $user_id);
                 if (!mysqli_stmt_execute($insert_ratio_stmt)) {
