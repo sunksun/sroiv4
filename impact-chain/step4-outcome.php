@@ -663,9 +663,11 @@ function getProxiesForOutcome($conn, $outcome_id)
                                                     placeholder="ระบุผู้ใช้ประโยชน์..."></textarea>
                                             </td>
                                             <td>
-                                                <input type="text" class="form-control"
+                                                <input type="text" class="form-control number-only"
                                                     name="benefit_note_1"
-                                                    placeholder="กรอกจำนวนเงิน (บาท/ปี)">
+                                                    placeholder="กรอกจำนวนเงิน (บาท/ปี)"
+                                                    pattern="[0-9,]+"
+                                                    title="กรุณาใส่ตัวเลขเท่านั้น">
                                             </td>
                                             <td class="text-center align-middle">
                                                 <button type="button" class="btn btn-outline-danger btn-sm"
@@ -772,6 +774,48 @@ function getProxiesForOutcome($conn, $outcome_id)
             return parseInt(input.value.replace(/,/g, '')) || 0;
         }
 
+        // ฟังก์ชันรีเซ็ตฟอร์มให้ว่าง (สำหรับ new chain)
+        function resetFormToEmpty() {
+            // ล้างค่าในฟอร์มทั้งหมด
+            document.querySelector('#benefitTable tbody').innerHTML = `
+                <tr>
+                    <td class="text-center">1</td>
+                    <td>
+                        <textarea class="form-control" name="benefit_detail_1" rows="3"
+                            placeholder="ระบุรายละเอียดผลประโยชน์..."></textarea>
+                    </td>
+                    <td>
+                        <textarea class="form-control" name="beneficiary_1" rows="3"
+                            placeholder="ระบุผู้ใช้ประโยชน์..."></textarea>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control number-only" name="benefit_note_1"
+                            placeholder="กรอกจำนวนเงิน (บาท/ปี)"
+                            pattern="[0-9,]+" title="กรุณาใส่ตัวเลขเท่านั้น">
+                    </td>
+                    <td class="text-center align-middle">
+                        <button type="button" class="btn btn-outline-danger btn-sm" disabled>
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+            
+            // รีเซ็ตค่าสัดส่วนผลกระทบ
+            document.querySelector('input[name="attribution_1"]').value = '0';
+            document.querySelector('input[name="deadweight_1"]').value = '0';
+            document.querySelector('input[name="displacement_1"]').value = '0';
+            
+            // แสดงฟอร์มและซ่อนส่วนที่บันทึกแล้ว
+            document.getElementById('formulaSection').style.display = 'block';
+            document.getElementById('savedDataSection').style.display = 'none';
+            
+            // รีเซ็ตตัวนับแถว
+            benefitRowCount = 1;
+            
+            console.log('Form reset for new chain data entry');
+        }
+
         // เพิ่ม event listener สำหรับ input field จำนวนเงิน
         document.addEventListener('DOMContentLoaded', function() {
             // เพิ่ม event listener สำหรับ input จำนวนเงินที่มีอยู่แล้ว
@@ -780,6 +824,35 @@ function getProxiesForOutcome($conn, $outcome_id)
                 existingMoneyInput.addEventListener('blur', function() {
                     formatNumberInput(this);
                 });
+            }
+        });
+
+        // ป้องกันการพิมพ์ตัวอักษรในช่องจำนวนเงิน
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('number-only')) {
+                // อนุญาตเฉพาะตัวเลข 0-9 และคอมมา
+                e.target.value = e.target.value.replace(/[^0-9,]/g, '');
+            }
+        });
+
+        // ป้องกันการวางข้อความที่ไม่ใช่ตัวเลข
+        document.addEventListener('paste', function(e) {
+            if (e.target.classList.contains('number-only')) {
+                e.preventDefault();
+                const pastedData = (e.clipboardData || window.clipboardData).getData('text');
+                const numericData = pastedData.replace(/[^0-9,]/g, '');
+                e.target.value = numericData;
+                formatNumber(e.target);
+            }
+        });
+
+        // ป้องกันการกดปุ่มที่ไม่ใช่ตัวเลข
+        document.addEventListener('keypress', function(e) {
+            if (e.target.classList.contains('number-only')) {
+                const char = String.fromCharCode(e.which);
+                if (!/[0-9,]/.test(char) && e.which !== 8 && e.which !== 46) {
+                    e.preventDefault();
+                }
             }
         });
 
@@ -889,8 +962,15 @@ function getProxiesForOutcome($conn, $outcome_id)
             // โหลดข้อมูล Proxy สำหรับผลลัพธ์ที่เลือก
             loadProxyData(outcomeId);
 
-            // โหลดข้อมูลเดิม (ถ้ามี)
+            // โหลดข้อมูลเดิม (เฉพาะ legacy system เท่านั้น)
+            <?php if ($is_legacy_system): ?>
             loadExistingData();
+            <?php else: ?>
+            // New Chain - ไม่โหลดข้อมูลเดิม ให้ผู้ใช้กรอกใหม่
+            document.getElementById('formulaSection').style.display = 'block';
+            document.getElementById('savedDataSection').style.display = 'none';
+            console.log('New chain - showing empty form for new data entry');
+            <?php endif; ?>
 
             // แสดง modal
             const modal = new bootstrap.Modal(document.getElementById('outcomeProxyModal'));
@@ -1088,10 +1168,12 @@ function getProxiesForOutcome($conn, $outcome_id)
                             placeholder="ระบุผู้ใช้ประโยชน์...">${record.beneficiary || ''}</textarea>
                     </td>
                     <td>
-                        <input type="text" class="form-control"
+                        <input type="text" class="form-control number-only"
                             name="benefit_note_${rowNumber}"
                             value="${record.benefit_note || ''}"
-                            placeholder="กรอกจำนวนเงิน (บาท/ปี)">
+                            placeholder="กรอกจำนวนเงิน (บาท/ปี)"
+                            pattern="[0-9,]+"
+                            title="กรุณาใส่ตัวเลขเท่านั้น">
                     </td>
                     <td class="text-center align-middle">
                         <button type="button" class="btn btn-outline-danger btn-sm" 
@@ -1288,10 +1370,15 @@ function getProxiesForOutcome($conn, $outcome_id)
                     saveBtn.innerHTML = `<i class="fas fa-check"></i> บันทึกเรียบร้อย (${savedCount} รายการ)`;
                     saveBtn.className = 'btn btn-success';
 
-                    // โหลดข้อมูลใหม่และแสดงผล
+                    // โหลดข้อมูลใหม่และแสดงผล (เฉพาะ legacy system)
+                    <?php if ($is_legacy_system): ?>
                     setTimeout(() => {
                         loadExistingData();
                     }, 500);
+                    <?php else: ?>
+                    // New Chain - ไม่รีเซ็ตฟอร์ม เพื่อไม่ให้ข้อมูลสูญหาย
+                    console.log('New chain - data saved successfully, keeping form data');
+                    <?php endif; ?>
 
                     // รีเซ็ตปุ่มหลังจาก 2 วินาที
                     setTimeout(() => {
@@ -1798,9 +1885,11 @@ function getProxiesForOutcome($conn, $outcome_id)
                         placeholder="ระบุผู้ใช้ประโยชน์..."></textarea>
                 </td>
                 <td>
-                    <input type="text" class="form-control"
+                    <input type="text" class="form-control number-only"
                         name="benefit_note_${benefitRowCount}"
-                        placeholder="กรอกจำนวนเงิน (บาท/ปี)">
+                        placeholder="กรอกจำนวนเงิน (บาท/ปี)"
+                        pattern="[0-9,]+"
+                        title="กรุณาใส่ตัวเลขเท่านั้น">
                 </td>
                 <td class="text-center align-middle">
                     <button type="button" class="btn btn-outline-danger btn-sm" 

@@ -11,7 +11,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     <div class="nav-container">
         <div class="nav-left">
             <div class="logo">
-                <img src="<?php echo isset($navbar_root) ? $navbar_root : ''; ?>assets/imgs/lru.png" alt="LRU Logo" class="logo-img">
+                <img src="<?php echo isset($navbar_root) ? $navbar_root . 'assets/imgs/lru.png' : 'assets/imgs/lru.png'; ?>" alt="LRU Logo" class="logo-img">
                 SROI LRU
             </div>
             <ul class="nav-menu">

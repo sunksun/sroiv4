@@ -124,7 +124,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         foreach ($impact_data as $data) {
             mysqli_stmt_bind_param(
                 $insert_stmt,
-                'idddssisssd',
+                'idddsissssd',
                 $chain_id,
                 $data['deadweight'],
                 $data['attribution'],

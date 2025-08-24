@@ -52,6 +52,43 @@ $user_stats = $user_stats ?? [
     'total_budget' => 0
 ];
 
+// ดึงกิจกรรมล่าสุดของผู้ใช้
+$activity_query = "
+    SELECT 
+        'project_created' as type,
+        CONCAT('สร้างโครงการ \"', LEFT(name, 30), '...\"') as text,
+        created_at as timestamp,
+        '➕' as icon
+    FROM projects 
+    WHERE created_by = ?
+    
+    UNION ALL
+    
+    SELECT 
+        'project_updated' as type,
+        CONCAT('อัปเดตโครงการ \"', LEFT(name, 30), '...\"') as text,
+        updated_at as timestamp,
+        '📊' as icon
+    FROM projects 
+    WHERE created_by = ? AND updated_at > created_at
+    
+    ORDER BY timestamp DESC 
+    LIMIT 5
+";
+
+$activity_stmt = mysqli_prepare($conn, $activity_query);
+mysqli_stmt_bind_param($activity_stmt, 'ss', $user_id, $user_id);
+mysqli_stmt_execute($activity_stmt);
+$activities_result = mysqli_stmt_get_result($activity_stmt);
+$recent_activities = [];
+while ($row = mysqli_fetch_assoc($activities_result)) {
+    $recent_activities[] = [
+        'type' => $row['type'],
+        'text' => $row['text'],
+        'icon' => $row['icon']
+    ];
+}
+
 // ฟังก์ชันแปลงสถานะ
 function getStatusText($status)
 {
@@ -238,6 +275,7 @@ function formatThaiDate($date)
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
+            text-align: right;
         }
 
         .stat-card {
@@ -280,7 +318,7 @@ function formatThaiDate($date)
 
         .stat-header {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: flex-start;
             margin-bottom: 1rem;
         }
@@ -768,7 +806,6 @@ function formatThaiDate($date)
                             📁 โครงการของคุณ
                         </div>
                     </div>
-                    <div class="stat-icon">📊</div>
                 </div>
             </div>
 
@@ -781,7 +818,6 @@ function formatThaiDate($date)
                             ✅ เสร็จแล้ว
                         </div>
                     </div>
-                    <div class="stat-icon success">✅</div>
                 </div>
             </div>
 
@@ -789,12 +825,11 @@ function formatThaiDate($date)
                 <div class="stat-header">
                     <div>
                         <div class="stat-label">งบประมาณรวม</div>
-                        <div class="stat-number" id="totalBudget"><?php echo number_format($user_stats['total_budget'] / 1000000, 1); ?>M</div>
+                        <div class="stat-number" id="totalBudget"><?php echo $user_stats['total_budget'] ? number_format($user_stats['total_budget'], 0) : '0'; ?></div>
                         <div class="stat-change positive">
                             💰 บาท
                         </div>
                     </div>
-                    <div class="stat-icon warning">💰</div>
                 </div>
             </div>
 
@@ -807,7 +842,6 @@ function formatThaiDate($date)
                             🔄 ดำเนินการอยู่
                         </div>
                     </div>
-                    <div class="stat-icon info">📈</div>
                 </div>
             </div>
         </div>
@@ -1001,32 +1035,8 @@ function formatThaiDate($date)
     </div>
 
     <script>
-        // จำลองข้อมูลกิจกรรมล่าสุด
-        const sampleActivities = [{
-                type: 'project_created',
-                text: 'สร้างโครงการใหม่เรียบร้อยแล้ว',
-                time: '2 ชั่วโมงที่แล้ว',
-                icon: '➕'
-            },
-            {
-                type: 'calculation_completed',
-                text: 'อัปเดตข้อมูลโครงการแล้ว',
-                time: '5 ชั่วโมงที่แล้ว',
-                icon: '📊'
-            },
-            {
-                type: 'report_generated',
-                text: 'เข้าถึงระบบจัดการโครงการ',
-                time: '1 วันที่แล้ว',
-                icon: '📄'
-            },
-            {
-                type: 'data_imported',
-                text: 'เข้าสู่ระบบ SROI',
-                time: '2 วันที่แล้ว',
-                icon: '📥'
-            }
-        ];
+        // ข้อมูลกิจกรรมล่าสุดจากฐานข้อมูล
+        const recentActivities = <?php echo json_encode($recent_activities); ?>;
 
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
@@ -1037,7 +1047,12 @@ function formatThaiDate($date)
             const container = document.getElementById('recentActivity');
             container.innerHTML = '';
 
-            sampleActivities.forEach(activity => {
+            if (recentActivities.length === 0) {
+                container.innerHTML = '<div class="no-activity">ยังไม่มีกิจกรรม</div>';
+                return;
+            }
+
+            recentActivities.forEach(activity => {
                 const activityItem = createActivityItem(activity);
                 container.appendChild(activityItem);
             });
@@ -1051,7 +1066,6 @@ function formatThaiDate($date)
                 <div class="activity-icon">${activity.icon}</div>
                 <div class="activity-content">
                     <div class="activity-text">${activity.text}</div>
-                    <div class="activity-time">${activity.time}</div>
                 </div>
             `;
 

@@ -316,7 +316,7 @@
     <nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container">
             <a class="navbar-brand" href="#home">
-                <i class="bi bi-graph-up-arrow me-2"></i>
+                <img src="assets/imgs/lru.png" alt="LRU Logo" style="width: 30px; height: 30px; object-fit: contain;" class="me-2">
                 การประเมินผลกระทบทางสังคม สำหรับโครงการยุทธศาสตร์ มหาวิทยาลัยราชภัฏเลย
             </a>
 
