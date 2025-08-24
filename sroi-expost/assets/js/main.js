@@ -12,22 +12,23 @@ function selectProject(projectId) {
     }
 }
 
+// กลับไปหน้า Dashboard
+function goToDashboard() {
+    window.location.href = '../dashboard.php';
+}
+
 // สร้างรายงาน
 function generateReport() {
-    const projectSelect = document.getElementById('projectSelect');
-    const projectId = projectSelect.value;
-    
-    if (!projectId) {
-        alert('กรุณาเลือกโครงการก่อน');
-        return;
-    }
-    
     // แสดง loading
     showLoading();
     
     // โหลดข้อมูลและสร้างรายงาน
     setTimeout(() => {
-        loadProjectData(projectId);
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectId = urlParams.get('project_id');
+        if (projectId) {
+            loadProjectData(projectId);
+        }
         hideLoading();
     }, 1000);
 }
@@ -185,6 +186,9 @@ function exportToExcel() {
     a.href = url;
     a.download = 'sroi_analysis_report.csv';
     a.click();
+    
+    // แสดงข้อความแจ้งเตือน
+    alert('กำลังดาวน์โหลดไฟล์ Excel...');
 }
 
 // พิมพ์รายงาน
@@ -248,8 +252,6 @@ function addTooltips() {
 
 // Event Listeners เมื่อโหลดหน้าเสร็จ
 document.addEventListener('DOMContentLoaded', function() {
-    // เพิ่มปุ่ม Export และ Print
-    addExportPrintButtons();
     
     // เริ่มต้น PVF Table
     initializePVFTable();
@@ -271,40 +273,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// เพิ่มปุ่ม Export และ Print
-function addExportPrintButtons() {
-    const controlsSection = document.querySelector('.controls .control-group');
-    if (controlsSection) {
-        const buttonContainer = document.createElement('div');
-        buttonContainer.style.marginLeft = 'auto';
-        buttonContainer.style.display = 'flex';
-        buttonContainer.style.gap = '10px';
-        
-        // ปุ่ม Export
-        const exportBtn = document.createElement('button');
-        exportBtn.className = 'btn';
-        exportBtn.textContent = 'ส่งออก Excel';
-        exportBtn.onclick = exportToExcel;
-        
-        // ปุ่ม Print
-        const printBtn = document.createElement('button');
-        printBtn.className = 'btn';
-        printBtn.textContent = 'พิมพ์รายงาน';
-        printBtn.onclick = printReport;
-        
-        // ปุ่มกลับไปหน้า Dashboard
-        const backBtn = document.createElement('button');
-        backBtn.className = 'btn btn-secondary';
-        backBtn.textContent = 'กลับไปหน้า Dashboard';
-        backBtn.onclick = () => {
-            window.location.href = '../dashboard.php';
-        };
-        
-        buttonContainer.appendChild(exportBtn);
-        buttonContainer.appendChild(printBtn);
-        buttonContainer.appendChild(backBtn);
-        controlsSection.parentNode.appendChild(buttonContainer);
-    }
-}
 
 console.log('🎯 SROI Ex-post Analysis initialized successfully!');

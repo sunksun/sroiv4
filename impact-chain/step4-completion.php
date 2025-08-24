@@ -80,16 +80,19 @@ $progress_data = [
             border: 2px solid #28a745;
             background: linear-gradient(135deg, #f8fff9 0%, #f0fff4 100%);
         }
+
         .option-card {
             transition: all 0.3s ease;
             border: 2px solid #e9ecef;
             cursor: pointer;
         }
+
         .option-card:hover {
             border-color: #007bff;
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
         .chain-summary {
             background-color: #f8f9fa;
             border-left: 4px solid #28a745;
@@ -110,8 +113,7 @@ $progress_data = [
                     </ol>
                 </nav>
                 <h2><i class="fas fa-check-circle text-success"></i> Impact Chain เสร็จสิ้น!</h2>
-                <p class="text-muted">โครงการ: <?php echo htmlspecialchars($project['name']); ?></p>
-                <p class="text-muted">รหัสโครงการ: <?php echo htmlspecialchars($project['project_code']); ?></p>
+                <p class="text-muted">โครงการ: <?php echo htmlspecialchars($project['project_code']); ?> <?php echo htmlspecialchars($project['name']); ?></p>
             </div>
         </div>
 
@@ -124,7 +126,7 @@ $progress_data = [
                 <div class="card completion-card">
                     <div class="card-body text-center py-4">
                         <i class="fas fa-check-circle text-success fa-4x mb-3"></i>
-                        <h3 class="text-success mb-3">🎉 Impact Chain เสร็จสิ้นแล้ว!</h3>
+                        <h3 class="text-success mb-3">Impact Chain เสร็จสิ้นแล้ว!</h3>
                         <p class="lead">คุณได้สร้าง Impact Chain เรียบร้อยแล้ว ตอนนี้คุณสามารถเลือกดำเนินการต่อไปได้</p>
                     </div>
                 </div>
@@ -271,7 +273,8 @@ $progress_data = [
         // Auto-redirect message
         <?php if (isset($_SESSION['success_message'])): ?>
             setTimeout(function() {
-                alert('<?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?>');
+                alert('<?php echo $_SESSION['success_message'];
+                        unset($_SESSION['success_message']); ?>');
             }, 500);
         <?php endif; ?>
     </script>

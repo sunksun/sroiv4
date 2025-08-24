@@ -7,7 +7,6 @@ $selected_project = $selected_project_id ? getProjectById($conn, $selected_proje
 
 <div class="controls">
     <div class="control-group">
-        <label>โครงการที่เลือก:</label>
         <?php if ($selected_project): ?>
             <div class="project-display">
                 <strong><?php echo htmlspecialchars($selected_project['project_code'] . ' - ' . $selected_project['name']); ?></strong>
@@ -17,37 +16,16 @@ $selected_project = $selected_project_id ? getProjectById($conn, $selected_proje
                 <em>ไม่พบโครงการ</em>
             </div>
         <?php endif; ?>
-        <button class="btn" onclick="generateReport()">สร้างรายงาน</button>
-    </div>
-</div>
-
-<?php if ($selected_project): ?>
-<div class="project-info">
-    <div class="info-grid">
-        <div class="info-item">
-            <label>รหัสโครงการ:</label>
-            <span><?php echo htmlspecialchars($selected_project['project_code']); ?></span>
-        </div>
-        <div class="info-item">
-            <label>ชื่อโครงการ:</label>
-            <span><?php echo htmlspecialchars($selected_project['name']); ?></span>
-        </div>
-        <div class="info-item">
-            <label>งบประมาณ:</label>
-            <span><?php echo formatCurrency($selected_project['budget']); ?></span>
-        </div>
-        <div class="info-item">
-            <label>สถานะ:</label>
-            <span><?php echo $selected_project['status'] == 'completed' ? 'เสร็จสิ้น' : 'ยังไม่เสร็จ'; ?></span>
-        </div>
-        <div class="info-item">
-            <label>วันที่สร้าง:</label>
-            <span><?php echo formatThaiDate($selected_project['created_at']); ?></span>
-        </div>
-        <div class="info-item">
-            <label>อัปเดตล่าสุด:</label>
-            <span><?php echo formatThaiDate($selected_project['updated_at']); ?></span>
+        <div class="button-group">
+            <button class="btn btn-secondary" onclick="goToDashboard()">
+                <i class="fas fa-arrow-left"></i> กลับไปหน้า Dashboard
+            </button>
+            <button class="btn btn-primary" onclick="generateReport()">
+                <i class="fas fa-chart-bar"></i> สร้างรายงาน
+            </button>
+            <button class="btn btn-success" onclick="exportToExcel()">
+                <i class="fas fa-file-excel"></i> ส่งออก Excel
+            </button>
         </div>
     </div>
 </div>
-<?php endif; ?>

@@ -57,7 +57,7 @@
         foreach ($available_years as $year_index => $year) {
             $benefit_amount = isset($benefit_notes_by_year[$benefit_number]) && isset($benefit_notes_by_year[$benefit_number][$year['year_be']])
                 ? $benefit_notes_by_year[$benefit_number][$year['year_be']] : 0;
-            
+
             // ดึงค่า base case factors จากฐานข้อมูล
             $attribution_rate = isset($base_case_factors[$benefit_number]) && isset($base_case_factors[$benefit_number][$year['year_be']])
                 ? $base_case_factors[$benefit_number][$year['year_be']]['attribution'] : 0;
@@ -65,19 +65,19 @@
                 ? $base_case_factors[$benefit_number][$year['year_be']]['deadweight'] : 0;
             $displacement_rate = isset($base_case_factors[$benefit_number]) && isset($base_case_factors[$benefit_number][$year['year_be']])
                 ? $base_case_factors[$benefit_number][$year['year_be']]['displacement'] : 0;
-            
+
             // คำนวณ present value ของ base case impact
             $attribution = $benefit_amount * ($attribution_rate / 100);
             $deadweight = $benefit_amount * ($deadweight_rate / 100);
             $displacement = $benefit_amount * ($displacement_rate / 100);
-            
+
             $impact_amount = $attribution + $deadweight + $displacement;
             $present_impact = $impact_amount / pow(1 + ($default_settings['discount_rate']), $year_index);
-            
+
             $base_case_impact += $present_impact;
         }
     }
-    
+
     $net_social_benefit = $total_present_benefits - $base_case_impact;
     ?>
 
@@ -85,7 +85,7 @@
 
     <!-- Benefit Section -->
     <div class="section">
-        <h2 class="section-title">🎁 ผลประโยชน์ของโครงการ (Benefit)</h2>
+        <h2 class="section-title">ผลประโยชน์ของโครงการ (Benefit)</h2>
         <table class="data-table">
             <thead>
                 <tr>
@@ -128,14 +128,14 @@
                         <td><?php echo formatNumber($present_benefits_by_year[$year['year_be']] ?? 0, 0); ?></td>
                     <?php endforeach; ?>
                 </tr>
-                
+
                 <!-- แถวรวมผลประโยชน์ปัจจุบันสุทธิ (Total Present Benefit) -->
                 <tr class="total-present-benefit-row" style="background-color: #e8f5e8; font-weight: bold; border-top: 3px solid #28a745;">
                     <td>รวมผลประโยชน์ปัจจุบันสุทธิ (Total Present Benefit)</td>
                     <td id="total-present-benefit-summary">
                         <?php echo formatNumber($total_present_benefits, 0); ?>
                     </td>
-                    <?php 
+                    <?php
                     // แสดงเครื่องหมาย "-" ในคอลัมน์ปีอื่นๆ
                     for ($i = 1; $i < count($available_years); $i++): ?>
                         <td>-</td>
@@ -153,7 +153,7 @@
 
     <!-- Base Case Impact Section -->
     <div class="section">
-        <h2 class="section-title">⚖️ ผลกระทบกรณีฐาน (Base Case Impact)</h2>
+        <h2 class="section-title">ผลกระทบกรณีฐาน (Base Case Impact)</h2>
 
         <h3 style="color: #667eea; margin-bottom: 15px;">ผลจากปัจจัยอื่นๆ (Attribution)</h3>
         <table class="data-table">
@@ -169,8 +169,8 @@
                 <?php foreach ($project_benefits as $index => $benefit): ?>
                     <?php $benefit_number = $index + 1; ?>
                     <tr class="impact-row">
-                        <td><?php echo htmlspecialchars($benefit['detail']); ?> 
-                            <?php 
+                        <td><?php echo htmlspecialchars($benefit['detail']); ?>
+                            <?php
                             // แสดงค่า attribution เฉลี่ยจากฐานข้อมูล
                             $attribution_avg = 0;
                             $count = 0;
@@ -215,8 +215,8 @@
                 <?php foreach ($project_benefits as $index => $benefit): ?>
                     <?php $benefit_number = $index + 1; ?>
                     <tr class="impact-row">
-                        <td><?php echo htmlspecialchars($benefit['detail']); ?> 
-                            <?php 
+                        <td><?php echo htmlspecialchars($benefit['detail']); ?>
+                            <?php
                             // แสดงค่า deadweight เฉลี่ยจากฐานข้อมูล
                             $deadweight_avg = 0;
                             $count = 0;
@@ -261,8 +261,8 @@
                 <?php foreach ($project_benefits as $index => $benefit): ?>
                     <?php $benefit_number = $index + 1; ?>
                     <tr class="impact-row">
-                        <td><?php echo htmlspecialchars($benefit['detail']); ?> 
-                            <?php 
+                        <td><?php echo htmlspecialchars($benefit['detail']); ?>
+                            <?php
                             // แสดงค่า displacement เฉลี่ยจากฐานข้อมูล
                             $displacement_avg = 0;
                             $count = 0;
@@ -303,7 +303,7 @@
 
     <!-- Results Section -->
     <div class="section">
-        <h2 class="section-title">📊 ผลการวิเคราะห์ SROI</h2>
+        <h2 class="section-title">ผลการวิเคราะห์ SROI</h2>
 
         <h3 style="color: #667eea; margin-bottom: 15px;">ข้อมูลการประเมินโครงการ ปี พ.ศ. <?php echo (date('Y') + 543); ?></h3>
         <table class="data-table">
@@ -385,6 +385,7 @@
     </div>
 
     <!-- Charts Section -->
+    <!--
     <div class="chart-container">
         <h2 class="section-title">📈 กราฟแสดงผลการวิเคราะห์</h2>
         <div class="analysis-grid">
@@ -402,16 +403,19 @@
             </div>
         </div>
     </div>
+                        -->
 
     <!-- Impact Distribution Chart -->
+    <!--
     <div class="chart-container">
         <h3 style="color: #667eea; margin-bottom: 15px;">การกระจายผลกระทบตามปี</h3>
         <div class="chart-wrapper">
             <canvas id="impactDistributionChart"></canvas>
         </div>
     </div>
-
+    -->
     <!-- Sensitivity Analysis -->
+    <!--
     <div class="sensitivity-analysis">
         <h2 class="section-title">🎯 การวิเคราะห์ความไว (Sensitivity Analysis)</h2>
         <div class="analysis-grid">
@@ -456,10 +460,10 @@
             </div>
         </div>
     </div>
-
+    -->
     <!-- Impact Pathway Section -->
     <div class="section">
-        <h2 class="section-title">🗺️ เส้นทางผลกระทบ (Impact Pathway)</h2>
+        <h2 class="section-title">เส้นทางผลกระทบ (Impact Pathway)</h2>
         <div class="impact-breakdown" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
             <div class="impact-item">
                 <h4>🎯 Input</h4>
@@ -490,7 +494,7 @@
     </div>
 
     <div class="section">
-        <h2 class="section-title">📋 สรุปและข้อเสนอแนะ</h2>
+        <h2 class="section-title">สรุปและข้อเสนอแนะ</h2>
 
         <?php if ($sroi_ratio > 1): ?>
             <div class="impact-breakdown">
@@ -568,8 +572,7 @@
                 type: 'bar',
                 data: {
                     labels: chartData.years,
-                    datasets: [
-                        {
+                    datasets: [{
                             label: 'ต้นทุน (บาท)',
                             data: chartData.costs,
                             backgroundColor: 'rgba(220, 53, 69, 0.8)',
@@ -617,7 +620,7 @@
             if (!ctx) return;
 
             const netBenefit = chartData.totalPresentBenefits - chartData.baseCaseImpact;
-            
+
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {
@@ -667,7 +670,7 @@
             if (!ctx) return;
 
             // คำนวณ Net Impact แต่ละปี (Present Benefit - Present Cost)
-            const netImpact = chartData.presentBenefits.map((benefit, index) => 
+            const netImpact = chartData.presentBenefits.map((benefit, index) =>
                 benefit - (chartData.presentCosts[index] || 0)
             );
 
@@ -675,8 +678,7 @@
                 type: 'line',
                 data: {
                     labels: chartData.years,
-                    datasets: [
-                        {
+                    datasets: [{
                             label: 'ผลประโยชน์ปัจจุบันสุทธิ',
                             data: chartData.presentBenefits,
                             borderColor: 'rgba(40, 167, 69, 1)',
@@ -738,10 +740,24 @@
             const ctx = document.getElementById('sensitivityChart');
             if (!ctx) return;
 
-            const scenarios = [
-                { name: 'เลวที่สุด', rate: 5, sroi: chartData.sroiRatio * 0.8, color: 'rgba(220, 53, 69, 0.8)' },
-                { name: 'ปัจจุบัน', rate: 3, sroi: chartData.sroiRatio, color: 'rgba(102, 126, 234, 0.8)' },
-                { name: 'ดีที่สุด', rate: 1, sroi: chartData.sroiRatio * 1.2, color: 'rgba(40, 167, 69, 0.8)' }
+            const scenarios = [{
+                    name: 'เลวที่สุด',
+                    rate: 5,
+                    sroi: chartData.sroiRatio * 0.8,
+                    color: 'rgba(220, 53, 69, 0.8)'
+                },
+                {
+                    name: 'ปัจจุบัน',
+                    rate: 3,
+                    sroi: chartData.sroiRatio,
+                    color: 'rgba(102, 126, 234, 0.8)'
+                },
+                {
+                    name: 'ดีที่สุด',
+                    rate: 1,
+                    sroi: chartData.sroiRatio * 1.2,
+                    color: 'rgba(40, 167, 69, 0.8)'
+                }
             ];
 
             new Chart(ctx, {
