@@ -103,26 +103,14 @@ try {
             }
         } else {
             // แก้ไข Impact Chain เดิม (ใช้ตารางเดิม)
-            // ลบข้อมูลการเลือกกิจกรรมเดิม (ถ้ามี)
-            $delete_query = "DELETE FROM project_activities WHERE project_id = ?";
-            $delete_stmt = mysqli_prepare($conn, $delete_query);
-            mysqli_stmt_bind_param($delete_stmt, 'i', $project_id);
-            mysqli_stmt_execute($delete_stmt);
-            mysqli_stmt_close($delete_stmt);
-
-            // ลบข้อมูลการเลือกผลผลิตเดิม (เนื่องจากเปลี่ยนกิจกรรม)
-            $delete_outputs_query = "DELETE FROM project_outputs WHERE project_id = ?";
-            $delete_outputs_stmt = mysqli_prepare($conn, $delete_outputs_query);
-            mysqli_stmt_bind_param($delete_outputs_stmt, 'i', $project_id);
-            mysqli_stmt_execute($delete_outputs_stmt);
-            mysqli_stmt_close($delete_outputs_stmt);
-
-            // บันทึกการเลือกกิจกรรมใหม่
+            // บันทึกการเลือกกิจกรรม (อนุญาตให้เลือกซ้ำเพื่อเพิ่ม output ใหม่)
             $insert_query = "INSERT INTO project_activities (project_id, activity_id, created_by) VALUES (?, ?, ?)";
             $insert_stmt = mysqli_prepare($conn, $insert_query);
             mysqli_stmt_bind_param($insert_stmt, 'iis', $project_id, $selected_activity, $user_id);
+            $insert_success = mysqli_stmt_execute($insert_stmt);
+            mysqli_stmt_close($insert_stmt);
 
-            if (mysqli_stmt_execute($insert_stmt)) {
+            if ($insert_success) {
                 // เก็บข้อมูลใน session เพื่อใช้ในการแสดงผล
                 $_SESSION['selected_activities'] = [$activity['activity_id']];
                 $_SESSION['selected_activity_detail'] = $activity;
@@ -139,7 +127,6 @@ try {
                 header("location: step2-activity.php?project_id=" . $project_id);
                 exit;
             }
-            mysqli_stmt_close($insert_stmt);
         }
     } else {
         $_SESSION['error_message'] = "ไม่พบข้อมูลกิจกรรมที่เลือก";

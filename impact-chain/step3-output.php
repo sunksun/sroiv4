@@ -223,16 +223,17 @@ ksort($grouped_outputs);
         <!-- Error Messages -->
         <?php if (isset($_SESSION['error_message'])): ?>
             <div class="alert alert-danger alert-dismissible fade show">
-                <i class="fas fa-exclamation-circle"></i> 
-                <strong>Error:</strong> <?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?>
+                <i class="fas fa-exclamation-circle"></i>
+                <strong>Error:</strong> <?php echo $_SESSION['error_message'];
+                                        unset($_SESSION['error_message']); ?>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         <?php endif; ?>
 
         <!-- Progress Steps -->
-        <?php 
+        <?php
         $status = getImpactChainStatus($project_id);
-        renderImpactChainProgressBar($project_id, 3, $status); 
+        renderImpactChainProgressBar($project_id, 3, $status);
         ?>
 
         <!-- Selected Activity Info -->
@@ -280,9 +281,12 @@ ksort($grouped_outputs);
                                 <i class="fas fa-exclamation-triangle"></i> ไม่พบข้อมูลผลผลิตที่เกี่ยวข้องกับกิจกรรมที่เลือก
                             </div>
                             <div class="d-flex justify-content-between">
-                                <a href="step2-activity.php?project_id=<?php echo $project_id; ?><?php echo ($chain_id > 0 ? '&new_chain=1' : ''); ?>" class="btn btn-outline-secondary">
-                                    <i class="fas fa-arrow-left"></i> ย้อนกลับ
-                                </a>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="goBack()">
+                                    <i class="fas fa-arrow-left"></i> ย้อนกลับไปเลือกกิจกรรม
+                                </button>
+                                <button type="button" class="btn btn-success btn-sm" onclick="goToImpactPathway()">
+                                    <i class="fas fa-check-circle"></i> เสร็จสิ้นและไป Impact Pathway
+                                </button>
                             </div>
                         <?php else: ?>
                             <div class="mb-4">
@@ -428,11 +432,14 @@ ksort($grouped_outputs);
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                             <i class="fas fa-times"></i> ยกเลิก
                         </button>
-                        <button type="button" class="btn btn-outline-primary" onclick="goBack()">
-                            <i class="fas fa-arrow-left"></i> ย้อนกลับ
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="goBack()">
+                            <i class="fas fa-arrow-left"></i> ย้อนกลับไปเลือกกิจกรรม
                         </button>
-                        <button type="button" class="btn btn-success" onclick="handleSubmit();">
+                        <button type="button" class="btn btn-success btn-sm" onclick="handleSubmit();">
                             <i class="fas fa-arrow-right"></i> ถัดไป: เลือกผลลัพธ์ (Step 4)
+                        </button>
+                        <button type="button" class="btn btn-info btn-sm" onclick="goToImpactPathway();">
+                            <i class="fas fa-check-circle"></i> เสร็จสิ้นและไป Impact Pathway
                         </button>
                     </div>
                 </form>
@@ -499,17 +506,17 @@ ksort($grouped_outputs);
             const projectId = <?php echo $project_id; ?>;
             const chainId = <?php echo $chain_id ? $chain_id : 'null'; ?>;
             console.log('Debug: chainId =', chainId, 'project_id =', projectId);
-            
+
             if (outputDetails === '') {
                 alert('กรุณากรอกรายละเอียดเพิ่มเติม');
                 return false;
             }
-            
+
             if (selectedOutputId === '' || selectedOutputId === null) {
                 alert('กรุณาเลือกผลผลิตก่อน');
                 return false;
             }
-            
+
             // ส่งข้อมูลไปยัง process-step3.php พร้อม chain_id
             let url = `process-step3.php?project_id=${projectId}&selected_output_id=${selectedOutputId}&output_details=${encodeURIComponent(outputDetails)}`;
             if (chainId && chainId > 0) {
@@ -520,9 +527,159 @@ ksort($grouped_outputs);
 
         // ฟังก์ชันย้อนกลับ
         function goBack() {
+            const outputDetails = document.getElementById('output_details');
+            const selectedOutputId = document.getElementById('selected_output_id');
+
+            // ตรวจสอบว่ามี textarea อยู่หรือไม่ (กรณีที่มีผลผลิตให้เลือก)
+            if (outputDetails && selectedOutputId) {
+                const detailsValue = outputDetails.value.trim();
+                const outputId = selectedOutputId.value;
+
+                // ตรวจสอบว่าเลือกผลผลิตแล้วหรือยัง
+                if (outputId === '') {
+                    alert('กรุณาเลือกผลผลิตก่อนดำเนินการต่อ');
+                    return false;
+                }
+
+                // ตรวจสอบว่ากรอกรายละเอียดแล้วหรือยัง
+                if (detailsValue === '') {
+                    alert('กรุณากรอกรายละเอียดเพิ่มเติมก่อนดำเนินการต่อ');
+                    outputDetails.focus();
+                    return false;
+                }
+
+                // มีข้อมูลครบถ้วนแล้ว - ให้ผู้ใช้เลือก
+                if (confirm('คุณได้กรอกข้อมูลรายละเอียดผลผลิตแล้ว ต้องการบันทึกข้อมูลและย้อนกลับไปเลือกกิจกรรมหรือไม่?\n\n- กด "ตกลง" เพื่อบันทึกข้อมูลแล้วย้อนกลับ\n- กด "ยกเลิก" เพื่อย้อนกลับโดยไม่บันทึก')) {
+                    // บันทึกข้อมูลก่อนย้อนกลับ
+                    saveAndGoBack();
+                    return;
+                }
+            }
+
+            // ย้อนกลับโดยไม่บันทึก (กรณีไม่มี textarea หรือผู้ใช้เลือกไม่บันทึก)
             window.location.href = 'step2-activity.php?project_id=<?php echo $project_id; ?><?php echo ($chain_id > 0 ? '&new_chain=1' : ''); ?>';
         }
 
+        // ฟังก์ชันบันทึกข้อมูลแล้วย้อนกลับ
+        function saveAndGoBack() {
+            const outputDetails = document.getElementById('output_details').value.trim();
+            const selectedOutputId = document.getElementById('selected_output_id').value;
+            const projectId = <?php echo $project_id; ?>;
+            const chainId = <?php echo $chain_id ? $chain_id : 'null'; ?>;
+
+            if (outputDetails === '' || selectedOutputId === '') {
+                window.location.href = 'step2-activity.php?project_id=' + projectId + '<?php echo ($chain_id > 0 ? '&new_chain=1' : ''); ?>';
+                return;
+            }
+
+            // แสดง loading
+            const originalText = 'บันทึกและย้อนกลับ...';
+
+            // เตรียมข้อมูลสำหรับส่ง
+            const formData = new FormData();
+            formData.append('action', 'save_output');
+            formData.append('project_id', projectId);
+            formData.append('output_id', selectedOutputId);
+            formData.append('output_details', outputDetails);
+            if (chainId !== null) {
+                formData.append('chain_id', chainId);
+            }
+
+            // ส่งข้อมูล
+            fetch('process-step3.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // บันทึกสำเร็จ - ย้อนกลับไป step2
+                        window.location.href = 'step2-activity.php?project_id=' + projectId + '<?php echo ($chain_id > 0 ? '&new_chain=1' : ''); ?>&saved=1';
+                    } else {
+                        alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' + (data.message || 'ไม่ทราบสาเหตุ'));
+                        // แม้บันทึกไม่สำเร็จ ก็ให้ย้อนกลับได้
+                        window.location.href = 'step2-activity.php?project_id=' + projectId + '<?php echo ($chain_id > 0 ? '&new_chain=1' : ''); ?>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+                    // แม้เกิดข้อผิดพลาด ก็ให้ย้อนกลับได้
+                    window.location.href = 'step2-activity.php?project_id=' + projectId + '<?php echo ($chain_id > 0 ? '&new_chain=1' : ''); ?>';
+                });
+        }
+
+        // ฟังก์ชันไป Impact Pathway
+        function goToImpactPathway() {
+            const outputDetails = document.getElementById('output_details');
+            const selectedOutputId = document.getElementById('selected_output_id');
+            
+            // ตรวจสอบว่ามี textarea อยู่หรือไม่ (กรณีที่มีผลผลิตให้เลือก)
+            if (outputDetails && selectedOutputId) {
+                const detailsValue = outputDetails.value.trim();
+                const outputId = selectedOutputId.value;
+                
+                // ตรวจสอบว่าเลือกผลผลิตแล้วหรือยัง
+                if (outputId === '') {
+                    alert('กรุณาเลือกผลผลิตก่อนดำเนินการต่อ');
+                    return false;
+                }
+                
+                // ตรวจสอบว่ากรอกรายละเอียดแล้วหรือยัง
+                if (detailsValue === '') {
+                    alert('กรุณากรอกรายละเอียดเพิ่มเติมก่อนดำเนินการต่อ');
+                    outputDetails.focus();
+                    return false;
+                }
+                
+                // บันทึกข้อมูลก่อนไป Impact Pathway
+                if (confirm('คุณต้องการบันทึกข้อมูลและเสร็จสิ้นขั้นตอนนี้เพื่อไปยังหน้า Impact Pathway หรือไม่?')) {
+                    saveAndGoToImpactPathway();
+                }
+            } else {
+                // กรณีไม่มี textarea (ไม่มีผลผลิต) ไปต่อได้เลย
+                if (confirm('คุณต้องการเสร็จสิ้นขั้นตอนนี้และไปยังหน้า Impact Pathway หรือไม่?')) {
+                    window.location.href = '../impact_pathway/impact_pathway.php?project_id=<?php echo $project_id; ?>';
+                }
+            }
+        }
+
+        // ฟังก์ชันบันทึกข้อมูลแล้วไป Impact Pathway
+        function saveAndGoToImpactPathway() {
+            const outputDetails = document.getElementById('output_details').value.trim();
+            const selectedOutputId = document.getElementById('selected_output_id').value;
+            const projectId = <?php echo $project_id; ?>;
+            const chainId = <?php echo $chain_id ? $chain_id : 'null'; ?>;
+            
+            // เตรียมข้อมูลสำหรับส่ง
+            const formData = new FormData();
+            formData.append('action', 'save_output');
+            formData.append('project_id', projectId);
+            formData.append('output_id', selectedOutputId);
+            formData.append('output_details', outputDetails);
+            if (chainId !== null) {
+                formData.append('chain_id', chainId);
+            }
+            
+            // ส่งข้อมูล
+            fetch('process-step3.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // บันทึกสำเร็จ - ไป Impact Pathway
+                    window.location.href = '../impact_pathway/impact_pathway.php?project_id=' + projectId;
+                } else {
+                    alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' + (data.message || 'ไม่ทราบสาเหตุ'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองอีกครั้ง');
+            });
+        }
     </script>
 </body>
 
