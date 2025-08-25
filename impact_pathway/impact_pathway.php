@@ -1160,13 +1160,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <!-- ผู้ใช้ประโยชน์ - แสดงตามกิจกรรม -->
                                 <td>
                                     <?php
-                                    // ค้นหาผู้ใช้ประโยชน์ที่เกี่ยวข้องกับกิจกรรมนี้
+                                    // แสดงผู้ใช้ประโยชน์แยกตามแต่ละกิจกรรม
                                     $activity_beneficiaries = [];
-                                    foreach ($project_beneficiaries as $beneficiary) {
-                                        // ถ้าเป็น Legacy system (ไม่มี activity_id) หรือตรงกับ activity_id
-                                        if ($beneficiary['source_type'] == 'legacy' || 
-                                            ($beneficiary['source_type'] == 'new_chain' && $beneficiary['activity_id'] == $activity['activity_id'])) {
-                                            $activity_beneficiaries[] = $beneficiary;
+                                    
+                                    if ($activity['source_type'] == 'legacy') {
+                                        // กิจกรรมระบบเดิม: แสดงเฉพาะข้อมูลจาก project_impact_ratios
+                                        foreach ($project_beneficiaries as $beneficiary) {
+                                            if ($beneficiary['source_type'] == 'legacy') {
+                                                $activity_beneficiaries[] = $beneficiary;
+                                            }
+                                        }
+                                    } else if ($activity['source_type'] == 'new_chain') {
+                                        // กิจกรรม Impact Chain: แสดงเฉพาะข้อมูลจาก impact_chain_ratios ที่ตรงกับ activity_id
+                                        foreach ($project_beneficiaries as $beneficiary) {
+                                            if ($beneficiary['source_type'] == 'new_chain' && $beneficiary['activity_id'] == $activity['activity_id']) {
+                                                $activity_beneficiaries[] = $beneficiary;
+                                            }
                                         }
                                     }
                                     ?>
