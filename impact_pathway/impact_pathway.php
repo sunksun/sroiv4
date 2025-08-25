@@ -241,21 +241,42 @@ if ($project_id > 0) {
     }
     mysqli_stmt_close($outcomes_stmt_new);
 
-    // ดึงผู้ใช้ประโยชน์จากตาราง project_impact_ratios
-    $beneficiaries_query = "
-        SELECT DISTINCT beneficiary, benefit_number, benefit_detail
-        FROM project_impact_ratios 
-        WHERE project_id = ? AND beneficiary IS NOT NULL AND beneficiary != ''
-        ORDER BY benefit_number ASC
+    // ดึงผู้ใช้ประโยชน์จากทั้งสองตาราง และจับคู่กับกิจกรรม
+    
+    // จาก project_impact_ratios (Legacy system)
+    $legacy_beneficiaries_query = "
+        SELECT DISTINCT pir.beneficiary, pir.benefit_number, pir.benefit_detail, 
+               NULL as activity_id, 'legacy' as source_type
+        FROM project_impact_ratios pir
+        WHERE pir.project_id = ? AND pir.beneficiary IS NOT NULL AND pir.beneficiary != ''
+        ORDER BY pir.benefit_number ASC
     ";
-    $beneficiaries_stmt = mysqli_prepare($conn, $beneficiaries_query);
-    mysqli_stmt_bind_param($beneficiaries_stmt, "i", $project_id);
-    mysqli_stmt_execute($beneficiaries_stmt);
-    $beneficiaries_result = mysqli_stmt_get_result($beneficiaries_stmt);
-    while ($beneficiary = mysqli_fetch_assoc($beneficiaries_result)) {
+    $legacy_stmt = mysqli_prepare($conn, $legacy_beneficiaries_query);
+    mysqli_stmt_bind_param($legacy_stmt, "i", $project_id);
+    mysqli_stmt_execute($legacy_stmt);
+    $legacy_result = mysqli_stmt_get_result($legacy_stmt);
+    while ($beneficiary = mysqli_fetch_assoc($legacy_result)) {
         $project_beneficiaries[] = $beneficiary;
     }
-    mysqli_stmt_close($beneficiaries_stmt);
+    mysqli_stmt_close($legacy_stmt);
+
+    // จาก impact_chain_ratios (New chain system)
+    $new_beneficiaries_query = "
+        SELECT DISTINCT icr.beneficiary, icr.benefit_number, icr.benefit_detail,
+               ic.activity_id, 'new_chain' as source_type
+        FROM impact_chain_ratios icr
+        INNER JOIN impact_chains ic ON icr.impact_chain_id = ic.id
+        WHERE ic.project_id = ? AND icr.beneficiary IS NOT NULL AND icr.beneficiary != ''
+        ORDER BY icr.benefit_number ASC
+    ";
+    $new_stmt = mysqli_prepare($conn, $new_beneficiaries_query);
+    mysqli_stmt_bind_param($new_stmt, "i", $project_id);
+    mysqli_stmt_execute($new_stmt);
+    $new_result = mysqli_stmt_get_result($new_stmt);
+    while ($beneficiary = mysqli_fetch_assoc($new_result)) {
+        $project_beneficiaries[] = $beneficiary;
+    }
+    mysqli_stmt_close($new_stmt);
 }
 
 
@@ -1136,26 +1157,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <?php endif; ?>
                                 </td>
 
-                                <!-- ผู้ใช้ประโยชน์ - แสดงเฉพาะแถวแรก -->
-                                <?php if ($activity_index == 0): ?>
-                                    <td rowspan="<?php echo count($project_activities); ?>">
-                                        <?php if (!empty($project_beneficiaries)): ?>
-                                            <?php foreach ($project_beneficiaries as $beneficiary): ?>
-                                                <div class="user-item">
-                                                    <div class="user-info">ผลประโยชน์ <?php echo htmlspecialchars($beneficiary['benefit_number']); ?></div>
-                                                    <div class="user-detail"><?php echo htmlspecialchars($beneficiary['beneficiary']); ?></div>
-                                                    <?php if (!empty($beneficiary['benefit_detail'])): ?>
-                                                        <div style="font-size: 0.75rem; color: #6c757d; margin-top: 0.25rem;">
-                                                            รายละเอียด: <?php echo htmlspecialchars($beneficiary['benefit_detail']); ?>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                </div>
-                                            <?php endforeach; ?>
-                                        <?php else: ?>
-                                            <small class="text-muted">ยังไม่มีข้อมูลผู้ใช้ประโยชน์</small>
-                                        <?php endif; ?>
-                                    </td>
-                                <?php endif; ?>
+                                <!-- ผู้ใช้ประโยชน์ - แสดงตามกิจกรรม -->
+                                <td>
+                                    <?php
+                                    // ค้นหาผู้ใช้ประโยชน์ที่เกี่ยวข้องกับกิจกรรมนี้
+                                    $activity_beneficiaries = [];
+                                    foreach ($project_beneficiaries as $beneficiary) {
+                                        // ถ้าเป็น Legacy system (ไม่มี activity_id) หรือตรงกับ activity_id
+                                        if ($beneficiary['source_type'] == 'legacy' || 
+                                            ($beneficiary['source_type'] == 'new_chain' && $beneficiary['activity_id'] == $activity['activity_id'])) {
+                                            $activity_beneficiaries[] = $beneficiary;
+                                        }
+                                    }
+                                    ?>
+                                    <?php if (!empty($activity_beneficiaries)): ?>
+                                        <?php foreach ($activity_beneficiaries as $beneficiary): ?>
+                                            <div class="user-item">
+                                                <div class="user-info">ผลประโยชน์ <?php echo htmlspecialchars($beneficiary['benefit_number']); ?></div>
+                                                <div class="user-detail"><?php echo htmlspecialchars($beneficiary['beneficiary']); ?></div>
+                                                <?php if (!empty($beneficiary['benefit_detail'])): ?>
+                                                    <div style="font-size: 0.75rem; color: #6c757d; margin-top: 0.25rem;">
+                                                        รายละเอียด: <?php echo htmlspecialchars($beneficiary['benefit_detail']); ?>
+                                                    </div>
+                                                <?php endif; ?>
+                                                <?php if (isset($beneficiary['source_type'])): ?>
+                                                    <div style="font-size: 0.7rem; color: #dc3545; margin-top: 0.25rem;">
+                                                        <i class="fas fa-users"></i>
+                                                        <?php echo $beneficiary['source_type'] == 'legacy' ? 'ระบบเดิม' : 'Impact Chain'; ?>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <small class="text-muted">ไม่มีผู้ใช้ประโยชน์สำหรับกิจกรรม <?php echo htmlspecialchars($activity['activity_code']); ?></small>
+                                    <?php endif; ?>
+                                </td>
 
                                 <!-- ผลลัพธ์ - ดึงผลลัพธ์ที่เกี่ยวข้องกับกิจกรรมนี้ -->
                                 <td>
