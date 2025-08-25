@@ -56,15 +56,17 @@ if ($chain_id > 0) {
     $activity_stmt = mysqli_prepare($conn, $activity_query);
     mysqli_stmt_bind_param($activity_stmt, 'i', $chain_id);
 } else {
-    // กรณี Impact Chain เดิม - ดึงข้อมูลจาก project_activities
+    // กรณี Impact Chain เดิม - ดึงข้อมูลกิจกรรมล่าสุดที่เลือกจาก project_activities
     $activity_query = "SELECT pa.activity_id, a.activity_name, a.activity_code, a.activity_description, s.strategy_id, s.strategy_name 
                        FROM project_activities pa 
                        JOIN activities a ON pa.activity_id = a.activity_id 
                        JOIN strategies s ON a.strategy_id = s.strategy_id 
-                       WHERE pa.project_id = ?";
+                       WHERE pa.project_id = ?
+                       ORDER BY pa.id DESC
+                       LIMIT 1";
     $activity_stmt = mysqli_prepare($conn, $activity_query);
     mysqli_stmt_bind_param($activity_stmt, 'i', $project_id);
-    error_log("step3-output.php: Legacy system query: " . $activity_query . " with project_id=$project_id");
+    error_log("step3-output.php: Legacy system query (latest activity): " . $activity_query . " with project_id=$project_id");
 }
 
 mysqli_stmt_execute($activity_stmt);

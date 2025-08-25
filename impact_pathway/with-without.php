@@ -124,33 +124,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // บันทึกข้อมูลใหม่
         $saved_count = 0;
-        foreach ($benefit_data as $index => $benefit_detail) {
-            $with_value = $_POST['with_' . ($index + 1)] ?? '';
-            $without_value = $_POST['without_' . ($index + 1)] ?? '';
+        
+        if (empty($benefit_data)) {
+            // กรณีไม่มีข้อมูลผลประโยชน์ - บันทึกข้อความแทน NULL เพื่อบอกว่าไม่มีข้อมูล
+            $insert_query = "INSERT INTO project_with_without (project_id, benefit_detail, with_value, without_value, created_by) VALUES (?, ?, NULL, NULL, ?)";
+            $insert_stmt = mysqli_prepare($conn, $insert_query);
+            $placeholder_text = "ไม่มีข้อมูลผลประโยชน์";
+            mysqli_stmt_bind_param($insert_stmt, 'iss', $project_id, $placeholder_text, $user_id);
             
-            // บันทึกข้อมูลลงฐานข้อมูล (เฉพาะที่มีข้อมูลอย่างน้อยหนึ่งช่อง)
-            if (!empty($with_value) || !empty($without_value)) {
-                $insert_query = "INSERT INTO project_with_without (project_id, benefit_detail, with_value, without_value, created_by) VALUES (?, ?, ?, ?, ?)";
-                $insert_stmt = mysqli_prepare($conn, $insert_query);
-                mysqli_stmt_bind_param($insert_stmt, 'isssi', $project_id, $benefit_detail, $with_value, $without_value, $user_id);
+            if (mysqli_stmt_execute($insert_stmt)) {
+                $saved_count++;
+                $message = "บันทึกข้อมูลเรียบร้อยแล้ว (ไม่มีข้อมูลผลประโยชน์)";
+            }
+            mysqli_stmt_close($insert_stmt);
+        } else {
+            // กรณีมีข้อมูลผลประโยชน์ - บันทึกข้อมูลตามปกติ
+            foreach ($benefit_data as $index => $benefit_detail) {
+                $with_value = $_POST['with_' . ($index + 1)] ?? '';
+                $without_value = $_POST['without_' . ($index + 1)] ?? '';
                 
-                if (mysqli_stmt_execute($insert_stmt)) {
-                    $saved_count++;
+                // บันทึกข้อมูลลงฐานข้อมูล (เฉพาะที่มีข้อมูลอย่างน้อยหนึ่งช่อง)
+                if (!empty($with_value) || !empty($without_value)) {
+                    $insert_query = "INSERT INTO project_with_without (project_id, benefit_detail, with_value, without_value, created_by) VALUES (?, ?, ?, ?, ?)";
+                    $insert_stmt = mysqli_prepare($conn, $insert_query);
+                    mysqli_stmt_bind_param($insert_stmt, 'isssi', $project_id, $benefit_detail, $with_value, $without_value, $user_id);
+                    
+                    if (mysqli_stmt_execute($insert_stmt)) {
+                        $saved_count++;
+                    }
+                    mysqli_stmt_close($insert_stmt);
                 }
-                mysqli_stmt_close($insert_stmt);
+            }
+            
+            if ($saved_count > 0) {
+                $message = "บันทึกข้อมูล " . $saved_count . " รายการเรียบร้อยแล้ว";
+            } else {
+                $message = "ไม่มีข้อมูล With-Without ที่บันทึก ดำเนินการต่อไปหน้าถัดไป";
             }
         }
-
-        if ($saved_count > 0) {
-            $message = "บันทึกข้อมูล " . $saved_count . " รายการเรียบร้อยแล้ว";
-            
-            // Redirect ไป SROI Ex-post Analysis
-            $_SESSION['success_message'] = $message;
-            header("location: ../sroi-expost/index.php?project_id=" . $project_id);
-            exit;
-        } else {
-            $message = "ไม่มีข้อมูลที่จะบันทึก";
-        }
+        
+        // Redirect ไป SROI Ex-post Analysis
+        $_SESSION['success_message'] = $message;
+        header("location: ../sroi-expost/index.php?project_id=" . $project_id);
+        exit;
 
     } catch (Exception $e) {
         $error = $e->getMessage();
@@ -590,7 +606,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ?>
                             <tr>
                                 <td colspan="3" class="text-center" style="padding: 2rem; color: #6c757d;">
-                                    ไม่พบข้อมูลผลประโยชน์ กรุณาเพิ่มข้อมูลในส่วนการวิเคราะห์ Impact Pathway ก่อน
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle"></i>
+                                        <strong>ไม่พบข้อมูลผลประโยชน์</strong>
+                                    </div>
                                 </td>
                             </tr>
                         <?php } ?>

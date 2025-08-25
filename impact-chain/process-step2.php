@@ -103,7 +103,7 @@ try {
             }
         } else {
             // แก้ไข Impact Chain เดิม (ใช้ตารางเดิม)
-            // บันทึกการเลือกกิจกรรม (อนุญาตให้เลือกซ้ำเพื่อเพิ่ม output ใหม่)
+            // บันทึกการเลือกกิจกรรม (เพิ่มข้อมูลใหม่เพื่อเก็บเส้นทางของแต่ละกิจกรรม)
             $insert_query = "INSERT INTO project_activities (project_id, activity_id, created_by) VALUES (?, ?, ?)";
             $insert_stmt = mysqli_prepare($conn, $insert_query);
             mysqli_stmt_bind_param($insert_stmt, 'iis', $project_id, $selected_activity, $user_id);

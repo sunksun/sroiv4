@@ -9,7 +9,7 @@ if (!$conn) {
 
 // ตรวจสอบการ login
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
-    header("location: login.php");
+    header("location: ../login.php");
     exit;
 }
 
@@ -257,6 +257,7 @@ if ($project_id > 0) {
     }
     mysqli_stmt_close($beneficiaries_stmt);
 }
+
 
 
 // ดึงรายการกิจกรรมทั้งหมดสำหรับ dropdown
@@ -1025,7 +1026,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                 <tr>
                                                     <td><small><strong>ผลประโยชน์ <?php echo ($index + 1); ?></strong></small></td>
                                                     <td><small><?php echo htmlspecialchars($benefit['beneficiary'] ?? 'ไม่ระบุ'); ?></small></td>
-                                                    <td><small class="text-end"><?php echo isset($benefit['benefit_note']) ? number_format($benefit['benefit_note']) : 'ไม่ระบุ'; ?></small></td>
+                                                    <td><small class="text-end"><?php 
+                                                        if (isset($benefit['benefit_note']) && is_numeric($benefit['benefit_note'])) {
+                                                            echo number_format((float)$benefit['benefit_note']);
+                                                        } else {
+                                                            echo 'ไม่ระบุ';
+                                                        }
+                                                    ?></small></td>
                                                     <td><small class="text-center"><?php echo $benefit['attribution'] ?? '0'; ?></small></td>
                                                     <td><small class="text-center"><?php echo $benefit['deadweight'] ?? '0'; ?></small></td>
                                                     <td><small class="text-center"><?php echo $benefit['displacement'] ?? '0'; ?></small></td>
@@ -1036,10 +1043,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </div>
                         <?php endif; ?>
-                        <small class="text-muted">เก็บข้อมูลเมื่อ: <?php echo date('d/m/Y H:i:s', $step4_info['timestamp']); ?></small>
                     </div>
                 <?php endif; ?>
             </div>
+
 
             <!-- Pathway Display Table -->
             <table class="pathway-display-table">

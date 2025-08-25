@@ -44,6 +44,19 @@ $stats_result = mysqli_stmt_get_result($stats_stmt);
 $user_stats = mysqli_fetch_assoc($stats_result);
 mysqli_stmt_close($stats_stmt);
 
+// ดึงจำนวน Impact Chain ทั้งหมด
+$chain_query = "SELECT 
+                    (SELECT COUNT(*) FROM project_strategies WHERE project_id IN (SELECT id FROM projects WHERE created_by = ?)) +
+                    (SELECT COUNT(*) FROM project_activities WHERE project_id IN (SELECT id FROM projects WHERE created_by = ?)) +
+                    (SELECT COUNT(*) FROM project_outputs WHERE project_id IN (SELECT id FROM projects WHERE created_by = ?))
+                    as total_chains";
+$chain_stmt = mysqli_prepare($conn, $chain_query);
+mysqli_stmt_bind_param($chain_stmt, 'sss', $user_id, $user_id, $user_id);
+mysqli_stmt_execute($chain_stmt);
+$chain_result = mysqli_stmt_get_result($chain_stmt);
+$chain_stats = mysqli_fetch_assoc($chain_result);
+mysqli_stmt_close($chain_stmt);
+
 // กำหนดค่าเริ่มต้นหากไม่มีข้อมูล
 $user_stats = $user_stats ?? [
     'total_projects' => 0,
@@ -836,10 +849,10 @@ function formatThaiDate($date)
             <div class="stat-card info">
                 <div class="stat-header">
                     <div>
-                        <div class="stat-label">โครงการที่ยังไม่เสร็จ</div>
-                        <div class="stat-number" id="incompletedProjects"><?php echo $user_stats['incompleted_projects']; ?></div>
-                        <div class="stat-change <?php echo $user_stats['incompleted_projects'] > 0 ? 'negative' : 'positive'; ?>">
-                            🔄 ดำเนินการอยู่
+                        <div class="stat-label">Impact Chain</div>
+                        <div class="stat-number" id="totalChains"><?php echo $chain_stats['total_chains'] ?? 0; ?></div>
+                        <div class="stat-change positive">
+                            🔗 Chain ทั้งหมด
                         </div>
                     </div>
                 </div>

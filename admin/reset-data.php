@@ -27,14 +27,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $project_id = (int)$_POST['project_id'];
                 
                 if ($project_id > 0) {
-                    // ลบข้อมูลตารางเดิม
+                    // ลบข้อมูล Impact Chain ตารางเดิม
                     mysqli_query($conn, "DELETE FROM project_strategies WHERE project_id = $project_id");
                     mysqli_query($conn, "DELETE FROM project_activities WHERE project_id = $project_id");
                     mysqli_query($conn, "DELETE FROM project_outputs WHERE project_id = $project_id");
                     mysqli_query($conn, "DELETE FROM project_outcomes WHERE project_id = $project_id");
                     mysqli_query($conn, "DELETE FROM project_impact_ratios WHERE project_id = $project_id");
                     
-                    // ลบข้อมูลตารางใหม่
+                    // ลบข้อมูล Impact Pathway
+                    mysqli_query($conn, "DELETE FROM social_impact_pathway WHERE project_id = $project_id");
+                    mysqli_query($conn, "DELETE FROM project_with_without WHERE project_id = $project_id");
+                    mysqli_query($conn, "DELETE FROM project_costs WHERE project_id = $project_id");
+                    
+                    // ลบข้อมูลตารางใหม่ (New Chain System)
                     mysqli_query($conn, "DELETE FROM impact_chain_activities WHERE impact_chain_id IN (SELECT id FROM impact_chains WHERE project_id = $project_id)");
                     mysqli_query($conn, "DELETE FROM impact_chain_outputs WHERE impact_chain_id IN (SELECT id FROM impact_chains WHERE project_id = $project_id)");
                     mysqli_query($conn, "DELETE FROM impact_chain_outcomes WHERE impact_chain_id IN (SELECT id FROM impact_chains WHERE project_id = $project_id)");
@@ -49,13 +54,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 break;
                 
             case 'reset_all_impact_chains':
-                // ลบข้อมูล Impact Chain ทั้งหมด
+                // ลบข้อมูล Impact Chain ทั้งหมด (ตารางเดิม)
                 mysqli_query($conn, "DELETE FROM project_strategies");
                 mysqli_query($conn, "DELETE FROM project_activities");
                 mysqli_query($conn, "DELETE FROM project_outputs");
                 mysqli_query($conn, "DELETE FROM project_outcomes");
                 mysqli_query($conn, "DELETE FROM project_impact_ratios");
                 
+                // ลบข้อมูล Impact Pathway ทั้งหมด
+                mysqli_query($conn, "DELETE FROM social_impact_pathway");
+                mysqli_query($conn, "DELETE FROM project_with_without");
+                mysqli_query($conn, "DELETE FROM project_costs");
+                
+                // ลบข้อมูลตารางใหม่ทั้งหมด (New Chain System)
                 mysqli_query($conn, "DELETE FROM impact_chain_activities");
                 mysqli_query($conn, "DELETE FROM impact_chain_outputs");
                 mysqli_query($conn, "DELETE FROM impact_chain_outcomes");
@@ -207,7 +218,7 @@ foreach ($stats_queries as $key => $query) {
                     <div class="card-body">
                         <p>ลบข้อมูล Impact Chain ของโครงการที่เลือก (ไม่ลบโครงการ)</p>
                         
-                        <form method="POST" onsubmit="return confirm('คุณแน่ใจหรือไม่ที่จะลบข้อมูล Impact Chain ของโครงการนี้?')">
+                        <form method="POST" onsubmit="return validateProjectSelection(this)">
                             <input type="hidden" name="action" value="reset_project_data">
                             
                             <div class="mb-3">
@@ -230,7 +241,7 @@ foreach ($stats_queries as $key => $query) {
                         
                         <hr>
                         <small class="text-muted">
-                            <strong>จะลบ:</strong> Impact Chain, Activities, Outputs, Outcomes, Ratios<br>
+                            <strong>จะลบ:</strong> Impact Chain, Impact Pathway, Activities, Outputs, Outcomes, Ratios, Costs, With-Without Analysis<br>
                             <strong>จะไม่ลบ:</strong> ข้อมูลโครงการหลัก
                         </small>
                     </div>
@@ -256,7 +267,7 @@ foreach ($stats_queries as $key => $query) {
                         
                         <hr>
                         <small class="text-muted">
-                            <strong>จะลบ:</strong> Impact Chain ทุกตาราง ของทุกโครงการ<br>
+                            <strong>จะลบ:</strong> Impact Chain + Impact Pathway ทุกตารางของทุกโครงการ<br>
                             <strong>จะไม่ลบ:</strong> ข้อมูลโครงการหลัก
                         </small>
                     </div>
@@ -293,12 +304,17 @@ foreach ($stats_queries as $key => $query) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Auto refresh stats every 30 seconds
-        setTimeout(function() {
-            if (confirm('รีเฟรชสถิติหรือไม่?')) {
-                location.reload();
+        function validateProjectSelection(form) {
+            const projectSelect = form.querySelector('select[name="project_id"]');
+            if (!projectSelect.value) {
+                alert('กรุณาเลือกโครงการก่อนดำเนินการ');
+                projectSelect.focus();
+                return false;
             }
-        }, 30000);
+            
+            const projectName = projectSelect.options[projectSelect.selectedIndex].text;
+            return confirm('คุณแน่ใจหรือไม่ที่จะลบข้อมูล Impact Chain ของ:\n' + projectName + '\n\nการกระทำนี้ไม่สามารถย้อนกลับได้!');
+        }
     </script>
 </body>
 

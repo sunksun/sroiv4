@@ -932,12 +932,24 @@ function getProxiesForOutcome($conn, $outcome_id)
 
         // ฟังก์ชันแสดง modal ข้อมูล Proxy
         function showOutcomeProxyModal(radioElement) {
+            console.log('=== showOutcomeProxyModal called ===');
+            console.log('Radio element:', radioElement);
+            console.log('Bootstrap version check:', typeof bootstrap !== 'undefined' ? 'Bootstrap loaded' : 'Bootstrap NOT loaded');
+            
             const outcomeText = radioElement.closest('.card-body').querySelector('.text-dark').textContent.trim();
             const outcomeSequence = radioElement.closest('.card-body').querySelector('.fw-bold').textContent.trim();
             const outcomeId = radioElement.value;
+            
+            console.log('Outcome details:', {outcomeText, outcomeSequence, outcomeId});
 
             // อัปเดตข้อความใน modal
-            document.getElementById('selectedOutcomeText').textContent = outcomeSequence + ': ' + outcomeText;
+            const selectedOutcomeText = document.getElementById('selectedOutcomeText');
+            if (selectedOutcomeText) {
+                selectedOutcomeText.textContent = outcomeSequence + ': ' + outcomeText;
+                console.log('selectedOutcomeText updated');
+            } else {
+                console.error('selectedOutcomeText element not found!');
+            }
 
             // โหลดข้อมูล Proxy สำหรับผลลัพธ์ที่เลือก
             loadProxyData(outcomeId);
@@ -947,14 +959,28 @@ function getProxiesForOutcome($conn, $outcome_id)
                 loadExistingData();
             <?php else: ?>
                 // New Chain - ไม่โหลดข้อมูลเดิม ให้ผู้ใช้กรอกใหม่
-                document.getElementById('formulaSection').style.display = 'block';
-                document.getElementById('savedDataSection').style.display = 'none';
+                const savedDataSection = document.getElementById('savedDataSection');
+                if (savedDataSection) {
+                    savedDataSection.style.display = 'none';
+                }
+                
                 console.log('New chain - showing empty form for new data entry');
             <?php endif; ?>
 
             // แสดง modal
-            const modal = new bootstrap.Modal(document.getElementById('outcomeProxyModal'));
-            modal.show();
+            console.log('Attempting to show modal...');
+            const modalElement = document.getElementById('outcomeProxyModal');
+            console.log('Modal element:', modalElement);
+            
+            if (typeof bootstrap !== 'undefined') {
+                const modal = new bootstrap.Modal(modalElement);
+                console.log('Modal instance created:', modal);
+                modal.show();
+                console.log('Modal.show() called');
+            } else {
+                console.error('Bootstrap is not loaded!');
+                alert('Bootstrap ไม่ได้โหลด กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต');
+            }
         }
 
         // ฟังก์ชันโหลดข้อมูล Proxy จากฐานข้อมูล

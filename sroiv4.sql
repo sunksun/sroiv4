@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 24, 2025 at 05:11 AM
+-- Generation Time: Aug 25, 2025 at 12:46 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -107,271 +107,73 @@ CREATE TABLE `audit_logs` (
 --
 
 INSERT INTO `audit_logs` (`id`, `table_name`, `record_id`, `action`, `old_values`, `new_values`, `changed_fields`, `user_id`, `ip_address`, `user_agent`, `session_id`, `timestamp`) VALUES
-(1, 'project_strategies', '1', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-09 03:35:05'),
-(2, 'project_activities', '1', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-09 03:35:11'),
-(3, 'project_outputs', '1', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 2, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-09 03:35:30'),
-(4, 'project_strategies', '2', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-09 03:58:32'),
-(5, 'project_activities', '2', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-09 03:58:35'),
-(6, 'project_outputs', '2', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 4, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-09 03:58:46'),
-(7, 'project_strategies', '1', 'INSERT', NULL, '{\"project_id\": 7, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-09 04:12:20'),
-(8, 'project_activities', '1', 'INSERT', NULL, '{\"project_id\": 7, \"activity_id\": 7, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-09 04:12:27'),
-(9, 'project_outputs', '1', 'INSERT', NULL, '{\"project_id\": 7, \"output_id\": 15, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-09 04:12:34'),
-(10, 'projects', '8', 'INSERT', NULL, '{\"project_code\": \"681234587\", \"name\": \"การสร้างทักษะการเรียนรู้ด้วย React Native สำหรับครูและบุคลากรทางการศึกษา\", \"status\": \"incompleted\", \"budget\": 70000.00, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-09 07:32:27'),
-(11, 'project_strategies', '2', 'INSERT', NULL, '{\"project_id\": 8, \"strategy_id\": 1, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-09 07:43:12'),
-(12, 'project_activities', '2', 'INSERT', NULL, '{\"project_id\": 8, \"activity_id\": 21, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-09 07:43:27'),
-(13, 'project_outputs', '2', 'INSERT', NULL, '{\"project_id\": 8, \"output_id\": 41, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-09 07:44:06'),
-(14, 'project_strategies', '3', 'INSERT', NULL, '{\"project_id\": 8, \"strategy_id\": 1, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-13 05:56:27'),
-(15, 'project_activities', '3', 'INSERT', NULL, '{\"project_id\": 8, \"activity_id\": 12, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-13 05:56:41'),
-(16, 'project_outputs', '3', 'INSERT', NULL, '{\"project_id\": 8, \"output_id\": 28, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-13 05:57:23'),
-(17, 'project_strategies', '1', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 2, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-13 06:35:19'),
-(18, 'project_strategies', '2', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-13 06:35:29'),
-(19, 'project_activities', '1', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 7, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-13 06:36:05'),
-(20, 'project_outputs', '1', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 16, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-13 06:36:21'),
-(21, 'project_strategies', '3', 'INSERT', NULL, '{\"project_id\": 8, \"strategy_id\": 1, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-13 06:52:03'),
-(22, 'project_activities', '2', 'INSERT', NULL, '{\"project_id\": 8, \"activity_id\": 18, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-13 06:52:08'),
-(23, 'project_outputs', '2', 'INSERT', NULL, '{\"project_id\": 8, \"output_id\": 38, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-13 06:52:13'),
-(24, 'project_strategies', '4', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-13 12:08:30'),
-(25, 'project_activities', '3', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-13 12:08:34'),
-(26, 'project_outputs', '3', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 2, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-13 12:08:42'),
-(27, 'project_strategies', '1', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-13 16:06:43'),
-(28, 'project_activities', '1', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 10, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-13 16:06:55'),
-(29, 'project_outputs', '1', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 19, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-13 16:07:11'),
-(30, 'project_strategies', '2', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 11:36:03'),
-(31, 'project_strategies', '3', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 11:36:24'),
-(32, 'project_activities', '2', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 11:36:43'),
-(33, 'project_outputs', '2', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 2, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 11:37:20'),
-(34, 'project_strategies', '4', 'INSERT', NULL, '{\"project_id\": 7, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 12:04:59'),
-(35, 'project_activities', '3', 'INSERT', NULL, '{\"project_id\": 7, \"activity_id\": 3, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 12:05:16'),
-(36, 'project_outputs', '3', 'INSERT', NULL, '{\"project_id\": 7, \"output_id\": 7, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 12:05:28'),
-(37, 'project_strategies', '5', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:35:12'),
-(38, 'project_activities', '4', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:35:15'),
-(39, 'project_outputs', '4', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 2, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:35:21'),
-(40, 'project_strategies', '6', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:37:10'),
-(41, 'project_activities', '5', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:37:13'),
-(42, 'project_outputs', '5', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 4, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:37:19'),
-(43, 'project_strategies', '7', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:37:58'),
-(44, 'project_activities', '6', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 11, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:38:28'),
-(45, 'project_outputs', '6', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 24, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:38:36'),
-(46, 'project_strategies', '8', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:48:05'),
-(47, 'project_activities', '7', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 3, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:48:08'),
-(48, 'project_outputs', '7', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 7, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-15 13:48:16'),
-(49, 'project_strategies', '9', 'INSERT', NULL, '{\"project_id\": 4, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 04:39:15'),
-(50, 'project_activities', '8', 'INSERT', NULL, '{\"project_id\": 4, \"activity_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 04:40:05'),
-(51, 'project_outputs', '8', 'INSERT', NULL, '{\"project_id\": 4, \"output_id\": 2, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 04:40:25'),
-(52, 'project_strategies', '10', 'INSERT', NULL, '{\"project_id\": 4, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 10:01:45'),
-(53, 'project_activities', '9', 'INSERT', NULL, '{\"project_id\": 4, \"activity_id\": 10, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 10:02:01'),
-(54, 'project_outputs', '9', 'INSERT', NULL, '{\"project_id\": 4, \"output_id\": 22, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 10:02:46'),
-(55, 'project_strategies', '11', 'INSERT', NULL, '{\"project_id\": 3, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 11:35:34'),
-(56, 'project_activities', '10', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 13, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 11:35:40'),
-(57, 'project_outputs', '10', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 29, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 11:35:49'),
-(58, 'project_activities', '11', 'INSERT', NULL, '{\"project_id\": 3, \"activity_id\": 13, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 11:38:03'),
-(59, 'project_outputs', '11', 'INSERT', NULL, '{\"project_id\": 3, \"output_id\": 29, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 11:38:12'),
-(60, 'projects', '1', 'INSERT', NULL, '{\"project_code\": \"681234567\", \"name\": \"การพัฒนานวัตกรการศึกษาด้วย Mobile Application: เสริมสร้างทักษะการสร้างแอปพลิเคชันการเรียนรู้ด้วย React Native\", \"status\": \"incompleted\", \"budget\": 70000.00, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 12:22:45'),
-(61, 'project_strategies', '12', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 12:24:00'),
-(62, 'project_activities', '12', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 12:24:32'),
-(63, 'project_outputs', '12', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 12:25:31'),
-(64, 'project_strategies', '13', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 12:33:43'),
-(65, 'project_activities', '13', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 12:33:51'),
-(66, 'project_outputs', '13', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 12:34:02'),
-(67, 'project_strategies', '14', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 12:36:47'),
-(68, 'project_activities', '14', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 16, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 12:36:54'),
-(69, 'project_outputs', '14', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 36, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 12:37:06'),
-(70, 'project_strategies', '15', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 14:24:30'),
-(71, 'project_activities', '15', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 16, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 14:24:40'),
-(72, 'project_outputs', '15', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 36, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 14:24:45'),
-(73, 'project_strategies', '16', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 14:25:27'),
-(74, 'project_activities', '16', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 3, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 14:25:39'),
-(75, 'project_outputs', '16', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 7, \"created_by\": \"5\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 14:25:46'),
-(76, 'project_strategies', '1', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 14:53:49'),
-(77, 'project_activities', '1', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 14:56:23'),
-(78, 'project_outputs', '1', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 14:58:20'),
-(79, 'project_strategies', '2', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 15:43:28'),
-(80, 'project_activities', '2', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 15:43:32'),
-(81, 'project_activities', '3', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 18, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 16:22:50'),
-(82, 'project_activities', '4', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 19, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 16:42:39'),
-(83, 'project_outputs', '2', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 39, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 16:42:55'),
-(84, 'project_outputs', '3', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 38, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 16:43:10'),
-(85, 'project_outputs', '4', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 39, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 16:44:31'),
-(86, 'project_strategies', '3', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 16:58:51'),
-(87, 'project_activities', '5', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 18, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 16:58:55'),
-(88, 'project_outputs', '5', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 38, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 16:59:09'),
-(89, 'project_outputs', '6', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 38, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-16 17:06:02'),
-(90, 'project_strategies', '4', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 06:19:19'),
-(91, 'project_strategies', '5', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 06:19:43'),
-(92, 'project_strategies', '6', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 06:20:17'),
-(93, 'project_strategies', '7', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 06:21:05'),
-(94, 'project_activities', '6', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 07:43:07'),
-(95, 'project_activities', '7', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 07:44:38'),
-(96, 'project_activities', '8', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 16, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 07:46:39'),
-(97, 'project_activities', '9', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 14, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 07:47:15'),
-(98, 'project_outputs', '7', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 30, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 07:48:04'),
-(99, 'project_outputs', '8', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 30, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 07:50:14'),
-(100, 'project_strategies', '8', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 08:08:44'),
-(101, 'project_activities', '10', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 13, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 08:08:52'),
-(102, 'project_outputs', '9', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 29, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 08:08:58'),
-(103, 'project_strategies', '9', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 08:48:19'),
-(104, 'project_activities', '11', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 08:48:23'),
-(105, 'project_outputs', '10', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 08:48:29'),
-(106, 'project_activities', '12', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 18, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 08:48:42'),
-(107, 'project_outputs', '11', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 38, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 08:49:00'),
-(108, 'project_activities', '13', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 08:49:06'),
-(109, 'project_strategies', '10', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:02:20'),
-(110, 'project_activities', '14', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:02:24'),
-(111, 'project_outputs', '12', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:02:33'),
-(112, 'project_strategies', '11', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:06:57'),
-(113, 'project_activities', '15', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:07:01'),
-(114, 'project_outputs', '13', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:07:08'),
-(115, 'project_outputs', '14', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:07:40'),
-(116, 'project_outputs', '15', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:08:40'),
-(117, 'project_strategies', '12', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:12:48'),
-(118, 'project_activities', '16', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:12:53'),
-(119, 'project_activities', '17', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:17:24'),
-(120, 'project_strategies', '13', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:18:07'),
-(121, 'project_activities', '18', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:18:12'),
-(122, 'project_outputs', '16', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:19:32'),
-(123, 'project_strategies', '14', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:20:55'),
-(124, 'project_activities', '19', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:21:00'),
-(125, 'project_outputs', '17', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:21:24'),
-(126, 'project_outputs', '18', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 35, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-18 09:22:07'),
-(127, 'project_strategies', '15', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 02:40:00'),
-(128, 'project_activities', '20', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 02:40:05'),
-(129, 'project_outputs', '19', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 02:43:10'),
-(130, 'project_outputs', '20', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 3, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 02:48:18'),
-(131, 'project_outputs', '21', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 4, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 02:52:13'),
-(132, 'project_strategies', '16', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 03:05:40'),
-(133, 'project_activities', '21', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 03:05:48'),
-(134, 'project_strategies', '17', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 03:38:55'),
-(135, 'project_activities', '22', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 03:39:04'),
-(136, 'project_outputs', '22', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 03:39:15'),
-(137, 'project_outputs', '23', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 3, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 03:40:48'),
-(138, 'project_strategies', '18', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:07:29'),
-(139, 'project_activities', '23', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:07:41'),
-(140, 'project_outputs', '24', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:07:55'),
-(141, 'project_outputs', '25', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 3, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:09:34'),
-(142, 'project_outputs', '26', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 4, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:22:40'),
-(143, 'projects', '2', 'INSERT', NULL, '{\"project_code\": \"681234568\", \"name\": \"พัฒนาศูนย์เรียนรู้ผู้สูงอายุ\", \"status\": \"incompleted\", \"budget\": 70000.00, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:26:07'),
-(144, 'project_strategies', '19', 'INSERT', NULL, '{\"project_id\": 2, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:26:35'),
-(145, 'project_activities', '24', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:26:49'),
-(146, 'project_outputs', '27', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 2, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:26:56'),
-(147, 'project_outputs', '28', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 3, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:28:42'),
-(148, 'project_outputs', '29', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 4, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:33:57'),
-(149, 'project_strategies', '20', 'INSERT', NULL, '{\"project_id\": 1, \"strategy_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:42:23'),
-(150, 'project_activities', '25', 'INSERT', NULL, '{\"project_id\": 1, \"activity_id\": 1, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:42:40'),
-(151, 'project_outputs', '30', 'INSERT', NULL, '{\"project_id\": 1, \"output_id\": 2, \"created_by\": \"6\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-20 04:43:19'),
-(152, 'project_strategies', '21', 'INSERT', NULL, '{\"project_id\": 2, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-21 02:10:57'),
-(153, 'project_activities', '26', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-21 02:11:02'),
-(154, 'project_outputs', '31', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 2, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-21 02:11:12'),
-(155, 'project_activities', '27', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 23, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-22 16:47:58'),
-(156, 'project_activities', '28', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 25, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-22 16:48:35'),
-(157, 'project_activities', '29', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 42, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-22 17:16:49'),
-(158, 'project_activities', '30', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 23, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 07:54:32'),
-(159, 'project_activities', '31', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 24, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 07:55:02'),
-(160, 'project_activities', '32', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 27, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 07:55:48'),
-(161, 'project_activities', '33', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 27, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 08:02:49'),
-(162, 'project_activities', '34', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 30, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 08:03:15'),
-(163, 'project_activities', '35', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 30, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 08:03:31'),
-(164, 'project_activities', '36', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 32, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 08:03:42'),
-(165, 'project_activities', '37', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 23, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:15:42'),
-(166, 'project_outputs', '32', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 43, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:16:06'),
-(167, 'project_activities', '38', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 24, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:17:18'),
-(168, 'project_outputs', '33', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 44, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:17:35'),
-(169, 'project_outputs', '34', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 45, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:18:51'),
-(170, 'project_outputs', '35', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 46, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:19:43'),
-(171, 'project_outputs', '36', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 47, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:20:33'),
-(172, 'project_outputs', '37', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 48, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:21:25'),
-(173, 'project_outputs', '38', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 49, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:24:22'),
-(174, 'project_activities', '39', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 27, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:25:21'),
-(175, 'project_outputs', '39', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 50, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:25:32'),
-(176, 'project_activities', '40', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 30, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:26:22'),
-(177, 'project_outputs', '40', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 51, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:26:34'),
-(178, 'project_activities', '41', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 32, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:27:56'),
-(179, 'project_outputs', '41', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 52, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:28:11'),
-(180, 'project_outputs', '42', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 53, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:28:42'),
-(181, 'proxies', '75', 'INSERT', NULL, '{\"outcome_id\": 85, \"proxy_sequence\": \"1\", \"proxy_name\": \"ค่าตอบแทนตำแหน่ง/วิทยฐานะที่สูงขึ้น\", \"calculation_formula\": \"(ค่าตอบแทนที่เพิ่มขึ้น/คน/ปี x จำนวนคน)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:37:43'),
-(182, 'project_activities', '42', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 23, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:39:56'),
-(183, 'project_outputs', '43', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 43, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:40:03'),
-(184, 'proxies', '76', 'INSERT', NULL, '{\"outcome_id\": 86, \"proxy_sequence\": \"1\", \"proxy_name\": \"ค่าตอบแทนในการถ่ายทอดความรู้/ทักษะเรื่อง...................\", \"calculation_formula\": \"(ค่าตอบแทน/คน/ปี x จำนวนคน)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:42:00'),
-(185, 'proxies', '77', 'INSERT', NULL, '{\"outcome_id\": 87, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าของเวลาที่ลดลง\", \"calculation_formula\": \"ค่าตอบแทนครูต่อชม. x จำนวนชั่วโมงที่ลดลง (คิดตามจำนวนคนเป็นรายปี)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:43:36'),
-(186, 'proxies', '78', 'INSERT', NULL, '{\"outcome_id\": 88, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าของเวลาที่ว่างที่เพิ่มขึ้น\", \"calculation_formula\": \"= นำเวลาว่างที่เพิ่มขึ้นไปใช้ในการเพิ่มรายได้ เกี่ยวกับ................... จำนวน..........บาท/ปี\\n= นำเวลาว่างที่เพิ่มขึ้นไปใช้ในการลดต้นทุน เกี่ยวกับ................... จำนวน..........บาท/ปี\\n(คิดตามจำนวนคนเป็นรายปี)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:46:16'),
-(187, 'proxies', '79', 'INSERT', NULL, '{\"outcome_id\": 89, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าผลสัมฤทธิ์ทางการเรียนที่เพิ่มขึ้น\", \"calculation_formula\": \"ค่าใช้จ่ายในการเรียนพิเศษเพื่อพัฒนาทักษะด้าน.......ลดลง จำนวน......บาท/คน/ปี (ค่าใช้จ่ายที่ลดลงต่อคน x จำนวนคน)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:48:17'),
-(188, 'proxies', '80', 'INSERT', NULL, '{\"outcome_id\": 90, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าของเวลาที่ลดลง\", \"calculation_formula\": \"ค่าตอบแทนครูต่อชม. x จำนวนชั่วโมงที่ลดลง (คิดตามจำนวนคนเป็นรายปี)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:51:02'),
-(189, 'proxies', '81', 'INSERT', NULL, '{\"outcome_id\": 91, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าของเวลาที่ว่างที่เพิ่มขึ้น\", \"calculation_formula\": \"= นำเวลาว่างที่เพิ่มขึ้นไปใช้ในการเพิ่มรายได้ เกี่ยวกับ................... จำนวน..........บาท/ปี\\n= นำเวลาว่างที่เพิ่มขึ้นไปใช้ในการลดต้นทุน เกี่ยวกับ................... จำนวน..........บาท/ปี\\n(คิดตามจำนวนคนเป็นรายปี)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:52:19'),
-(190, 'proxies', '82', 'INSERT', NULL, '{\"outcome_id\": 92, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าผลสัมฤทธิ์ทางการเรียนที่เพิ่มขึ้น\", \"calculation_formula\": \"ค่าใช้จ่ายในการเรียนพิเศษเพื่อพัฒนาทักษะด้าน.......ลดลง จำนวน......บาท/คน/ปี (ค่าใช้จ่ายที่ลดลงต่อคน x จำนวนคน)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:57:53'),
-(191, 'proxies', '83', 'INSERT', NULL, '{\"outcome_id\": 93, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าของเวลาที่ลดลง\", \"calculation_formula\": \"ค่าตอบแทนครูต่อชม. x จำนวนชั่วโมงที่ลดลง (คิดตามจำนวนคนเป็นรายปี)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 13:59:22'),
-(192, 'proxies', '84', 'INSERT', NULL, '{\"outcome_id\": 94, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าของเวลาที่ว่างที่เพิ่มขึ้น\", \"calculation_formula\": \"= นำเวลาว่างที่เพิ่มขึ้นไปใช้ในการเพิ่มรายได้ เกี่ยวกับ................... จำนวน..........บาท/ปี\\n= นำเวลาว่างที่เพิ่มขึ้นไปใช้ในการลดต้นทุน เกี่ยวกับ................... จำนวน..........บาท/ปี\\n(คิดตามจำนวนคนเป็นรายปี)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:01:23'),
-(193, 'proxies', '85', 'INSERT', NULL, '{\"outcome_id\": 95, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าผลสัมฤทธิ์ทางการเรียนที่เพิ่มขึ้น\", \"calculation_formula\": \"ค่าใช้จ่ายในการเรียนพิเศษเพื่อพัฒนาทักษะด้าน.......ลดลง จำนวน......บาท/คน/ปี (ค่าใช้จ่ายที่ลดลงต่อคน x จำนวนคน)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:03:19'),
-(194, 'proxies', '86', 'INSERT', NULL, '{\"outcome_id\": 96, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าของเวลาที่ลดลง\", \"calculation_formula\": \"ค่าตอบแทนครูต่อชม. x จำนวนชั่วโมงที่ลดลง (คิดตามจำนวนคนเป็นรายปี)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:05:16'),
-(195, 'proxies', '87', 'INSERT', NULL, '{\"outcome_id\": 97, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าของเวลาที่ว่างที่เพิ่มขึ้น\", \"calculation_formula\": \"= นำเวลาว่างที่เพิ่มขึ้นไปใช้ในการเพิ่มรายได้ เกี่ยวกับ................... จำนวน..........บาท/ปี\\n= นำเวลาว่างที่เพิ่มขึ้นไปใช้ในการลดต้นทุน เกี่ยวกับ................... จำนวน..........บาท/ปี\\n(คิดตามจำนวนคนเป็นรายปี)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:06:43'),
-(196, 'proxies', '88', 'INSERT', NULL, '{\"outcome_id\": 98, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าผลสัมฤทธิ์ทางการเรียนที่เพิ่มขึ้น\", \"calculation_formula\": \"ค่าใช้จ่ายในการเรียนพิเศษเพื่อพัฒนาทักษะด้าน.......ลดลง จำนวน......บาท/คน/ปี (ค่าใช้จ่ายที่ลดลงต่อคน x จำนวนคน)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:08:14'),
-(197, 'proxies', '89', 'INSERT', NULL, '{\"outcome_id\": 99, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าของเวลาที่ลดลง\", \"calculation_formula\": \"ค่าตอบแทนครูต่อชม. x จำนวนชั่วโมงที่ลดลง (คิดตามจำนวนคนเป็นรายปี)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:09:37'),
-(198, 'proxies', '90', 'INSERT', NULL, '{\"outcome_id\": 100, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าของเวลาที่ว่างที่เพิ่มขึ้น\", \"calculation_formula\": \"= นำเวลาว่างที่เพิ่มขึ้นไปใช้ในการเพิ่มรายได้ เกี่ยวกับ................... จำนวน..........บาท/ปี\\n= นำเวลาว่างที่เพิ่มขึ้นไปใช้ในการลดต้นทุน เกี่ยวกับ................... จำนวน..........บาท/ปี\\n(คิดตามจำนวนคนเป็นรายปี)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:11:29'),
-(199, 'proxies', '91', 'INSERT', NULL, '{\"outcome_id\": 101, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าผลสัมฤทธิ์ทางการเรียนที่เพิ่มขึ้น\", \"calculation_formula\": \"ค่าใช้จ่ายในการเรียนพิเศษเพื่อพัฒนาทักษะด้าน.......ลดลง จำนวน......บาท/คน/ปี (ค่าใช้จ่ายที่ลดลงต่อคน x จำนวนคน)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:13:02'),
-(200, 'proxies', '92', 'INSERT', NULL, '{\"outcome_id\": 102, \"proxy_sequence\": \"1\", \"proxy_name\": \"ต้นทุนในการจัดหาสื่อการเรียนการสอนลดลง\", \"calculation_formula\": \"จำนวน.....บาท/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:16:49'),
-(201, 'proxies', '93', 'INSERT', NULL, '{\"outcome_id\": 103, \"proxy_sequence\": \"1\", \"proxy_name\": \"ลดงบประมาณค่าใช้จ่ายในการอบรมพัฒนาความรู้/ทักษะเมื่อใช้นวัตกรรม\", \"calculation_formula\": \"...................บาท/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:16:49'),
-(202, 'proxies', '94', 'INSERT', NULL, '{\"outcome_id\": 104, \"proxy_sequence\": \"1\", \"proxy_name\": \"ค่าใช้จ่ายในการพัฒนาการเรียนการสอนลดลง\", \"calculation_formula\": \"จำนวน......บาท/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:16:49'),
-(203, 'proxies', '95', 'INSERT', NULL, '{\"outcome_id\": 105, \"proxy_sequence\": \"1\", \"proxy_name\": \"รายได้เพิ่มขึ้นจากการมีความรู้ทักษะ\", \"calculation_formula\": \".........บาท/ปี (อธิบายรายละเอียดของรายได้ เช่น ทำให้สามารถไปเป็นวิทยากรถ่ายทอดต่อได้ ทำให้มีรายได้จากการแปรรูปผลิตภัณฑ์ รายได้เพิ่มขึ้นจากการมีตำแหน่งหรือวิทยฐานะที่สูงขึ้น)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:26:47'),
-(204, 'proxies', '96', 'INSERT', NULL, '{\"outcome_id\": 106, \"proxy_sequence\": \"1\", \"proxy_name\": \"นักเรียนมีผลสัมฤทธิ์ทางการเรียนเพิ่มขึ้น ทำให้ค่าใช้จ่ายในการเรียนพิเศษลดลง\", \"calculation_formula\": \"จำนวน......บาท/คน/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:26:47'),
-(205, 'proxies', '97', 'INSERT', NULL, '{\"outcome_id\": 107, \"proxy_sequence\": \"1\", \"proxy_name\": \"โรงเรียนกลุ่มเป้าหมายมีต้นทุนในการจัดหาหลักสูตรลดลง\", \"calculation_formula\": \"จำนวนงบประมาณในการจัดหาหลักสูตร......ลดลง จำนวน........บาท/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:26:47'),
-(206, 'proxies', '98', 'INSERT', NULL, '{\"outcome_id\": 108, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าที่นักศึกษาครูสอบผ่านประมวลความรู้ และสามารถออกฝึกได้ตามเวลา\", \"calculation_formula\": \"ลดค่าใช้จ่ายในการอบรมเตรียมความพร้อมจำนวน......บาท/คน/ปี (จำนวนค่าใช้จ่ายในการฝึกอบรมเตรียมความพร้อมต่อคน x จำนวนคน)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:32:09'),
-(207, 'proxies', '99', 'INSERT', NULL, '{\"outcome_id\": 109, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าที่นักศึกษาครูมีคะแนนทดสอบความรู้ผ่านเกณฑ์\", \"calculation_formula\": \"ลดค่าใช้จ่ายในการอบรมเตรียมความพร้อมจำนวน......บาท/คน/ปี (จำนวนค่าใช้จ่ายในการฝึกอบรมเตรียมความพร้อมต่อคน x จำนวนคน)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:32:09'),
-(208, 'proxies', '100', 'INSERT', NULL, '{\"outcome_id\": 110, \"proxy_sequence\": \"1\", \"proxy_name\": \"1. ลดค่าใช้จ่ายเนื่องจากลดการฝึกสอนซ้ำ\", \"calculation_formula\": \"จำนวนการฝึกสอนซ้ำที่ลดลง x ค่าใช้จ่ายในการฝึกสอนซ้ำต่อคน x จำนวนคน\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:32:09'),
-(209, 'proxies', '101', 'INSERT', NULL, '{\"outcome_id\": 110, \"proxy_sequence\": \"2\", \"proxy_name\": \"2. ค่าเสียโอกาสหากขาดความมั่นใจ (ทำไม่ได้-ลาออก)\", \"calculation_formula\": \"ค่าใช้จ่ายหลักสูตรครู จำนวน........บาท/คน/ปี (คำนวณตามจำนวนคน)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:32:09'),
-(210, 'proxies', '102', 'INSERT', NULL, '{\"outcome_id\": 110, \"proxy_sequence\": \"3\", \"proxy_name\": \"3. ลดความเครียดในการเรียนครู/ฝึกสอน\", \"calculation_formula\": \"ลดค่าใช้จ่ายในการพบจิตแพทย์ หรือกิจกรรมอบรมลดความเครียด จำนวน......บาท/คน/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:32:09'),
-(211, 'proxies', '100', 'UPDATE', '{\"proxy_name\": \"1. ลดค่าใช้จ่ายเนื่องจากลดการฝึกสอนซ้ำ\", \"calculation_formula\": \"จำนวนการฝึกสอนซ้ำที่ลดลง x ค่าใช้จ่ายในการฝึกสอนซ้ำต่อคน x จำนวนคน\", \"proxy_description\": \"(จากการสัมภาษณ์กลุ่มเป้าหมาย)\"}', '{\"proxy_name\": \"ลดค่าใช้จ่ายเนื่องจากลดการฝึกสอนซ้ำ\", \"calculation_formula\": \"จำนวนการฝึกสอนซ้ำที่ลดลง x ค่าใช้จ่ายในการฝึกสอนซ้ำต่อคน x จำนวนคน\", \"proxy_description\": \"(จากการสัมภาษณ์กลุ่มเป้าหมาย)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:33:04'),
-(212, 'proxies', '101', 'UPDATE', '{\"proxy_name\": \"2. ค่าเสียโอกาสหากขาดความมั่นใจ (ทำไม่ได้-ลาออก)\", \"calculation_formula\": \"ค่าใช้จ่ายหลักสูตรครู จำนวน........บาท/คน/ปี (คำนวณตามจำนวนคน)\", \"proxy_description\": \"(จากการสัมภาษณ์กลุ่มเป้าหมาย)\"}', '{\"proxy_name\": \"ค่าเสียโอกาสหากขาดความมั่นใจ (ทำไม่ได้-ลาออก)\", \"calculation_formula\": \"ค่าใช้จ่ายหลักสูตรครู จำนวน........บาท/คน/ปี (คำนวณตามจำนวนคน)\", \"proxy_description\": \"(จากการสัมภาษณ์กลุ่มเป้าหมาย)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:33:08'),
-(213, 'proxies', '102', 'UPDATE', '{\"proxy_name\": \"3. ลดความเครียดในการเรียนครู/ฝึกสอน\", \"calculation_formula\": \"ลดค่าใช้จ่ายในการพบจิตแพทย์ หรือกิจกรรมอบรมลดความเครียด จำนวน......บาท/คน/ปี\", \"proxy_description\": \"(จากการสัมภาษณ์กลุ่มเป้าหมาย)\"}', '{\"proxy_name\": \"ลดความเครียดในการเรียนครู/ฝึกสอน\", \"calculation_formula\": \"ลดค่าใช้จ่ายในการพบจิตแพทย์ หรือกิจกรรมอบรมลดความเครียด จำนวน......บาท/คน/ปี\", \"proxy_description\": \"(จากการสัมภาษณ์กลุ่มเป้าหมาย)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:33:14'),
-(214, 'proxies', '103', 'INSERT', NULL, '{\"outcome_id\": 111, \"proxy_sequence\": \"1\", \"proxy_name\": \"ค่าใช้จ่ายในการดูแลนักศึกษาครูฝึกสอน\", \"calculation_formula\": \"จำนวนนักเรียนที่ฝึกสอนซ้ำลดลง x งบประมาณที่ใช้ในการดูแลนักศึกษาครูต่อคน\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 14:36:04'),
-(215, 'proxies', '104', 'INSERT', NULL, '{\"outcome_id\": 112, \"proxy_sequence\": \"1\", \"proxy_name\": \"ลดค่าใช้จ่ายในการหาที่ฝึกสอน\", \"calculation_formula\": \"จำนวน......บาท/คน/ปี = ค่าใช้จ่ายหาที่ฝึกสอนต่อคน x จำนวนนักเรียนครูที่ฝึกสอน\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 15:10:01'),
-(216, 'proxies', '105', 'INSERT', NULL, '{\"outcome_id\": 113, \"proxy_sequence\": \"1\", \"proxy_name\": \"ลดค่าใช้จ่ายในการจ้างครู\", \"calculation_formula\": \"จำนวน.....บาท/ปี (จำนวนคน x อัตราค่าจ้าง)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 15:10:01'),
-(217, 'proxies', '106', 'INSERT', NULL, '{\"outcome_id\": 114, \"proxy_sequence\": \"1\", \"proxy_name\": \"ลดค่าใช้จ่ายในการหาที่ฝึกสอน\", \"calculation_formula\": \"จำนวน......บาท/คน/ปี = ค่าใช้จ่ายหาที่ฝึกสอนต่อคน x จำนวนนักเรียนครูที่ฝึกสอน\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 15:12:21'),
-(218, 'proxies', '107', 'INSERT', NULL, '{\"outcome_id\": 115, \"proxy_sequence\": \"1\", \"proxy_name\": \"ลดค่าใช้จ่ายในการจ้างครู\", \"calculation_formula\": \"จำนวน.....บาท/ปี (จำนวนคน x อัตราค่าจ้าง)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 15:12:21'),
-(219, 'project_activities', '43', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 32, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 15:13:08'),
-(220, 'project_outputs', '44', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 52, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 15:13:16'),
-(221, 'project_outputs', '45', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 53, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 15:13:41'),
-(222, 'project_activities', '44', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 34, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 17:07:17'),
-(223, 'project_outputs', '46', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 54, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 17:07:25'),
-(224, 'project_activities', '45', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 35, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 17:08:02'),
-(225, 'project_outputs', '47', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 55, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-23 17:08:11'),
-(226, 'proxies', '108', 'INSERT', NULL, '{\"outcome_id\": 116, \"proxy_sequence\": \"1\", \"proxy_name\": \"ค่าตอบแทนที่นักศึกษาได้รับขณะฝึกสหกิจโดยมีรายได้..............บาท/ปี\", \"calculation_formula\": \"(เงินเดือน x จำนวนนักศึกษา x 12 เดือน = xxxxxx บาท/ปี)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 01:37:47'),
-(227, 'proxies', '109', 'INSERT', NULL, '{\"outcome_id\": 117, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าเวลาที่ลดลงจากการสอนงาน\", \"calculation_formula\": \"จำนวนวันที่ลดลง x ค่าใช้จ่ายในการสอนงานต่อวัน x จำนวนผู้ประกอบการ\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 01:40:15'),
-(228, 'proxies', '110', 'INSERT', NULL, '{\"outcome_id\": 118, \"proxy_sequence\": \"1\", \"proxy_name\": \"ค่าใช้จ่าย/ต้นทุนที่ลดลง\", \"calculation_formula\": \"จำนวน......บาท/ปี (คิดจากผู้ประกอบการทุกราย)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 01:42:44'),
-(229, 'proxies', '111', 'INSERT', NULL, '{\"outcome_id\": 119, \"proxy_sequence\": \"1\", \"proxy_name\": \"นักศึกษาจำนวน......คน ได้รับเข้าทำงานหลังฝึกสหกิจโดยมีรายได้..............บาท/ปี\", \"calculation_formula\": \"(เงินเดือน x จำนวนนักศึกษา x 12 เดือน = xxxxxx บาท/ปี)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 01:44:04'),
-(230, 'proxies', '112', 'INSERT', NULL, '{\"outcome_id\": 120, \"proxy_sequence\": \"1\", \"proxy_name\": \"นักศึกษาจำนวน......คน ได้รับเข้าทำงานหลังฝึกสหกิจโดยมีรายได้..............บาท/ปี\", \"calculation_formula\": \"(เงินเดือน x จำนวนนักศึกษา x 12 เดือน = xxxxxx บาท/ปี)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 01:49:54'),
-(231, 'proxies', '113', 'INSERT', NULL, '{\"outcome_id\": 121, \"proxy_sequence\": \"1\", \"proxy_name\": \"เงินรางวัล/ทุนสนับสนุน\", \"calculation_formula\": \"จำนวน......บาท/ปี (คิดจากนักศึกษาทุกคน)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 01:51:10'),
-(232, 'proxies', '114', 'INSERT', NULL, '{\"outcome_id\": 122, \"proxy_sequence\": \"1\", \"proxy_name\": \"สถานประกอบการมีรายได้เพิ่มขึ้น\", \"calculation_formula\": \".......บาท/ปี (คิดจากผู้ประกอบการทุกราย)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 01:52:28'),
-(233, 'proxies', '115', 'INSERT', NULL, '{\"outcome_id\": 123, \"proxy_sequence\": \"1\", \"proxy_name\": \"สถานประกอบการมีต้นทุนลดลง\", \"calculation_formula\": \".......บาท/ปี (คิดจากผู้ประกอบการทุกราย)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 01:53:45'),
-(234, 'proxies', '116', 'INSERT', NULL, '{\"outcome_id\": 124, \"proxy_sequence\": \"1\", \"proxy_name\": \"นักศึกษา/คณะ/มหาวิทยาลัยมีต้นทุนลดลง\", \"calculation_formula\": \".......บาท/ปี (คิดจากรายการ)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 02:00:45'),
-(235, 'proxies', '117', 'INSERT', NULL, '{\"outcome_id\": 125, \"proxy_sequence\": \"1\", \"proxy_name\": \"ค่าอบรมอาจารย์แบบเข้มข้น (Intensive Training)\", \"calculation_formula\": \"จำนวน .......บาท/คน/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 02:02:43'),
-(236, 'proxies', '118', 'INSERT', NULL, '{\"outcome_id\": 125, \"proxy_sequence\": \"2\", \"proxy_name\": \"ค่าใช้จ่ายในการแก้ไขข้อบกพร่องจากการนิเทศที่ไม่ตรงเกณฑ์\", \"calculation_formula\": \"จำนวน.......บาท/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 02:02:43'),
-(237, 'proxies', '119', 'INSERT', NULL, '{\"outcome_id\": 126, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าการมีทักษะภาษาอังกฤษที่สูงขึ้น\", \"calculation_formula\": \"ค่าใช้จ่ายสำหรับการซื้อคอร์สเรียนภาษาอังกฤษและเทคนิคการทำข้อสอบ (คิดจากนักศึกษาทุกคนที่สอบผ่านระดับที่สูงขึ้น)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 02:04:17'),
-(238, 'proxies', '120', 'INSERT', NULL, '{\"outcome_id\": 127, \"proxy_sequence\": \"1\", \"proxy_name\": \"รายได้เพิ่มขึ้นจากการมีศักยภาพด้านภาษาอังกฤษที่เพิ่มขึ้น\", \"calculation_formula\": \"เปรียบเทียบความแตกต่างระหว่างรายได้ผู้ที่สอบผ่าน และไม่สอบผ่าน = xxxxxxx บาทต่อปี (คิดจากนักศึกษาทุกคนที่มีรายได้เพิ่มขึ้น)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 02:05:52'),
-(239, 'proxies', '121', 'INSERT', NULL, '{\"outcome_id\": 128, \"proxy_sequence\": \"1\", \"proxy_name\": \"รายได้สูงขึ้นจากการมีความรู้/ทักษะ\", \"calculation_formula\": \"ทำให้มีรายได้จาก....................เพิ่มขึ้น จำนวน..........บาท/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 02:07:04'),
-(240, 'proxies', '122', 'INSERT', NULL, '{\"outcome_id\": 129, \"proxy_sequence\": \"1\", \"proxy_name\": \"รายได้เพิ่มขึ้นจากการเป็นผู้ประกอบการรุ่นใหม่\", \"calculation_formula\": \"\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 02:08:38'),
-(241, 'proxies', '123', 'INSERT', NULL, '{\"outcome_id\": 130, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าเวลาการทำจิตอาสา\", \"calculation_formula\": \"ค่าตอบแทนจากการทำกิจกรรมหากได้ค่าตอบแทน x จำนวนคน\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 02:09:48'),
-(242, 'proxies', '124', 'INSERT', NULL, '{\"outcome_id\": 130, \"proxy_sequence\": \"2\", \"proxy_name\": \"ลดค่าใช้จ่ายสำหรับคอร์สฝึกอบรมทักษะต่างๆ\", \"calculation_formula\": \"ค่าใช้จ่ายสำหรับคอร์สนั้นๆ ต่อคน x จำนวนคน\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 02:11:55'),
-(243, 'proxies', '125', 'INSERT', NULL, '{\"outcome_id\": 131, \"proxy_sequence\": \"1\", \"proxy_name\": \"ค่าใช้จ่าย หรือ รายได้เพิ่มขึ้น จาก.......................... จำนวน......... บาท/ปี\", \"calculation_formula\": \"(จำนวนครัวเรือน x ค่าใช้จ่ายที่ลดลงหรือรายได้ที่เพิ่มขึ้นเฉลี่ยต่อครัวเรือน)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 02:13:10'),
-(244, 'proxies', '126', 'INSERT', NULL, '{\"outcome_id\": 132, \"proxy_sequence\": \"1\", \"proxy_name\": \"งบประมาณที่ใช้ในการพัฒนา/ชดเชย/สนับสนุน ชุมชนลดลง\", \"calculation_formula\": \"จำนวน.....บาท/ปี = (จำนวนครัวเรือนที่มีศักยภาพ x เงินสนับสนุน/ครัวเรือน)\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 02:14:39'),
-(245, 'proxies', '127', 'INSERT', NULL, '{\"outcome_id\": 133, \"proxy_sequence\": \"1\", \"proxy_name\": \"\", \"calculation_formula\": \"\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 02:17:47');
-INSERT INTO `audit_logs` (`id`, `table_name`, `record_id`, `action`, `old_values`, `new_values`, `changed_fields`, `user_id`, `ip_address`, `user_agent`, `session_id`, `timestamp`) VALUES
-(246, 'proxies', '128', 'INSERT', NULL, '{\"outcome_id\": 134, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าเวลาการทำจิตอาสา\", \"calculation_formula\": \"ค่าตอบแทนจากการทำกิจกรรมหากได้ค่าตอบแทน x จำนวนคน\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 02:19:45'),
-(247, 'proxies', '129', 'INSERT', NULL, '{\"outcome_id\": 134, \"proxy_sequence\": \"2\", \"proxy_name\": \"ลดค่าใช้จ่ายสำหรับคอร์สฝึกอบรมทักษะต่างๆ\", \"calculation_formula\": \"ค่าใช้จ่ายสำหรับคอร์สนั้นๆ ต่อคน x จำนวนคน\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 02:19:45'),
-(248, 'proxies', '130', 'INSERT', NULL, '{\"outcome_id\": 135, \"proxy_sequence\": \"1\", \"proxy_name\": \"ค่าใช้จ่ายในการแก้ปัญหาที่เกิดจากความเสียหายในการทำงาน\", \"calculation_formula\": \"จำนวน....บาทต่อปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 02:34:04'),
-(249, 'proxies', '131', 'INSERT', NULL, '{\"outcome_id\": 136, \"proxy_sequence\": \"1\", \"proxy_name\": \"ค่าใช้จ่ายในการแก้ปัญหาที่เกิดจากความเสียหายในการทำงาน\", \"calculation_formula\": \"จำนวน....บาทต่อปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 02:35:17'),
-(250, 'proxies', '132', 'INSERT', NULL, '{\"outcome_id\": 137, \"proxy_sequence\": \"1\", \"proxy_name\": \"ค่าใช้จ่ายในการแก้ปัญหาที่เกิดจากความเสียหายในการทำงาน\", \"calculation_formula\": \"จำนวน....บาทต่อปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 02:36:27'),
-(251, 'proxies', '133', 'INSERT', NULL, '{\"outcome_id\": 138, \"proxy_sequence\": \"1\", \"proxy_name\": \"รายได้จากค่าเทอมของนักศึกษาที่เพิ่มขึ้น\", \"calculation_formula\": \"จำนวน......บาท/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 02:54:17'),
-(252, 'proxies', '134', 'INSERT', NULL, '{\"outcome_id\": 139, \"proxy_sequence\": \"1\", \"proxy_name\": \"มูลค่าทุนที่ได้รับการสนับสนุน\", \"calculation_formula\": \"\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 02:55:39'),
-(253, 'proxies', '135', 'INSERT', NULL, '{\"outcome_id\": 140, \"proxy_sequence\": \"1\", \"proxy_name\": \"ค่าใช้จ่ายในการซ่อมบำรุงลดลง\", \"calculation_formula\": \"จำนวน........บาท/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 02:57:05'),
-(254, 'proxies', '136', 'INSERT', NULL, '{\"outcome_id\": 140, \"proxy_sequence\": \"2\", \"proxy_name\": \"ค่าใช้จ่ายลดลงจากการใช้ระบบทดแทน (เช่น พลังงานแสงอาทิตย์ เครื่องจักรแทนคน ระบบเช่าเหมา ฯลฯ)\", \"calculation_formula\": \"จำนวน......บาท/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 02:57:05'),
-(255, 'proxies', '137', 'INSERT', NULL, '{\"outcome_id\": 141, \"proxy_sequence\": \"1\", \"proxy_name\": \"ค่าใช้จ่ายในการจัดการการร้องเรียนต่างๆ\", \"calculation_formula\": \"จำนวน......บาท/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 03:00:01'),
-(256, 'proxies', '138', 'INSERT', NULL, '{\"outcome_id\": 142, \"proxy_sequence\": \"1\", \"proxy_name\": \"ค่าใช้จ่ายในการจัดหาวัสดุอุปกรณ์เพื่อให้เกิดประสิทธิภาพการเรียนการสอน\", \"calculation_formula\": \"จำนวน.......บาท/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 03:01:49'),
-(257, 'proxies', '139', 'INSERT', NULL, '{\"outcome_id\": 143, \"proxy_sequence\": \"1\", \"proxy_name\": \"รายได้จากค่าเทอมของนักศึกษาที่เพิ่มขึ้น\", \"calculation_formula\": \"จำนวน......บาท/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 03:02:42'),
-(258, 'proxies', '140', 'INSERT', NULL, '{\"outcome_id\": 144, \"proxy_sequence\": \"1\", \"proxy_name\": \"ค่าใช้จ่าย (ค่าน้ำ ค่าไฟ ค่าบำรุงรักษา ค่าซ่อมแซม) ลดลง\", \"calculation_formula\": \".........บาท/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 03:03:36'),
-(259, 'proxies', '141', 'INSERT', NULL, '{\"outcome_id\": 145, \"proxy_sequence\": \"1\", \"proxy_name\": \"ค่าใช้จ่าย/งบประมาณในการจัดการสิ่งแวดล้อมให้ดีขึ้นลดลง\", \"calculation_formula\": \"จำนวน......บาท/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 03:04:50'),
-(260, 'proxies', '142', 'INSERT', NULL, '{\"outcome_id\": 146, \"proxy_sequence\": \"1\", \"proxy_name\": \"ค่าใช้จ่ายในการรักษาโรคลดลง (โรคระบบหายใจที่ลดลง โรคระบาดต่างๆ)\", \"calculation_formula\": \"จำนวน......บาท/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 03:05:50'),
-(261, 'proxies', '143', 'INSERT', NULL, '{\"outcome_id\": 147, \"proxy_sequence\": \"1\", \"proxy_name\": \"ค่าสาธารณูปโภคลดลง\", \"calculation_formula\": \"จำนวน.....บาท/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 03:06:56'),
-(262, 'proxies', '144', 'INSERT', NULL, '{\"outcome_id\": 148, \"proxy_sequence\": \"1\", \"proxy_name\": \"จำนวนเงินรางวัล\", \"calculation_formula\": \"จำนวน......บาท/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 03:08:24'),
-(263, 'proxies', '145', 'INSERT', NULL, '{\"outcome_id\": 149, \"proxy_sequence\": \"1\", \"proxy_name\": \"จำนวนงบประมาณที่ได้รับ\", \"calculation_formula\": \".......บาท/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 03:09:57'),
-(264, 'proxies', '146', 'INSERT', NULL, '{\"outcome_id\": 150, \"proxy_sequence\": \"1\", \"proxy_name\": \"ลดค่าใช้จ่ายในการประชาสัมพันธ์\", \"calculation_formula\": \"จำนวน......บาท/ปี\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-24 03:10:47');
+(1, 'project_strategies', '1', 'INSERT', NULL, '{\"project_id\": 2, \"strategy_id\": 3, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 06:07:02'),
+(2, 'project_activities', '56', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 34, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 06:08:08'),
+(3, 'project_activities', '57', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 34, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 07:05:35'),
+(4, 'project_outputs', '57', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 54, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 07:09:30'),
+(5, 'project_activities', '58', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 34, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 07:17:48'),
+(6, 'project_activities', '59', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 34, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 07:18:16'),
+(7, 'project_activities', '60', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 34, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 07:19:52'),
+(8, 'project_activities', '61', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 34, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 07:25:51'),
+(9, 'project_activities', '62', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 34, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 07:28:20'),
+(10, 'project_activities', '63', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 34, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 07:39:08'),
+(11, 'project_outputs', '1', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 54, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 07:46:19'),
+(12, 'project_activities', '64', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 35, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 07:46:43'),
+(13, 'project_outputs', '2', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 55, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 07:47:16'),
+(14, 'project_activities', '65', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 35, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 07:48:06'),
+(15, 'project_outputs', '3', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 55, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 07:50:56'),
+(16, 'project_activities', '66', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 36, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 07:51:19'),
+(17, 'project_activities', '67', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 35, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 08:17:30'),
+(18, 'project_outputs', '4', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 56, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 08:17:56'),
+(19, 'project_activities', '68', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 35, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 08:18:30'),
+(20, 'project_outputs', '5', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 56, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 08:19:05'),
+(21, 'project_activities', '69', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 34, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 08:19:20'),
+(22, 'project_outputs', '6', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 56, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 08:19:51'),
+(23, 'project_strategies', '1', 'INSERT', NULL, '{\"project_id\": 2, \"strategy_id\": 4, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 09:35:32'),
+(24, 'project_activities', '1', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 43, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 09:35:44'),
+(25, 'project_outputs', '1', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 66, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 09:36:09'),
+(26, 'project_strategies', '1', 'INSERT', NULL, '{\"project_id\": 2, \"strategy_id\": 4, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 09:41:59'),
+(27, 'project_activities', '1', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 44, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 09:42:03'),
+(28, 'project_outputs', '1', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 69, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 09:42:14'),
+(29, 'project_activities', '2', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 43, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 09:42:34'),
+(30, 'project_outputs', '2', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 70, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 09:43:16'),
+(31, 'project_strategies', '1', 'INSERT', NULL, '{\"project_id\": 2, \"strategy_id\": 4, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 09:44:35'),
+(32, 'project_activities', '3', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 43, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 09:44:42'),
+(33, 'project_outputs', '1', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 69, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 09:44:59'),
+(34, 'project_strategies', '1', 'INSERT', NULL, '{\"project_id\": 2, \"strategy_id\": 4, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 09:46:08'),
+(35, 'project_strategies', '1', 'INSERT', NULL, '{\"project_id\": 2, \"strategy_id\": 4, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 09:46:43'),
+(36, 'project_activities', '1', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 43, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 09:47:08'),
+(37, 'project_outputs', '1', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 66, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 09:47:29'),
+(38, 'project_strategies', '1', 'INSERT', NULL, '{\"project_id\": 2, \"strategy_id\": 4, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 09:53:03'),
+(39, 'project_activities', '1', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 43, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 09:53:17'),
+(40, 'project_outputs', '1', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 67, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 09:53:31'),
+(41, 'project_activities', '2', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 43, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 09:53:53'),
+(42, 'project_outputs', '2', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 68, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 09:54:21'),
+(43, 'project_strategies', '1', 'INSERT', NULL, '{\"project_id\": 2, \"strategy_id\": 4, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:05:14'),
+(44, 'project_activities', '1', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 45, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:05:18'),
+(45, 'project_outputs', '1', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 72, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:05:29'),
+(46, 'project_activities', '2', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 45, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:05:34'),
+(47, 'project_outputs', '2', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 73, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:05:45'),
+(48, 'project_activities', '3', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 43, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:05:48'),
+(49, 'project_outputs', '3', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 72, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:06:16'),
+(50, 'project_strategies', '1', 'INSERT', NULL, '{\"project_id\": 2, \"strategy_id\": 4, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:10:00'),
+(51, 'project_activities', '1', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 43, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:10:04'),
+(52, 'project_outputs', '1', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 66, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:10:29'),
+(53, 'project_activities', '2', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 43, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:15:37'),
+(54, 'project_outputs', '2', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 66, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:15:49'),
+(55, 'project_strategies', '1', 'INSERT', NULL, '{\"project_id\": 2, \"strategy_id\": 4, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:20:09'),
+(56, 'project_activities', '1', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 43, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:20:13'),
+(57, 'project_outputs', '1', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 66, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:20:24'),
+(58, 'project_activities', '2', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 43, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:20:30'),
+(59, 'project_outputs', '2', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 67, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:20:39'),
+(60, 'project_activities', '3', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 43, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:20:42'),
+(61, 'project_outputs', '3', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 68, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:20:57'),
+(62, 'project_activities', '4', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 44, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:22:30'),
+(63, 'project_activities', '5', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 45, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:22:54'),
+(64, 'project_strategies', '1', 'INSERT', NULL, '{\"project_id\": 2, \"strategy_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:25:09'),
+(65, 'project_activities', '6', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 1, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:25:14'),
+(66, 'project_outputs', '4', 'INSERT', NULL, '{\"project_id\": 2, \"output_id\": 2, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:25:27'),
+(67, 'project_activities', '7', 'INSERT', NULL, '{\"project_id\": 2, \"activity_id\": 18, \"created_by\": \"3\"}', NULL, NULL, NULL, NULL, NULL, '2025-08-25 10:28:50');
 
 -- --------------------------------------------------------
 
@@ -396,10 +198,8 @@ CREATE TABLE `impact_chains` (
 --
 
 INSERT INTO `impact_chains` (`id`, `project_id`, `chain_name`, `activity_id`, `sequence_order`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
-(31, 2, 'Impact Chain 1: พัฒนาความรู้/ทักษะ/ศักยภาพ/ทักษะอาชีพ', 1, 1, 'active', '3', '2025-08-21 02:12:22', '2025-08-21 02:13:20'),
-(32, 2, 'Impact Chain 2: พัฒนาความรู้/ทักษะ/ศักยภาพ/ทักษะอาชีพ', 1, 2, 'active', '3', '2025-08-21 02:14:39', '2025-08-21 02:16:54'),
-(33, 2, 'Impact Chain 3: พัฒนาความรู้/ทักษะ/ศักยภาพ/ทักษะอาชีพ', 1, 3, 'active', '3', '2025-08-21 02:17:22', '2025-08-21 02:18:26'),
-(34, 2, 'Impact Chain 4: แปรรูปผลิตภัณฑ์/พัฒนาผลิตภัณฑ์ใหม่/ผลิตภัณฑ์สร้างสรรค์ (พัฒนาบรรจุภัณฑ์ โลโก้แบรนด์)', 3, 4, 'inactive', '3', '2025-08-21 02:19:17', '2025-08-21 02:38:42');
+(40, 2, 'Impact Chain 1: ประชุมเตรียมความพร้อมในการบริหารจัดการ', 43, 1, 'active', '3', '2025-08-25 10:11:48', '2025-08-25 10:13:04'),
+(41, 2, 'Impact Chain 2: แปรรูปผลิตภัณฑ์/พัฒนาผลิตภัณฑ์ใหม่/ผลิตภัณฑ์สร้างสรรค์ (พัฒนาบรรจุภัณฑ์ โลโก้แบรนด์)', 3, 2, 'active', '3', '2025-08-25 10:26:13', '2025-08-25 10:26:25');
 
 -- --------------------------------------------------------
 
@@ -420,10 +220,8 @@ CREATE TABLE `impact_chain_activities` (
 --
 
 INSERT INTO `impact_chain_activities` (`id`, `impact_chain_id`, `activity_id`, `created_by`, `created_at`) VALUES
-(26, 31, 1, '3', '2025-08-21 02:12:22'),
-(27, 32, 1, '3', '2025-08-21 02:14:39'),
-(28, 33, 1, '3', '2025-08-21 02:17:22'),
-(29, 34, 3, '3', '2025-08-21 02:19:17');
+(35, 40, 43, '3', '2025-08-25 10:11:48'),
+(36, 41, 3, '3', '2025-08-25 10:26:13');
 
 -- --------------------------------------------------------
 
@@ -441,16 +239,6 @@ CREATE TABLE `impact_chain_outcomes` (
   `created_by` varchar(50) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `impact_chain_outcomes`
---
-
-INSERT INTO `impact_chain_outcomes` (`id`, `impact_chain_id`, `outcome_id`, `outcome_details`, `evaluation_year`, `benefit_data`, `created_by`, `created_at`) VALUES
-(21, 31, 5, '1.2.2: กลุ่มเป้าหมาย จำนวน..........คน สามารถนำความรู้ความสามารถที่เกิดจากศักยภาพ ด้าน.......................มา....(ใช้ประโยชน์อย่างไร)....ทำให้สร้างรายได้เพิ่มขึ้น', '2568', NULL, '3', '2025-08-21 02:13:20'),
-(23, 32, 9, '1.3.3: กลุ่มเป้าหมาย จำนวน..........คน สามารถนำสรรถนะ ด้าน.......................มา....(ใช้ประโยชน์อย่างไร)....ทำให้ต้นทุนลดลง', '2568', NULL, '3', '2025-08-21 02:16:54'),
-(25, 33, 7, '1.3.1: กลุ่มเป้าหมาย จำนวน..........คน สามารถถ่ายทอดสมรรถนะ ด้าน.......................ให้กับ..................จำนวน..........คน (กลุ่ม/ชุมชน)', '2568', NULL, '3', '2025-08-21 02:18:26'),
-(27, 34, 11, '1.1: รายได้เพิ่มขึ้นจาการขายผลิตภัณฑ์ใหม่ที่มีการพัฒนาบรรจุภัณฑ์ใหม่/โลโก้แบรนด์ใหม่ ได้แก่..........................................', '2568', NULL, '3', '2025-08-21 02:20:18');
 
 -- --------------------------------------------------------
 
@@ -472,10 +260,8 @@ CREATE TABLE `impact_chain_outputs` (
 --
 
 INSERT INTO `impact_chain_outputs` (`id`, `impact_chain_id`, `output_id`, `output_details`, `created_by`, `created_at`) VALUES
-(51, 31, 3, 'กลุ่มเป้าหมาย จำนวน.....2....คน มีศักยภาพ ด้าน..........2...........', '3', '2025-08-21 02:12:37'),
-(52, 32, 4, 'กลุ่มเป้าหมาย จำนวน.....3....คน มีสมรรถนะ ด้าน...........3..........', '3', '2025-08-21 02:15:01'),
-(53, 33, 4, 'กลุ่มเป้าหมาย จำนวน.........คน มีสมรรถนะ ด้าน.....................', '3', '2025-08-21 02:17:31'),
-(54, 34, 6, 'ผลิตภัณฑ์ใหม่ จำนวน...................ผลิตภัณฑ์ ได้แก่.......................', '3', '2025-08-21 02:19:35');
+(61, 40, 68, 'คู่มือการปฏิบัติงานและการใช้งบประมาณ', '3', '2025-08-25 10:13:04'),
+(62, 41, 6, 'ผลิตภัณฑ์ใหม่ จำนวน.....2..............ผลิตภัณฑ์ ได้แก่.........2..............', '3', '2025-08-25 10:26:25');
 
 -- --------------------------------------------------------
 
@@ -501,20 +287,6 @@ CREATE TABLE `impact_chain_ratios` (
   `year` varchar(20) DEFAULT NULL,
   `impact_ratio` decimal(10,4) DEFAULT 0.0000
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `impact_chain_ratios`
---
-
-INSERT INTO `impact_chain_ratios` (`id`, `impact_chain_id`, `outcome_id`, `deadweight`, `attribution`, `displacement`, `drop_off`, `created_by`, `created_at`, `updated_at`, `benefit_number`, `benefit_detail`, `beneficiary`, `benefit_note`, `year`, `impact_ratio`) VALUES
-(16, 31, NULL, 20.00, 10.00, 30.00, 0.00, '3', '2025-08-21 02:13:08', '2025-08-21 02:13:08', 1, '0', 'ผู้รับผลประโยชน์ 2', '2000', '2568', 0.4000),
-(17, 31, 5, 0.00, 0.00, 0.00, 0.00, '3', '2025-08-21 02:13:20', '2025-08-21 02:13:20', 1, NULL, NULL, NULL, NULL, 0.0000),
-(18, 32, NULL, 30.00, 30.00, 30.00, 0.00, '3', '2025-08-21 02:16:10', '2025-08-21 02:16:10', 1, '0', 'ผู้รับผลประโยชน์ 3', '3000', '2568', 0.1000),
-(19, 32, 9, 0.00, 0.00, 0.00, 0.00, '3', '2025-08-21 02:16:54', '2025-08-21 02:16:54', 1, NULL, NULL, NULL, NULL, 0.0000),
-(20, 33, NULL, 1.00, 1.00, 1.00, 0.00, '3', '2025-08-21 02:18:23', '2025-08-21 02:18:23', 1, '0', 'ผู้รับผลประโยชน์', '100', '2568', 0.9700),
-(21, 33, 7, 0.00, 0.00, 0.00, 0.00, '3', '2025-08-21 02:18:26', '2025-08-21 02:18:26', 1, NULL, NULL, NULL, NULL, 0.0000),
-(22, 34, NULL, 11.00, 11.00, 11.00, 0.00, '3', '2025-08-21 02:20:12', '2025-08-21 02:20:12', 1, '0', 'ผู้รับผลประโยชน์ 11', '1100', '2568', 0.6700),
-(23, 34, 11, 0.00, 0.00, 0.00, 0.00, '3', '2025-08-21 02:20:18', '2025-08-21 02:20:18', 1, NULL, NULL, NULL, NULL, 0.0000);
 
 -- --------------------------------------------------------
 
@@ -828,7 +600,8 @@ CREATE TABLE `projects` (
 
 INSERT INTO `projects` (`id`, `project_code`, `name`, `description`, `objective`, `start_date`, `end_date`, `budget`, `organization`, `project_manager`, `status`, `created_by`, `created_at`, `updated_at`, `impact_chain_status`, `total_impact_chains`, `current_chain_id`) VALUES
 (1, '681234567', 'การพัฒนานวัตกรการศึกษาด้วย Mobile Application: เสริมสร้างทักษะการสร้างแอปพลิเคชันการเรียนรู้ด้วย React Native', NULL, NULL, NULL, NULL, 70000.00, 'คณะครุศาสตร์', 'มัลลิกา พุดแดง', 'incompleted', '6', '2025-08-16 12:22:45', '2025-08-21 02:10:44', NULL, 0, NULL),
-(2, '681234568', 'พัฒนาศูนย์เรียนรู้ผู้สูงอายุ', NULL, NULL, NULL, NULL, 70000.00, 'คณะวิทยาศาสตร์และเทคโนโลยี', 'สังสรรค์ หล้าพันธ์', 'incompleted', '3', '2025-08-20 04:26:07', '2025-08-23 17:08:11', '{\"step1_completed\":true,\"step2_completed\":true,\"step3_completed\":true,\"step4_completed\":true,\"current_step\":4,\"last_updated\":\"2025-08-23 19:08:11\"}', 3, 34);
+(2, '681234568', 'พัฒนาศูนย์เรียนรู้ผู้สูงอายุ', NULL, NULL, NULL, NULL, 70000.00, 'คณะวิทยาศาสตร์และเทคโนโลยี', 'สังสรรค์ หล้าพันธ์', 'incompleted', '3', '2025-08-20 04:26:07', '2025-08-25 10:28:50', '{\"step1_completed\":true,\"step2_completed\":true,\"step3_completed\":true,\"step4_completed\":true,\"current_step\":4,\"last_updated\":\"2025-08-25 12:28:50\"}', 2, 41),
+(3, '681234569', 'การพัฒนานวัตกรสำหรับนักศึกษาสาขาวิชาวิศวกรรมไฟฟ้า', NULL, NULL, NULL, NULL, 70000.00, 'คณะเทคโนโลยีอุตสาหกรรม', 'นายสุกัญ เจริญสิน', 'incompleted', '7', '2025-08-24 03:34:22', '2025-08-24 10:43:51', NULL, 0, NULL);
 
 --
 -- Triggers `projects`
@@ -873,13 +646,6 @@ CREATE TABLE `project_activities` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='ตารางเก็บการเลือกกิจกรรมของโครงการ';
-
---
--- Dumping data for table `project_activities`
---
-
-INSERT INTO `project_activities` (`id`, `project_id`, `activity_id`, `created_by`, `created_at`, `updated_at`) VALUES
-(45, 2, 35, '3', '2025-08-23 17:08:02', '2025-08-23 17:08:02');
 
 --
 -- Triggers `project_activities`
@@ -934,13 +700,6 @@ CREATE TABLE `project_impact_ratios` (
   `year` varchar(10) DEFAULT NULL COMMENT 'ปี พ.ศ. ของการประเมิน'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `project_impact_ratios`
---
-
-INSERT INTO `project_impact_ratios` (`id`, `project_id`, `benefit_number`, `attribution`, `deadweight`, `displacement`, `impact_ratio`, `created_at`, `updated_at`, `benefit_detail`, `beneficiary`, `benefit_note`, `year`) VALUES
-(32, 2, 1, 20.00, 10.00, 30.00, 0.4000, '2025-08-21 02:11:49', '2025-08-21 02:11:49', 'ผลประโยชน์ 1', 'ผู้รับผลประโยชน์ 1', 1000, '2568');
-
 -- --------------------------------------------------------
 
 --
@@ -957,13 +716,6 @@ CREATE TABLE `project_outcomes` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `project_outcomes`
---
-
-INSERT INTO `project_outcomes` (`id`, `project_id`, `outcome_id`, `outcome_details`, `created_by`, `created_at`, `updated_at`) VALUES
-(41, 2, 1, '1.1.1: กลุ่มเป้าหมาย จำนวน....1......คน สามารถถ่ายทอดความรู้ เกี่ยวกับ...........1............ให้กับ...........1.......จำนวน..........คน (กลุ่ม/ชุมชน)', 3, '2025-08-21 02:12:09', '2025-08-21 02:12:09');
-
 -- --------------------------------------------------------
 
 --
@@ -979,13 +731,6 @@ CREATE TABLE `project_outputs` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='ตารางเก็บการเลือกผลผลิตของโครงการ';
-
---
--- Dumping data for table `project_outputs`
---
-
-INSERT INTO `project_outputs` (`id`, `project_id`, `output_id`, `output_details`, `created_by`, `created_at`, `updated_at`) VALUES
-(47, 2, 55, 'มีจำนวนผลงานวิจัย/นวัตกรรมที่ส่งเข้าประกวด จำนวน.........ผลงาน', '3', '2025-08-23 17:08:11', '2025-08-23 17:08:11');
 
 --
 -- Triggers `project_outputs`
@@ -1016,13 +761,6 @@ CREATE TABLE `project_strategies` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='ตารางเก็บการเลือกยุทธศาสตร์ของโครงการ';
-
---
--- Dumping data for table `project_strategies`
---
-
-INSERT INTO `project_strategies` (`id`, `project_id`, `strategy_id`, `created_by`, `created_at`, `updated_at`) VALUES
-(21, 2, 3, '3', '2025-08-21 02:10:57', '2025-08-23 17:07:06');
 
 --
 -- Triggers `project_strategies`
@@ -1392,7 +1130,8 @@ INSERT INTO `system_logs` (`id`, `log_level`, `module`, `message`, `context`, `u
 (3, 'INFO', 'PROJECT', 'ลบโครงการ: โครงการพัฒนาศูนย์การเรียนรู้ด้านพลังงานเพื่อการพัฒนาการบริหารจัดการทรัพยากรชุมชนอย่าง (ID: 4)', NULL, 3, NULL, NULL, '2025-08-16 12:18:39'),
 (4, 'INFO', 'PROJECT', 'ลบโครงการ: การพัฒนานวัตกรการศึกษาด้วย Mobile Application: เสริมสร้างทักษะการสร้างแอปพลิเคชันการเรียนรู้ด้วย React Native (ID: 3)', NULL, 3, NULL, NULL, '2025-08-16 12:18:49'),
 (5, 'INFO', 'PROJECT', 'สร้างโครงการใหม่: การพัฒนานวัตกรการศึกษาด้วย Mobile Application: เสริมสร้างทักษะการสร้างแอปพลิเคชันการเรียนรู้ด้วย React Native (รหัส: 681234567)', NULL, 5, 1, NULL, '2025-08-16 12:22:45'),
-(6, 'INFO', 'PROJECT', 'สร้างโครงการใหม่: พัฒนาศูนย์เรียนรู้ผู้สูงอายุ (รหัส: 681234568)', NULL, 3, 2, NULL, '2025-08-20 04:26:07');
+(6, 'INFO', 'PROJECT', 'สร้างโครงการใหม่: พัฒนาศูนย์เรียนรู้ผู้สูงอายุ (รหัส: 681234568)', NULL, 3, 2, NULL, '2025-08-20 04:26:07'),
+(7, 'INFO', 'PROJECT', 'สร้างโครงการใหม่: การพัฒนานวัตกรสำหรับนักศึกษาสาขาวิชาวิศวกรรมไฟฟ้า (รหัส: 681234569)', NULL, 7, 3, NULL, '2025-08-24 03:34:22');
 
 -- --------------------------------------------------------
 
@@ -1430,7 +1169,8 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `username`, `email`, `password_hash`, `first_name`, `last_name`, `full_name_th`, `title`, `position`, `department`, `organization`, `phone`, `role`, `is_active`, `email_verified`, `last_login`, `login_count`, `created_at`, `updated_at`, `created_by`) VALUES
 (3, 'sunksun.lap', 'sunksun.lap@lru.ac.th', '$2y$10$8uas62T9NwlsSlIYJmU15.svZQYZcnz9jYc6PmocsJsPMm5.NndPm', NULL, NULL, 'นายสังสรรค์ หล้าพันธ์', NULL, NULL, 'คณะวิทยาศาสตร์และเทคโนโลยี', NULL, NULL, 'teacher', 1, 0, NULL, 0, '2025-07-30 16:33:27', '2025-07-30 16:33:27', NULL),
 (5, 'manuttra.san', 'manuttra.san@lru.ac.th', '$2y$10$AW.YIZqZD62eL5y3SQhqLOlHawfp1kL4tkwNFvVxYp6u4XMk0YnZK', NULL, NULL, 'มานัตตา แสงสุวรรณ', NULL, NULL, 'คณะครุศาสตร์', NULL, NULL, 'teacher', 1, 0, NULL, 0, '2025-08-09 07:30:25', '2025-08-09 07:30:25', NULL),
-(6, 'test', 'test@test.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'ผู้ใช้ทดสอบ', NULL, NULL, NULL, NULL, NULL, 'teacher', 1, 0, NULL, 0, '2025-08-16 14:41:34', '2025-08-16 14:41:34', NULL);
+(6, 'test', 'test@test.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'ผู้ใช้ทดสอบ', NULL, NULL, NULL, NULL, NULL, 'teacher', 1, 0, NULL, 0, '2025-08-16 14:41:34', '2025-08-16 14:41:34', NULL),
+(7, 'admin.tec', 'jaruwan.lak@gmail.com', '$2y$10$VrbvEk1AB6g1biFb2SZx6egrIw67KdW/MsTqadK70RLpQYiXZf4lK', NULL, NULL, 'สุกัญญา มาสาย', NULL, NULL, 'คณะเทคโนโลยีอุตสาหกรรม', NULL, NULL, 'teacher', 1, 0, NULL, 0, '2025-08-24 03:32:31', '2025-08-24 03:32:31', NULL);
 
 -- --------------------------------------------------------
 
@@ -1702,37 +1442,37 @@ ALTER TABLE `activities`
 -- AUTO_INCREMENT for table `audit_logs`
 --
 ALTER TABLE `audit_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=265;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
 -- AUTO_INCREMENT for table `impact_chains`
 --
 ALTER TABLE `impact_chains`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `impact_chain_activities`
 --
 ALTER TABLE `impact_chain_activities`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `impact_chain_outcomes`
 --
 ALTER TABLE `impact_chain_outcomes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `impact_chain_outputs`
 --
 ALTER TABLE `impact_chain_outputs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
 -- AUTO_INCREMENT for table `impact_chain_ratios`
 --
 ALTER TABLE `impact_chain_ratios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `outcomes`
@@ -1756,49 +1496,49 @@ ALTER TABLE `present_value_factors`
 -- AUTO_INCREMENT for table `projects`
 --
 ALTER TABLE `projects`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `project_activities`
 --
 ALTER TABLE `project_activities`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `project_costs`
 --
 ALTER TABLE `project_costs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `project_impact_ratios`
 --
 ALTER TABLE `project_impact_ratios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `project_outcomes`
 --
 ALTER TABLE `project_outcomes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `project_outputs`
 --
 ALTER TABLE `project_outputs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `project_strategies`
 --
 ALTER TABLE `project_strategies`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `project_with_without`
 --
 ALTER TABLE `project_with_without`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `proxies`
@@ -1816,7 +1556,7 @@ ALTER TABLE `pvf_sets`
 -- AUTO_INCREMENT for table `social_impact_pathway`
 --
 ALTER TABLE `social_impact_pathway`
-  MODIFY `pathway_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `pathway_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `strategies`
@@ -1828,13 +1568,13 @@ ALTER TABLE `strategies`
 -- AUTO_INCREMENT for table `system_logs`
 --
 ALTER TABLE `system_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `years`
