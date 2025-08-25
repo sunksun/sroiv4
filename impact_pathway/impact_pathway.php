@@ -496,7 +496,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         /* Main Content */
         .main-container {
             max-width: 1200px;
-            margin: 0 auto;
+            margin: 3rem auto 0 auto;
             padding: 2rem;
         }
 
@@ -853,6 +853,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         /* Responsive Design */
         @media (max-width: 768px) {
             .main-container {
+                margin-top: 1.5rem;
                 padding: 1rem;
             }
 
@@ -1013,59 +1014,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?php endif; ?>
                 </div>
 
-                <!-- Session Step 4 Data (if available) -->
-                <?php if ($step4_info): ?>
-                    <div class="mt-3 p-3 border rounded" style="background: rgba(255,255,0,0.1);">
-                        <h6><span class="badge bg-danger">Session Data</span> ข้อมูลจากขั้นตอนที่ 4 (รอการบันทึก)</h6>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <strong>ผลลัพธ์ที่เลือก:</strong> ID <?php echo htmlspecialchars($step4_info['selected_outcome']); ?><br>
-                                <strong>ปีที่ประเมิน:</strong> <?php echo htmlspecialchars($step4_info['evaluation_year']); ?>
-                            </div>
-                            <div class="col-md-6">
-                                <strong>รายละเอียดผลลัพธ์:</strong><br>
-                                <small><?php echo htmlspecialchars($step4_info['outcome_details']); ?></small>
-                            </div>
-                        </div>
-                        <?php if (!empty($step4_info['benefit_data'])): ?>
-                            <div class="mt-2">
-                                <strong>ข้อมูลผลประโยชน์และสัดส่วนผลกระทบ:</strong> <?php echo count($step4_info['benefit_data']); ?> รายการ<br>
-                                <div class="table-responsive mt-2">
-                                    <table class="table table-sm table-bordered">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th width="25%">ผลประโยชน์</th>
-                                                <th width="30%">ผู้ใช้ประโยชน์</th>
-                                                <th width="15%">จำนวนเงิน (บาท)</th>
-                                                <th width="10%">Attribution (%)</th>
-                                                <th width="10%">Deadweight (%)</th>
-                                                <th width="10%">Displacement (%)</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php foreach ($step4_info['benefit_data'] as $index => $benefit): ?>
-                                                <tr>
-                                                    <td><small><strong>ผลประโยชน์ <?php echo ($index + 1); ?></strong></small></td>
-                                                    <td><small><?php echo htmlspecialchars($benefit['beneficiary'] ?? 'ไม่ระบุ'); ?></small></td>
-                                                    <td><small class="text-end"><?php 
-                                                        if (isset($benefit['benefit_note']) && is_numeric($benefit['benefit_note'])) {
-                                                            echo number_format((float)$benefit['benefit_note']);
-                                                        } else {
-                                                            echo 'ไม่ระบุ';
-                                                        }
-                                                    ?></small></td>
-                                                    <td><small class="text-center"><?php echo $benefit['attribution'] ?? '0'; ?></small></td>
-                                                    <td><small class="text-center"><?php echo $benefit['deadweight'] ?? '0'; ?></small></td>
-                                                    <td><small class="text-center"><?php echo $benefit['displacement'] ?? '0'; ?></small></td>
-                                                </tr>
-                                            <?php endforeach; ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                <?php endif; ?>
             </div>
 
 

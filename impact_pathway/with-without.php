@@ -24,62 +24,49 @@ $username = $_SESSION['username'];
 // รับ project_id จาก URL
 $project_id = isset($_GET['project_id']) ? intval($_GET['project_id']) : 0;
 
-// ดึงข้อมูลผลประโยชน์จากตาราง social_impact_pathway
+// ดึงข้อมูลผลประโยชน์จากทั้งสองตาราง (เหมือน impact_pathway.php)
 $benefit_data = [];
 if ($project_id > 0) {
-    $pathway_query = "SELECT benefit_data FROM social_impact_pathway WHERE project_id = ? AND benefit_data IS NOT NULL ORDER BY pathway_id DESC LIMIT 1";
-    $pathway_stmt = mysqli_prepare($conn, $pathway_query);
-    mysqli_stmt_bind_param($pathway_stmt, 'i', $project_id);
-    mysqli_stmt_execute($pathway_stmt);
-    $pathway_result = mysqli_stmt_get_result($pathway_stmt);
-    
-    if ($pathway_row = mysqli_fetch_assoc($pathway_result)) {
-        $benefit_json = $pathway_row['benefit_data'];
-        if (!empty($benefit_json)) {
-            $benefit_array = json_decode($benefit_json, true);
-            if (is_array($benefit_array)) {
-                foreach ($benefit_array as $index => $benefit) {
-                    // รวมข้อมูลทั้งหมดของผลประโยชน์
-                    $benefit_detail = [];
-                    $benefit_detail['beneficiary'] = $benefit['beneficiary'] ?? '';
-                    $benefit_detail['benefit_detail'] = $benefit['benefit_detail'] ?? '';
-                    $benefit_detail['benefit_note'] = $benefit['benefit_note'] ?? '';
-                    $benefit_detail['attribution'] = $benefit['attribution'] ?? '0';
-                    $benefit_detail['deadweight'] = $benefit['deadweight'] ?? '0';
-                    $benefit_detail['displacement'] = $benefit['displacement'] ?? '0';
-                    $benefit_detail['impact_percentage'] = $benefit['impact_percentage'] ?? '0';
-                    
-                    // สร้างข้อความแสดงรายละเอียดเต็ม
-                    $full_description = "ผลประโยชน์ " . ($index + 1) . ": " . $benefit_detail['beneficiary'];
-                    if (!empty($benefit_detail['benefit_detail'])) {
-                        $full_description .= "\n\nรายละเอียด: " . $benefit_detail['benefit_detail'];
-                    }
-                    
-                    if (!empty($full_description)) {
-                        $benefit_data[] = $full_description;
-                    }
-                }
-            }
+    // จาก project_impact_ratios (Legacy system)
+    $legacy_beneficiaries_query = "
+        SELECT DISTINCT pir.beneficiary, pir.benefit_detail, pir.benefit_number, 'legacy' as source_type
+        FROM project_impact_ratios pir
+        WHERE pir.project_id = ? AND pir.beneficiary IS NOT NULL AND pir.beneficiary != ''
+        ORDER BY pir.benefit_number ASC
+    ";
+    $legacy_stmt = mysqli_prepare($conn, $legacy_beneficiaries_query);
+    mysqli_stmt_bind_param($legacy_stmt, "i", $project_id);
+    mysqli_stmt_execute($legacy_stmt);
+    $legacy_result = mysqli_stmt_get_result($legacy_stmt);
+    while ($beneficiary = mysqli_fetch_assoc($legacy_result)) {
+        $full_description = "ผลประโยชน์ " . $beneficiary['benefit_number'] . ": " . $beneficiary['beneficiary'];
+        if (!empty($beneficiary['benefit_detail'])) {
+            $full_description .= "\n\nรายละเอียด: " . $beneficiary['benefit_detail'];
         }
+        $benefit_data[] = $full_description;
     }
-    mysqli_stmt_close($pathway_stmt);
-    
-    // ถ้าไม่พบข้อมูลใน social_impact_pathway ให้ fallback ไปใช้ project_impact_ratios
-    if (empty($benefit_data)) {
-        $benefit_query = "SELECT benefit_detail, benefit_number FROM project_impact_ratios WHERE project_id = ? ORDER BY benefit_number ASC";
-        $benefit_stmt = mysqli_prepare($conn, $benefit_query);
-        mysqli_stmt_bind_param($benefit_stmt, 'i', $project_id);
-        mysqli_stmt_execute($benefit_stmt);
-        $benefit_result = mysqli_stmt_get_result($benefit_stmt);
-        
-        while ($benefit_row = mysqli_fetch_assoc($benefit_result)) {
-            if (!empty($benefit_row['benefit_detail'])) {
-                $benefit_data[] = $benefit_row['benefit_detail'];
-            }
+    mysqli_stmt_close($legacy_stmt);
+
+    // จาก impact_chain_ratios (New chain system)
+    $new_beneficiaries_query = "
+        SELECT DISTINCT icr.beneficiary, icr.benefit_detail, icr.benefit_number, 'new_chain' as source_type
+        FROM impact_chain_ratios icr
+        INNER JOIN impact_chains ic ON icr.impact_chain_id = ic.id
+        WHERE ic.project_id = ? AND icr.beneficiary IS NOT NULL AND icr.beneficiary != ''
+        ORDER BY icr.benefit_number ASC
+    ";
+    $new_stmt = mysqli_prepare($conn, $new_beneficiaries_query);
+    mysqli_stmt_bind_param($new_stmt, "i", $project_id);
+    mysqli_stmt_execute($new_stmt);
+    $new_result = mysqli_stmt_get_result($new_stmt);
+    while ($beneficiary = mysqli_fetch_assoc($new_result)) {
+        $full_description = "ผลประโยชน์ " . $beneficiary['benefit_number'] . ": " . $beneficiary['beneficiary'];
+        if (!empty($beneficiary['benefit_detail'])) {
+            $full_description .= "\n\nรายละเอียด: " . $beneficiary['benefit_detail'];
         }
-        
-        mysqli_stmt_close($benefit_stmt);
+        $benefit_data[] = $full_description;
     }
+    mysqli_stmt_close($new_stmt);
 }
 
 // ดึงข้อมูล with-without ที่บันทึกไว้แล้ว
