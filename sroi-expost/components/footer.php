@@ -32,12 +32,11 @@
             ?>;
             const individualBenefitsData = [];
             <?php 
-            foreach ($project_benefits as $index => $benefit) {
-                $benefit_number = $index + 1;
+            foreach ($project_benefits as $benefit_number => $benefit) {
                 $total_benefit = 0;
                 foreach ($available_years as $year) {
                     if (isset($benefit_notes_by_year[$benefit_number]) && isset($benefit_notes_by_year[$benefit_number][$year['year_be']])) {
-                        $total_benefit += $benefit_notes_by_year[$benefit_number][$year['year_be']];
+                        $total_benefit += floatval($benefit_notes_by_year[$benefit_number][$year['year_be']]);
                     }
                 }
                 echo "individualBenefitsData.push(" . $total_benefit . ");\n";

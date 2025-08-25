@@ -13,7 +13,7 @@
     foreach ($project_costs as $cost) {
         foreach ($available_years as $year_index => $year) {
             $amount = isset($cost['amounts'][$year['year_be']]) ? $cost['amounts'][$year['year_be']] : 0;
-            $present_value = $amount / pow(1 + $default_settings['discount_rate'], $year_index);
+            $present_value = $amount / pow(1 + ($saved_discount_rate / 100), $year_index);
 
             $total_costs += $amount;
             if (!isset($costs_by_year[$year['year_be']])) {
@@ -26,13 +26,12 @@
     }
 
     // คำนวณผลประโยชน์รวมและ Present Value
-    foreach ($project_benefits as $index => $benefit) {
-        $benefit_number = $index + 1;
+    foreach ($project_benefits as $benefit_number => $benefit) {
         foreach ($available_years as $year_index => $year) {
             $amount = isset($benefit_notes_by_year[$benefit_number]) && isset($benefit_notes_by_year[$benefit_number][$year['year_be']])
-                ? $benefit_notes_by_year[$benefit_number][$year['year_be']] : 0;
+                ? floatval($benefit_notes_by_year[$benefit_number][$year['year_be']]) : 0;
             // ใช้ discount rate จากฐานข้อมูลเหมือนกับ Present Cost
-            $present_value = $amount / pow(1 + ($default_settings['discount_rate']), $year_index);
+            $present_value = $amount / pow(1 + ($saved_discount_rate / 100), $year_index);
 
             $total_benefits += $amount;
             if (!isset($benefits_by_year[$year['year_be']])) {
@@ -48,15 +47,14 @@
     $total_present_benefits = array_sum($present_benefits_by_year);
     $sroi_ratio = calculateSROIRatio($total_present_benefits, $total_present_costs);
     $npv = $total_present_benefits - $total_present_costs;
-    $sensitivity = calculateSensitivityAnalysis($sroi_ratio, $default_settings['sensitivity_range']);
+    $sensitivity = calculateSensitivityAnalysis($sroi_ratio, 0.2);
 
     // คำนวณ Base Case Impact จากข้อมูลจริงในฐานข้อมูล
     $base_case_impact = 0;
-    foreach ($project_benefits as $index => $benefit) {
-        $benefit_number = $index + 1;
+    foreach ($project_benefits as $benefit_number => $benefit) {
         foreach ($available_years as $year_index => $year) {
             $benefit_amount = isset($benefit_notes_by_year[$benefit_number]) && isset($benefit_notes_by_year[$benefit_number][$year['year_be']])
-                ? $benefit_notes_by_year[$benefit_number][$year['year_be']] : 0;
+                ? floatval($benefit_notes_by_year[$benefit_number][$year['year_be']]) : 0;
 
             // ดึงค่า base case factors จากฐานข้อมูล
             $attribution_rate = isset($base_case_factors[$benefit_number]) && isset($base_case_factors[$benefit_number][$year['year_be']])
@@ -72,7 +70,7 @@
             $displacement = $benefit_amount * ($displacement_rate / 100);
 
             $impact_amount = $attribution + $deadweight + $displacement;
-            $present_impact = $impact_amount / pow(1 + ($default_settings['discount_rate']), $year_index);
+            $present_impact = $impact_amount / pow(1 + ($saved_discount_rate / 100), $year_index);
 
             $base_case_impact += $present_impact;
         }
@@ -104,20 +102,22 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($project_benefits as $index => $benefit): ?>
-                    <?php $benefit_number = $index + 1; ?>
+                <?php foreach ($project_benefits as $benefit_number => $benefit): ?>
                     <tr class="benefit-row">
                         <td>
                             <?php echo htmlspecialchars($benefit['detail']); ?>
                             <?php if ($benefit['beneficiary']): ?>
                                 <br><small>ผู้รับ: <?php echo htmlspecialchars($benefit['beneficiary']); ?></small>
                             <?php endif; ?>
+                            <?php if (isset($benefit['source_type'])): ?>
+                                <br><small class="source-type">(<?php echo $benefit['source_type'] == 'legacy' ? 'Legacy' : 'New Chain'; ?>)</small>
+                            <?php endif; ?>
                         </td>
                         <?php foreach ($available_years as $year): ?>
                             <td>
                                 <?php
                                 $amount = isset($benefit_notes_by_year[$benefit_number]) && isset($benefit_notes_by_year[$benefit_number][$year['year_be']])
-                                    ? $benefit_notes_by_year[$benefit_number][$year['year_be']] : 0;
+                                    ? floatval($benefit_notes_by_year[$benefit_number][$year['year_be']]) : 0;
                                 echo $amount > 0 ? formatNumber($amount, 0) : '-';
                                 ?>
                             </td>
@@ -174,8 +174,7 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($project_benefits as $index => $benefit): ?>
-                    <?php $benefit_number = $index + 1; ?>
+                <?php foreach ($project_benefits as $benefit_number => $benefit): ?>
                     <tr class="impact-row">
                         <td><?php echo htmlspecialchars($benefit['detail']); ?>
                             <?php
@@ -196,7 +195,7 @@
                             <td>
                                 <?php
                                 $benefit_amount = isset($benefit_notes_by_year[$benefit_number]) && isset($benefit_notes_by_year[$benefit_number][$year['year_be']])
-                                    ? $benefit_notes_by_year[$benefit_number][$year['year_be']] : 0;
+                                    ? floatval($benefit_notes_by_year[$benefit_number][$year['year_be']]) : 0;
                                 $attribution_rate = isset($base_case_factors[$benefit_number]) && isset($base_case_factors[$benefit_number][$year['year_be']])
                                     ? $base_case_factors[$benefit_number][$year['year_be']]['attribution'] : 0;
                                 $attribution = $benefit_amount * ($attribution_rate / 100); // ใช้ค่าจากฐานข้อมูล
@@ -220,8 +219,7 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($project_benefits as $index => $benefit): ?>
-                    <?php $benefit_number = $index + 1; ?>
+                <?php foreach ($project_benefits as $benefit_number => $benefit): ?>
                     <tr class="impact-row">
                         <td><?php echo htmlspecialchars($benefit['detail']); ?>
                             <?php
@@ -242,7 +240,7 @@
                             <td>
                                 <?php
                                 $benefit_amount = isset($benefit_notes_by_year[$benefit_number]) && isset($benefit_notes_by_year[$benefit_number][$year['year_be']])
-                                    ? $benefit_notes_by_year[$benefit_number][$year['year_be']] : 0;
+                                    ? floatval($benefit_notes_by_year[$benefit_number][$year['year_be']]) : 0;
                                 $deadweight_rate = isset($base_case_factors[$benefit_number]) && isset($base_case_factors[$benefit_number][$year['year_be']])
                                     ? $base_case_factors[$benefit_number][$year['year_be']]['deadweight'] : 0;
                                 $deadweight = $benefit_amount * ($deadweight_rate / 100); // ใช้ค่าจากฐานข้อมูล
@@ -266,8 +264,7 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($project_benefits as $index => $benefit): ?>
-                    <?php $benefit_number = $index + 1; ?>
+                <?php foreach ($project_benefits as $benefit_number => $benefit): ?>
                     <tr class="impact-row">
                         <td><?php echo htmlspecialchars($benefit['detail']); ?>
                             <?php
@@ -288,7 +285,7 @@
                             <td>
                                 <?php
                                 $benefit_amount = isset($benefit_notes_by_year[$benefit_number]) && isset($benefit_notes_by_year[$benefit_number][$year['year_be']])
-                                    ? $benefit_notes_by_year[$benefit_number][$year['year_be']] : 0;
+                                    ? floatval($benefit_notes_by_year[$benefit_number][$year['year_be']]) : 0;
                                 $displacement_rate = isset($base_case_factors[$benefit_number]) && isset($base_case_factors[$benefit_number][$year['year_be']])
                                     ? $base_case_factors[$benefit_number][$year['year_be']]['displacement'] : 0;
                                 $displacement = $benefit_amount * ($displacement_rate / 100); // ใช้ค่าจากฐานข้อมูล
@@ -370,7 +367,7 @@
                 </tr>
                 <tr>
                     <td>โครงการนี้คำนวณมูลค่าผลประโยชน์ปัจจุบันสุทธิ (NPV) โดยใช้อัตราคิดลดร้อยละ</td>
-                    <td class="number"><?php echo formatNumber($default_settings['discount_rate'] * 100, 2); ?></td>
+                    <td class="number"><?php echo formatNumber($saved_discount_rate, 2); ?></td>
                     <td class="unit">%</td>
                 </tr>
                 <tr>
@@ -453,7 +450,7 @@
                         </tr>
                         <tr class="highlight-positive">
                             <td>ปัจจุบัน</td>
-                            <td><?php echo ($default_settings['discount_rate'] * 100); ?>%</td>
+                            <td><?php echo $saved_discount_rate; ?>%</td>
                             <td><?php echo formatNumber($sroi_ratio, 4); ?></td>
                             <td><?php echo formatNumber($npv, 0); ?></td>
                         </tr>

@@ -61,48 +61,102 @@ function getProjectCosts($conn, $project_id) {
  * ดึงข้อมูลผลประโยชน์โครงการ
  */
 function getProjectBenefits($conn, $project_id) {
-    $benefits_query = "SELECT benefit_number, benefit_detail, beneficiary, benefit_note, year, attribution, deadweight, displacement 
-                      FROM project_impact_ratios 
-                      WHERE project_id = ? AND benefit_detail IS NOT NULL AND benefit_detail != '' 
-                      ORDER BY benefit_number ASC";
-    $benefits_stmt = mysqli_prepare($conn, $benefits_query);
-    mysqli_stmt_bind_param($benefits_stmt, 'i', $project_id);
-    mysqli_stmt_execute($benefits_stmt);
-    $benefits_result = mysqli_stmt_get_result($benefits_stmt);
-    
     $benefits = [];
     $benefit_notes_by_year = [];
     $base_case_factors = []; // เก็บ attribution, deadweight, displacement
+    $benefit_counter = 0;
+    $processed_benefits = []; // ป้องกันข้อมูลซ้ำ
     
-    while ($benefit_row = mysqli_fetch_assoc($benefits_result)) {
-        $benefit_number = $benefit_row['benefit_number'];
+    // ดึงข้อมูลจาก project_impact_ratios (Legacy system)
+    $legacy_benefits_query = "SELECT benefit_number, benefit_detail, beneficiary, benefit_note, year, attribution, deadweight, displacement, 'legacy' as source_type
+                              FROM project_impact_ratios 
+                              WHERE project_id = ? AND benefit_detail IS NOT NULL AND benefit_detail != '' 
+                              ORDER BY benefit_number ASC, year ASC";
+    $legacy_stmt = mysqli_prepare($conn, $legacy_benefits_query);
+    mysqli_stmt_bind_param($legacy_stmt, 'i', $project_id);
+    mysqli_stmt_execute($legacy_stmt);
+    $legacy_result = mysqli_stmt_get_result($legacy_stmt);
+    
+    while ($benefit_row = mysqli_fetch_assoc($legacy_result)) {
+        $benefit_key = $benefit_row['benefit_detail'] . '_' . $benefit_row['beneficiary'] . '_legacy';
         $year = $benefit_row['year'];
         
-        // เก็บข้อมูลผลประโยชน์ครั้งแรกเท่านั้น
-        if (!isset($benefits[$benefit_number - 1])) {
-            $benefits[$benefit_number - 1] = [
+        // ถ้ายังไม่มีผลประโยชน์นี้ ให้เพิ่มใหม่
+        if (!isset($processed_benefits[$benefit_key])) {
+            $benefit_counter++;
+            $benefits[$benefit_counter] = [
                 'detail' => $benefit_row['benefit_detail'],
-                'beneficiary' => $benefit_row['beneficiary']
+                'beneficiary' => $benefit_row['beneficiary'],
+                'source_type' => $benefit_row['source_type']
             ];
+            $processed_benefits[$benefit_key] = $benefit_counter;
         }
         
-        // เก็บ benefit_note ตามปีและ benefit_number
-        if (!isset($benefit_notes_by_year[$benefit_number])) {
-            $benefit_notes_by_year[$benefit_number] = [];
-        }
-        $benefit_notes_by_year[$benefit_number][$year] = $benefit_row['benefit_note'];
+        $current_benefit_counter = $processed_benefits[$benefit_key];
         
-        // เก็บ base case factors ตามปีและ benefit_number
-        if (!isset($base_case_factors[$benefit_number])) {
-            $base_case_factors[$benefit_number] = [];
+        // เก็บ benefit_note ตามปีและ benefit_counter
+        if (!isset($benefit_notes_by_year[$current_benefit_counter])) {
+            $benefit_notes_by_year[$current_benefit_counter] = [];
         }
-        $base_case_factors[$benefit_number][$year] = [
+        $benefit_notes_by_year[$current_benefit_counter][$year] = $benefit_row['benefit_note'];
+        
+        // เก็บ base case factors ตามปีและ benefit_counter
+        if (!isset($base_case_factors[$current_benefit_counter])) {
+            $base_case_factors[$current_benefit_counter] = [];
+        }
+        $base_case_factors[$current_benefit_counter][$year] = [
             'attribution' => floatval($benefit_row['attribution']),
             'deadweight' => floatval($benefit_row['deadweight']),
             'displacement' => floatval($benefit_row['displacement'])
         ];
     }
-    mysqli_stmt_close($benefits_stmt);
+    mysqli_stmt_close($legacy_stmt);
+    
+    // ดึงข้อมูลจาก impact_chain_ratios (New chain system)
+    $new_benefits_query = "SELECT icr.benefit_number, icr.benefit_detail, icr.beneficiary, icr.benefit_note, icr.year, icr.attribution, icr.deadweight, icr.displacement, 'new_chain' as source_type
+                          FROM impact_chain_ratios icr
+                          INNER JOIN impact_chains ic ON icr.impact_chain_id = ic.id
+                          WHERE ic.project_id = ? AND icr.benefit_detail IS NOT NULL AND icr.benefit_detail != ''
+                          ORDER BY icr.benefit_number ASC, icr.year ASC";
+    $new_stmt = mysqli_prepare($conn, $new_benefits_query);
+    mysqli_stmt_bind_param($new_stmt, 'i', $project_id);
+    mysqli_stmt_execute($new_stmt);
+    $new_result = mysqli_stmt_get_result($new_stmt);
+    
+    while ($benefit_row = mysqli_fetch_assoc($new_result)) {
+        $benefit_key = $benefit_row['benefit_detail'] . '_' . $benefit_row['beneficiary'] . '_new_chain';
+        $year = $benefit_row['year'];
+        
+        // ถ้ายังไม่มีผลประโยชน์นี้ ให้เพิ่มใหม่
+        if (!isset($processed_benefits[$benefit_key])) {
+            $benefit_counter++;
+            $benefits[$benefit_counter] = [
+                'detail' => $benefit_row['benefit_detail'],
+                'beneficiary' => $benefit_row['beneficiary'],
+                'source_type' => $benefit_row['source_type']
+            ];
+            $processed_benefits[$benefit_key] = $benefit_counter;
+        }
+        
+        $current_benefit_counter = $processed_benefits[$benefit_key];
+        
+        // เก็บ benefit_note ตามปีและ benefit_counter
+        if (!isset($benefit_notes_by_year[$current_benefit_counter])) {
+            $benefit_notes_by_year[$current_benefit_counter] = [];
+        }
+        $benefit_notes_by_year[$current_benefit_counter][$year] = $benefit_row['benefit_note'];
+        
+        // เก็บ base case factors ตามปีและ benefit_counter
+        if (!isset($base_case_factors[$current_benefit_counter])) {
+            $base_case_factors[$current_benefit_counter] = [];
+        }
+        $base_case_factors[$current_benefit_counter][$year] = [
+            'attribution' => floatval($benefit_row['attribution']),
+            'deadweight' => floatval($benefit_row['deadweight']),
+            'displacement' => floatval($benefit_row['displacement'])
+        ];
+    }
+    mysqli_stmt_close($new_stmt);
     
     return [
         'benefits' => $benefits,
