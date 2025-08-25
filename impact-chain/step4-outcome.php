@@ -315,7 +315,7 @@ function getProxiesForOutcome($conn, $outcome_id)
                         <li class="breadcrumb-item"><a href="../project-list.php">โครงการ</a></li>
                         <li class="breadcrumb-item"><a href="step1-strategy.php?project_id=<?php echo $project_id; ?>">Step 1</a></li>
                         <li class="breadcrumb-item"><a href="step2-activity.php?project_id=<?php echo $project_id; ?>">Step 2</a></li>
-                        <li class="breadcrumb-item"><a href="step3-output.php?project_id=<?php echo $project_id; ?><?php echo ($chain_id > 0 ? '&chain_id='.$chain_id : ''); ?>">Step 3</a></li>
+                        <li class="breadcrumb-item"><a href="step3-output.php?project_id=<?php echo $project_id; ?><?php echo ($chain_id > 0 ? '&chain_id=' . $chain_id : ''); ?>">Step 3</a></li>
                         <li class="breadcrumb-item active">Step 4: ผลลัพธ์</li>
                     </ol>
                 </nav>
@@ -324,9 +324,9 @@ function getProxiesForOutcome($conn, $outcome_id)
         </div>
 
         <!-- Progress Steps -->
-        <?php 
+        <?php
         $status = getImpactChainStatus($project_id);
-        renderImpactChainProgressBar($project_id, 4, $status); 
+        renderImpactChainProgressBar($project_id, 4, $status);
         ?>
 
         <div class="row mb-4">
@@ -395,7 +395,7 @@ function getProxiesForOutcome($conn, $outcome_id)
                                 <?php endforeach; ?>
                             </div>
                             <div class="d-flex justify-content-between">
-                                <a href="step3-output.php?project_id=<?php echo $project_id; ?><?php echo ($chain_id > 0 ? '&chain_id='.$chain_id : ''); ?>" class="btn btn-outline-secondary">
+                                <a href="step3-output.php?project_id=<?php echo $project_id; ?><?php echo ($chain_id > 0 ? '&chain_id=' . $chain_id : ''); ?>" class="btn btn-outline-secondary">
                                     <i class="fas fa-arrow-left"></i> ย้อนกลับ
                                 </a>
                                 <a href="summary.php?project_id=<?php echo $project_id; ?>" class="btn btn-outline-primary">
@@ -456,7 +456,7 @@ function getProxiesForOutcome($conn, $outcome_id)
                                 <?php endforeach; ?>
 
                                 <div class="d-flex justify-content-between mt-4">
-                                    <a href="step3-output.php?project_id=<?php echo $project_id; ?><?php echo ($chain_id > 0 ? '&chain_id='.$chain_id : ''); ?>" class="btn btn-outline-secondary">
+                                    <a href="step3-output.php?project_id=<?php echo $project_id; ?><?php echo ($chain_id > 0 ? '&chain_id=' . $chain_id : ''); ?>" class="btn btn-outline-secondary">
                                         <i class="fas fa-arrow-left"></i> ย้อนกลับ
                                     </a>
                                     <button type="submit" class="btn btn-success" id="submitBtn">
@@ -482,6 +482,41 @@ function getProxiesForOutcome($conn, $outcome_id)
                 </div>
 
                 <div class="modal-body">
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0 text-secondary">
+                                <i class="fas fa-calendar-alt"></i> เลือกปีที่ต้องการประเมิน
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="row">
+                                        <?php if (!empty($evaluation_years)): ?>
+                                            <?php foreach ($evaluation_years as $index => $year): ?>
+                                                <div class="col-md-3 col-6 mb-2">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="evaluation_year"
+                                                            id="year<?php echo htmlspecialchars($year['year_be']); ?>"
+                                                            value="<?php echo htmlspecialchars($year['year_be']); ?>"
+                                                            <?php echo ($index == 0) ? 'checked' : ''; ?>>
+                                                        <label class="form-check-label fw-bold" for="year<?php echo htmlspecialchars($year['year_be']); ?>">
+                                                            <?php echo htmlspecialchars($year['year_display']); ?>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <div class="col-12">
+                                                <p class="text-muted">ไม่พบข้อมูลปีที่สามารถเลือกได้</p>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mb-4">
                         <label class="form-label fw-bold">ผลลัพธ์ที่เลือก:</label>
                         <div class="p-3 bg-light rounded">
@@ -531,15 +566,6 @@ function getProxiesForOutcome($conn, $outcome_id)
                                     <p>กรุณาเลือกผลลัพธ์เพื่อดูข้อมูล Proxy ที่เกี่ยวข้อง</p>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="alert alert-info border mb-4" id="formulaSection">
-                        <h6 class="text-primary mb-2">
-                            <i class="fas fa-calculator"></i> สูตรคำนวณ
-                        </h6>
-                        <div class="text-center">
-                            <strong>สัดส่วนผลกระทบจากโครงการ = 1 - (Attribution + Deadweight + Displacement) / 100</strong>
                         </div>
                     </div>
 
@@ -604,49 +630,14 @@ function getProxiesForOutcome($conn, $outcome_id)
                                 <i class="fas fa-list"></i> ข้อมูลผลประโยชน์
                             </h6>
 
-                            <div class="card mb-4">
-                                <div class="card-header bg-light">
-                                    <h6 class="mb-0 text-secondary">
-                                        <i class="fas fa-calendar-alt"></i> เลือกปีที่ต้องการประเมิน
-                                    </h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <div class="row">
-                                                <?php if (!empty($evaluation_years)): ?>
-                                                    <?php foreach ($evaluation_years as $index => $year): ?>
-                                                        <div class="col-md-3 col-6 mb-2">
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="radio" name="evaluation_year"
-                                                                    id="year<?php echo htmlspecialchars($year['year_be']); ?>"
-                                                                    value="<?php echo htmlspecialchars($year['year_be']); ?>"
-                                                                    <?php echo ($index == 0) ? 'checked' : ''; ?>>
-                                                                <label class="form-check-label fw-bold" for="year<?php echo htmlspecialchars($year['year_be']); ?>">
-                                                                    <?php echo htmlspecialchars($year['year_display']); ?>
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                    <?php endforeach; ?>
-                                                <?php else: ?>
-                                                    <div class="col-12">
-                                                        <p class="text-muted">ไม่พบข้อมูลปีที่สามารถเลือกได้</p>
-                                                    </div>
-                                                <?php endif; ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                             <div class="table-responsive mb-4">
                                 <table class="table table-bordered" id="benefitTable">
                                     <thead class="table-light">
                                         <tr>
                                             <th width="15%">ผลประโยชน์</th>
-                                            <th width="30%">รายละเอียด</th>
+                                            <th width="35%">รายละเอียด</th>
                                             <th width="25%">ผู้ใช้ประโยชน์</th>
-                                            <th width="20%">จำนวนเงิน (บาท/ปี)</th>
-                                            <th width="10%">จัดการ</th>
+                                            <th width="25%">จำนวนเงิน (บาท/ปี)</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -668,12 +659,6 @@ function getProxiesForOutcome($conn, $outcome_id)
                                                     placeholder="กรอกจำนวนเงิน (บาท/ปี)"
                                                     pattern="[0-9,]+"
                                                     title="กรุณาใส่ตัวเลขเท่านั้น">
-                                            </td>
-                                            <td class="text-center align-middle">
-                                                <button type="button" class="btn btn-outline-danger btn-sm"
-                                                    onclick="removeBenefitRow(1)" disabled>
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -793,26 +778,21 @@ function getProxiesForOutcome($conn, $outcome_id)
                             placeholder="กรอกจำนวนเงิน (บาท/ปี)"
                             pattern="[0-9,]+" title="กรุณาใส่ตัวเลขเท่านั้น">
                     </td>
-                    <td class="text-center align-middle">
-                        <button type="button" class="btn btn-outline-danger btn-sm" disabled>
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
                 </tr>
             `;
-            
+
             // รีเซ็ตค่าสัดส่วนผลกระทบ
             document.querySelector('input[name="attribution_1"]').value = '0';
             document.querySelector('input[name="deadweight_1"]').value = '0';
             document.querySelector('input[name="displacement_1"]').value = '0';
-            
+
             // แสดงฟอร์มและซ่อนส่วนที่บันทึกแล้ว
             document.getElementById('formulaSection').style.display = 'block';
             document.getElementById('savedDataSection').style.display = 'none';
-            
+
             // รีเซ็ตตัวนับแถว
             benefitRowCount = 1;
-            
+
             console.log('Form reset for new chain data entry');
         }
 
@@ -964,12 +944,12 @@ function getProxiesForOutcome($conn, $outcome_id)
 
             // โหลดข้อมูลเดิม (เฉพาะ legacy system เท่านั้น)
             <?php if ($is_legacy_system): ?>
-            loadExistingData();
+                loadExistingData();
             <?php else: ?>
-            // New Chain - ไม่โหลดข้อมูลเดิม ให้ผู้ใช้กรอกใหม่
-            document.getElementById('formulaSection').style.display = 'block';
-            document.getElementById('savedDataSection').style.display = 'none';
-            console.log('New chain - showing empty form for new data entry');
+                // New Chain - ไม่โหลดข้อมูลเดิม ให้ผู้ใช้กรอกใหม่
+                document.getElementById('formulaSection').style.display = 'block';
+                document.getElementById('savedDataSection').style.display = 'none';
+                console.log('New chain - showing empty form for new data entry');
             <?php endif; ?>
 
             // แสดง modal
@@ -1175,12 +1155,6 @@ function getProxiesForOutcome($conn, $outcome_id)
                             pattern="[0-9,]+"
                             title="กรุณาใส่ตัวเลขเท่านั้น">
                     </td>
-                    <td class="text-center align-middle">
-                        <button type="button" class="btn btn-outline-danger btn-sm" 
-                            onclick="removeBenefitRow(${rowNumber})" ${benefitRowCount <= 1 ? 'disabled' : ''}>
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
                 `;
                 benefitTableBody.appendChild(newBenefitRow);
 
@@ -1275,7 +1249,7 @@ function getProxiesForOutcome($conn, $outcome_id)
             const basecaseData = new FormData();
             basecaseData.append('project_id', document.querySelector('input[name="project_id"]').value);
             basecaseData.append('from_modal', '1');
-            
+
             // เพิ่ม chain_id ถ้ามี (สำหรับ New Chain system)
             const chainIdField = document.querySelector('input[name="chain_id"]');
             if (chainIdField && chainIdField.value) {
@@ -1284,7 +1258,7 @@ function getProxiesForOutcome($conn, $outcome_id)
             } else {
                 console.log('saveBestPracticeData: No chain_id field found or empty value');
             }
-            
+
             // เพิ่มปีที่เลือกในข้อมูลสัดส่วนผลกระทบ
             const selectedYear = document.querySelector('input[name="evaluation_year"]:checked');
             if (selectedYear) {
@@ -1330,7 +1304,7 @@ function getProxiesForOutcome($conn, $outcome_id)
 
             console.log('Saved count:', savedCount);
             console.log('Total rows:', benefitRows.length);
-            
+
             // Debug: ดูว่าแต่ละแถวมีข้อมูลอะไรบ้าง
             benefitRows.forEach((row, index) => {
                 const rowNumber = index + 1;
@@ -1338,7 +1312,7 @@ function getProxiesForOutcome($conn, $outcome_id)
                 const beneficiaryInput = document.querySelector(`textarea[name="beneficiary_${rowNumber}"]`);
                 const benefitNoteInput = document.querySelector(`input[name="benefit_note_${rowNumber}"]`);
                 const attributionInput = document.querySelector(`input[name="attribution_${rowNumber}"]`);
-                
+
                 console.log(`Row ${rowNumber}:`, {
                     benefitDetail: benefitDetailInput ? benefitDetailInput.value : 'not found',
                     beneficiary: beneficiaryInput ? beneficiaryInput.value : 'not found',
@@ -1372,12 +1346,12 @@ function getProxiesForOutcome($conn, $outcome_id)
 
                     // โหลดข้อมูลใหม่และแสดงผล (เฉพาะ legacy system)
                     <?php if ($is_legacy_system): ?>
-                    setTimeout(() => {
-                        loadExistingData();
-                    }, 500);
+                        setTimeout(() => {
+                            loadExistingData();
+                        }, 500);
                     <?php else: ?>
-                    // New Chain - ไม่รีเซ็ตฟอร์ม เพื่อไม่ให้ข้อมูลสูญหาย
-                    console.log('New chain - data saved successfully, keeping form data');
+                        // New Chain - ไม่รีเซ็ตฟอร์ม เพื่อไม่ให้ข้อมูลสูญหาย
+                        console.log('New chain - data saved successfully, keeping form data');
                     <?php endif; ?>
 
                     // รีเซ็ตปุ่มหลังจาก 2 วินาที
@@ -1441,7 +1415,7 @@ function getProxiesForOutcome($conn, $outcome_id)
         // ฟังก์ชันยืนยันการเลือกผลลัพธ์
         function confirmOutcomeSelection() {
             console.log('=== confirmOutcomeSelection started ===');
-            
+
             const selectedRadio = document.querySelector('input[name="selected_outcome"]:checked');
             if (!selectedRadio) {
                 alert('กรุณาเลือกผลลัพธ์ก่อน');
@@ -1470,7 +1444,7 @@ function getProxiesForOutcome($conn, $outcome_id)
             console.log('Form found:', outcomeForm);
             console.log('Form action before:', outcomeForm.action);
             console.log('Form method before:', outcomeForm.method);
-            
+
             let outcomeDetailsInput = outcomeForm.querySelector('input[name="outcome_details"]');
             if (!outcomeDetailsInput) {
                 outcomeDetailsInput = document.createElement('input');
@@ -1479,7 +1453,7 @@ function getProxiesForOutcome($conn, $outcome_id)
                 outcomeForm.appendChild(outcomeDetailsInput);
             }
             outcomeDetailsInput.value = outcomeDetails;
-            
+
             // เพิ่ม evaluation_year ลงในฟอร์มหลัก
             let evaluationYearInput = outcomeForm.querySelector('input[name="evaluation_year"]');
             if (!evaluationYearInput) {
@@ -1494,7 +1468,7 @@ function getProxiesForOutcome($conn, $outcome_id)
             const basecaseData = new FormData();
             basecaseData.append('project_id', document.querySelector('input[name="project_id"]').value);
             basecaseData.append('from_modal', '1');
-            
+
             // เพิ่ม chain_id ถ้ามี (สำหรับ New Chain system)
             const chainIdField2 = document.querySelector('input[name="chain_id"]');
             if (chainIdField2 && chainIdField2.value) {
@@ -1503,7 +1477,7 @@ function getProxiesForOutcome($conn, $outcome_id)
             } else {
                 console.log('goToNextStep: No chain_id field found or empty value');
             }
-            
+
             // เพิ่มปีที่เลือกในข้อมูลสัดส่วนผลกระทบ (ใช้ selectedYear ที่ declare แล้วข้างบน)
             if (selectedYear) {
                 basecaseData.append('evaluation_year', selectedYear.value);
@@ -1579,13 +1553,13 @@ function getProxiesForOutcome($conn, $outcome_id)
                 console.log('=== submitOutcomeForm called ===');
                 console.log('Form action:', outcomeForm.action);
                 console.log('Form method:', outcomeForm.method);
-                
+
                 // พิมพ์ข้อมูลทั้งหมดในฟอร์ม
                 const formData = new FormData(outcomeForm);
                 for (let pair of formData.entries()) {
                     console.log('Form field:', pair[0], '=', pair[1]);
                 }
-                
+
                 console.log('About to submit form...');
                 outcomeForm.submit();
                 console.log('Form submit() called');
@@ -1599,7 +1573,7 @@ function getProxiesForOutcome($conn, $outcome_id)
         // ฟังก์ชันไปขั้นตอนต่อไปโดยเก็บข้อมูลใน session
         function goToNextStep() {
             console.log('=== goToNextStep started ===');
-            
+
             const selectedRadio = document.querySelector('input[name="selected_outcome"]:checked');
             if (!selectedRadio) {
                 alert('กรุณาเลือกผลลัพธ์ก่อน');
@@ -1626,7 +1600,7 @@ function getProxiesForOutcome($conn, $outcome_id)
             // รวบรวมข้อมูลสัดส่วนผลกระทบ (ถ้ามี) 
             const benefitData = [];
             const benefitRows = document.querySelectorAll('#benefitTable tbody tr');
-            
+
             benefitRows.forEach((row, index) => {
                 const rowNumber = index + 1;
 
@@ -1672,71 +1646,71 @@ function getProxiesForOutcome($conn, $outcome_id)
 
             // ส่งข้อมูลไปยัง process-step4.php
             fetch('process-step4.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('Data saved to session successfully');
-                    
-                    // สร้าง form ใหม่เพื่อส่งข้อมูลไปยัง process-step4.php
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = 'process-step4.php';
-                    
-                    // เพิ่ม hidden inputs
-                    const projectIdInput = document.createElement('input');
-                    projectIdInput.type = 'hidden';
-                    projectIdInput.name = 'project_id';
-                    projectIdInput.value = document.querySelector('input[name="project_id"]').value;
-                    form.appendChild(projectIdInput);
-                    
-                    const outcomeInput = document.createElement('input');
-                    outcomeInput.type = 'hidden';
-                    outcomeInput.name = 'selected_outcome';
-                    outcomeInput.value = selectedRadio.value;
-                    form.appendChild(outcomeInput);
-                    
-                    const detailsInput = document.createElement('input');
-                    detailsInput.type = 'hidden';
-                    detailsInput.name = 'outcome_details';
-                    detailsInput.value = outcomeDetails;
-                    form.appendChild(detailsInput);
-                    
-                    const yearInput = document.createElement('input');
-                    yearInput.type = 'hidden';
-                    yearInput.name = 'evaluation_year';
-                    yearInput.value = selectedYear.value;
-                    form.appendChild(yearInput);
-                    
-                    const benefitDataInput = document.createElement('input');
-                    benefitDataInput.type = 'hidden';
-                    benefitDataInput.name = 'benefit_data';
-                    benefitDataInput.value = JSON.stringify(benefitData);
-                    form.appendChild(benefitDataInput);
-                    
-                    // เพิ่ม chain_id ถ้ามี
-                    const chainIdField = document.querySelector('input[name="chain_id"]');
-                    if (chainIdField) {
-                        const chainIdInput = document.createElement('input');
-                        chainIdInput.type = 'hidden';
-                        chainIdInput.name = 'chain_id';
-                        chainIdInput.value = chainIdField.value;
-                        form.appendChild(chainIdInput);
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('Data saved to session successfully');
+
+                        // สร้าง form ใหม่เพื่อส่งข้อมูลไปยัง process-step4.php
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = 'process-step4.php';
+
+                        // เพิ่ม hidden inputs
+                        const projectIdInput = document.createElement('input');
+                        projectIdInput.type = 'hidden';
+                        projectIdInput.name = 'project_id';
+                        projectIdInput.value = document.querySelector('input[name="project_id"]').value;
+                        form.appendChild(projectIdInput);
+
+                        const outcomeInput = document.createElement('input');
+                        outcomeInput.type = 'hidden';
+                        outcomeInput.name = 'selected_outcome';
+                        outcomeInput.value = selectedRadio.value;
+                        form.appendChild(outcomeInput);
+
+                        const detailsInput = document.createElement('input');
+                        detailsInput.type = 'hidden';
+                        detailsInput.name = 'outcome_details';
+                        detailsInput.value = outcomeDetails;
+                        form.appendChild(detailsInput);
+
+                        const yearInput = document.createElement('input');
+                        yearInput.type = 'hidden';
+                        yearInput.name = 'evaluation_year';
+                        yearInput.value = selectedYear.value;
+                        form.appendChild(yearInput);
+
+                        const benefitDataInput = document.createElement('input');
+                        benefitDataInput.type = 'hidden';
+                        benefitDataInput.name = 'benefit_data';
+                        benefitDataInput.value = JSON.stringify(benefitData);
+                        form.appendChild(benefitDataInput);
+
+                        // เพิ่ม chain_id ถ้ามี
+                        const chainIdField = document.querySelector('input[name="chain_id"]');
+                        if (chainIdField) {
+                            const chainIdInput = document.createElement('input');
+                            chainIdInput.type = 'hidden';
+                            chainIdInput.name = 'chain_id';
+                            chainIdInput.value = chainIdField.value;
+                            form.appendChild(chainIdInput);
+                        }
+
+                        // เพิ่ม form ไปยัง body และ submit
+                        document.body.appendChild(form);
+                        form.submit();
+                    } else {
+                        alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' + (data.message || 'Unknown error'));
                     }
-                    
-                    // เพิ่ม form ไปยัง body และ submit
-                    document.body.appendChild(form);
-                    form.submit();
-                } else {
-                    alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' + (data.message || 'Unknown error'));
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์');
-            });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์');
+                });
 
             // ปิด modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('outcomeProxyModal'));
@@ -1779,7 +1753,7 @@ function getProxiesForOutcome($conn, $outcome_id)
             formData.append('outcome_details', outcomeDetails);
             formData.append('evaluation_year', selectedYear.value);
             formData.append('save_details_only', '1'); // เพิ่ม flag เพื่อบอกว่าเป็นการบันทึกรายละเอียดเท่านั้น
-            
+
             // เพิ่ม chain_id ถ้ามี
             const chainIdField = document.querySelector('input[name="chain_id"]');
             if (chainIdField && chainIdField.value) {
@@ -1795,7 +1769,7 @@ function getProxiesForOutcome($conn, $outcome_id)
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                    
+
                     // ตรวจสอบ Content-Type ก่อน parse JSON
                     const contentType = response.headers.get('content-type');
                     if (!contentType || !contentType.includes('application/json')) {
@@ -1805,12 +1779,12 @@ function getProxiesForOutcome($conn, $outcome_id)
                             throw new Error('Server did not return JSON response');
                         });
                     }
-                    
+
                     return response.json();
                 })
                 .then(data => {
                     console.log('Server response:', data);
-                    
+
                     if (data.success) {
                         // แสดงข้อความสำเร็จ
                         saveBtn.innerHTML = '<i class="fas fa-check"></i> บันทึกเรียบร้อย';
@@ -1837,7 +1811,7 @@ function getProxiesForOutcome($conn, $outcome_id)
                         errorMessage += ': ' + error.message;
                         console.error('Error message:', error.message);
                     }
-                    
+
                     saveBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + errorMessage;
                     saveBtn.className = 'btn btn-danger';
 
@@ -1891,12 +1865,6 @@ function getProxiesForOutcome($conn, $outcome_id)
                         pattern="[0-9,]+"
                         title="กรุณาใส่ตัวเลขเท่านั้น">
                 </td>
-                <td class="text-center align-middle">
-                    <button type="button" class="btn btn-outline-danger btn-sm" 
-                        onclick="removeBenefitRow(${benefitRowCount})">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
             `;
             benefitTableBody.appendChild(newBenefitRow);
 
@@ -1943,47 +1911,6 @@ function getProxiesForOutcome($conn, $outcome_id)
             // คำนวณผลกระทบสำหรับแถวใหม่
             calculateImpact(benefitRowCount);
 
-            // อัปเดตสถานะปุ่มลบ
-            updateDeleteButtons();
-        }
-
-        // ฟังก์ชันลบแถวผลประโยชน์
-        function removeBenefitRow(rowNumber) {
-            if (benefitRowCount <= 1) {
-                alert('ต้องมีข้อมูลผลประโยชน์อย่างน้อย 1 รายการ');
-                return;
-            }
-
-            // ลบแถวจากตารางผลประโยชน์
-            const benefitRows = document.querySelectorAll('#benefitTable tbody tr');
-            benefitRows.forEach((row, index) => {
-                const button = row.querySelector('button');
-                if (button && button.getAttribute('onclick').includes(`removeBenefitRow(${rowNumber})`)) {
-                    row.remove();
-                }
-            });
-
-            // ลบแถวจากตารางสัดส่วนผลกระทบ
-            const impactRows = document.querySelectorAll('#impactTable tbody tr');
-            impactRows.forEach((row, index) => {
-                const input = row.querySelector(`input[name="attribution_${rowNumber}"]`);
-                if (input) {
-                    row.remove();
-                }
-            });
-
-            // อัปเดตสถานะปุ่มลบ
-            updateDeleteButtons();
-        }
-
-        // ฟังก์ชันอัปเดตสถานะปุ่มลบ
-        function updateDeleteButtons() {
-            const deleteButtons = document.querySelectorAll('#benefitTable .btn-outline-danger');
-            const currentRowCount = deleteButtons.length;
-
-            deleteButtons.forEach(button => {
-                button.disabled = currentRowCount <= 1;
-            });
         }
 
         // ฟังก์ชันเพิ่มข้อมูลต่อ (แสดงฟอร์มเพิ่มเติม)
@@ -1996,7 +1923,6 @@ function getProxiesForOutcome($conn, $outcome_id)
             // เพิ่มแถวใหม่
             addNewBenefitRow();
         }
-
     </script>
 </body>
 

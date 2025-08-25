@@ -19,18 +19,15 @@ function goToDashboard() {
 
 // สร้างรายงาน
 function generateReport() {
-    // แสดง loading
-    showLoading();
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectId = urlParams.get('project_id');
     
-    // โหลดข้อมูลและสร้างรายงาน
-    setTimeout(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const projectId = urlParams.get('project_id');
-        if (projectId) {
-            loadProjectData(projectId);
-        }
-        hideLoading();
-    }, 1000);
+    if (projectId) {
+        // Redirect ไปยังหน้า report-sroi.php พร้อม project_id
+        window.location.href = `report-sroi.php?project_id=${projectId}`;
+    } else {
+        alert('กรุณาเลือกโครงการก่อนสร้างรายงาน');
+    }
 }
 
 // อัพเดตอัตราคิดลด

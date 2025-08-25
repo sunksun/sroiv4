@@ -486,9 +486,11 @@ body {
     .pvf-table td:first-child,
     table[class*="table"] th:first-child,
     table[class*="table"] td:first-child {
-        width: 120px;
-        min-width: 120px;
-        font-size: 0.8em;
+        width: 200px;
+        min-width: 200px;
+        font-size: 0.75em;
+        word-wrap: break-word;
+        white-space: normal;
     }
     
     .data-table th:not(:first-child),
@@ -497,7 +499,7 @@ body {
     .pvf-table td:not(:first-child),
     table[class*="table"] th:not(:first-child),
     table[class*="table"] td:not(:first-child) {
-        width: calc((100% - 120px) / 6);
+        width: calc((100% - 200px) / 6);
         min-width: 60px;
         font-size: 0.8em;
         padding: 8px 4px;
@@ -505,7 +507,7 @@ body {
     
     /* year-header responsive */
     .year-header {
-        grid-template-columns: 120px repeat(6, 1fr);
+        grid-template-columns: 200px repeat(6, 1fr);
     }
     
     .year-header div {
@@ -690,11 +692,13 @@ table[class*="table"] {
 .pvf-table td:first-child,
 table[class*="table"] th:first-child,
 table[class*="table"] td:first-child {
-    width: 200px;
-    min-width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    width: 300px;
+    min-width: 300px;
+    white-space: normal;
+    word-wrap: break-word;
+    text-align: left;
+    padding: 12px 15px;
+    line-height: 1.4;
 }
 
 /* คอลัมน์ปี พ.ศ. ทุกตารางให้มีขนาดเท่ากัน */
@@ -704,7 +708,7 @@ table[class*="table"] td:first-child {
 .pvf-table td:not(:first-child),
 table[class*="table"] th:not(:first-child),
 table[class*="table"] td:not(:first-child) {
-    width: calc((100% - 200px) / 6);
+    width: calc((100% - 300px) / 6);
     min-width: 100px;
     text-align: center;
     padding: 12px 8px;
@@ -713,7 +717,7 @@ table[class*="table"] td:not(:first-child) {
 /* สำหรับตารางที่มี year-header */
 .year-header {
     display: grid;
-    grid-template-columns: 200px repeat(6, 1fr);
+    grid-template-columns: 300px repeat(6, 1fr);
     gap: 1px;
     background: #e9ecef;
     border-radius: 10px 10px 0 0;

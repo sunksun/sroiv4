@@ -79,9 +79,17 @@
     }
 
     $net_social_benefit = $total_present_benefits - $base_case_impact;
+
+    // คำนวณ IRR (Internal Rate of Return) แบบง่าย
+    $irr = 'N/A';
+    if ($total_present_costs > 0) {
+        $annual_net_benefit = $net_social_benefit / count($available_years);
+        $estimated_irr = (($annual_net_benefit / $total_present_costs) * 100);
+        if ($estimated_irr > 0) {
+            $irr = number_format($estimated_irr, 2) . '%';
+        }
+    }
     ?>
-
-
 
     <!-- Benefit Section -->
     <div class="section">
@@ -461,6 +469,54 @@
         </div>
     </div>
     -->
+    <!-- NPV, SROI, IRR Summary Section -->
+    <div class="section">
+        <h2 class="section-title">📊 สรุปผลการวิเคราะห์ทางการเงิน</h2>
+        <div class="metric-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
+            <div class="metric-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <div class="metric-label" style="font-size: 1rem; opacity: 0.9; margin-bottom: 8px;">
+                    NPV (Net Present Value)<br>
+                    <small>มูลค่าปัจจุบันสุทธิ (บาท)</small>
+                </div>
+                <div class="metric-value" style="font-size: 2rem; font-weight: bold;">
+                    <?php echo formatNumber($npv, 0); ?>
+                </div>
+                <div style="font-size: 0.85rem; margin-top: 8px; opacity: 0.8;">
+                    <?php echo $npv >= 0 ? '✅ โครงการมีความคุ้มค่า' : '⚠️ โครงการอาจไม่คุ้มค่า'; ?>
+                </div>
+            </div>
+
+            <div class="metric-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                <div class="metric-label" style="font-size: 1rem; opacity: 0.9; margin-bottom: 8px;">
+                    SROI Ratio<br>
+                    <small>อัตราผลตอบแทนทางสังคม (เท่า)</small>
+                </div>
+                <div class="metric-value" style="font-size: 2rem; font-weight: bold;">
+                    <?php echo formatNumber($sroi_ratio, 2); ?>
+                </div>
+                <div style="font-size: 0.85rem; margin-top: 8px; opacity: 0.8;">
+                    ลงทุน 1 บาท ได้ผลประโยชน์ <?php echo formatNumber($sroi_ratio, 2); ?> บาท
+                </div>
+            </div>
+
+            <div class="metric-card" style="background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%); color: white;">
+                <div class="metric-label" style="font-size: 1rem; opacity: 0.9; margin-bottom: 8px;">
+                    IRR (Internal Rate of Return)<br>
+                    <small>อัตราผลตอบแทนภายใน</small>
+                </div>
+                <div class="metric-value" style="font-size: 2rem; font-weight: bold;">
+                    <?php echo $irr; ?>
+                </div>
+                <div style="font-size: 0.85rem; margin-top: 8px; opacity: 0.8;">
+                    <?php echo $irr !== 'N/A' ? 'อัตราผลตอบแทนประมาณการ' : 'ไม่สามารถคำนวณได้'; ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- รายละเอียดเพิ่มเติม -->
+
+    </div>
+
     <!-- Impact Pathway Section -->
     <div class="section">
         <h2 class="section-title">เส้นทางผลกระทบ (Impact Pathway)</h2>

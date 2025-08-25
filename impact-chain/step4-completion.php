@@ -273,10 +273,11 @@ $progress_data = [
         // Auto-redirect message
         <?php if (isset($_SESSION['success_message'])): ?>
             setTimeout(function() {
-                alert('<?php echo $_SESSION['success_message'];
-                        unset($_SESSION['success_message']); ?>');
+                alert('<?php echo $_SESSION['success_message']; ?>');
             }, 500);
-        <?php endif; ?>
+        <?php 
+            unset($_SESSION['success_message']); 
+        endif; ?>
     </script>
 </body>
 

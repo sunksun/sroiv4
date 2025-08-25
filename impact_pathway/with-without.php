@@ -24,21 +24,62 @@ $username = $_SESSION['username'];
 // รับ project_id จาก URL
 $project_id = isset($_GET['project_id']) ? intval($_GET['project_id']) : 0;
 
-// ดึงข้อมูลผลประโยชน์จากตาราง project_impact_ratios
+// ดึงข้อมูลผลประโยชน์จากตาราง social_impact_pathway
 $benefit_data = [];
 if ($project_id > 0) {
-    $benefit_query = "SELECT benefit_detail, benefit_number FROM project_impact_ratios WHERE project_id = ? ORDER BY benefit_number ASC";
-    $benefit_stmt = mysqli_prepare($conn, $benefit_query);
-    mysqli_stmt_bind_param($benefit_stmt, 'i', $project_id);
-    mysqli_stmt_execute($benefit_stmt);
-    $benefit_result = mysqli_stmt_get_result($benefit_stmt);
+    $pathway_query = "SELECT benefit_data FROM social_impact_pathway WHERE project_id = ? AND benefit_data IS NOT NULL ORDER BY pathway_id DESC LIMIT 1";
+    $pathway_stmt = mysqli_prepare($conn, $pathway_query);
+    mysqli_stmt_bind_param($pathway_stmt, 'i', $project_id);
+    mysqli_stmt_execute($pathway_stmt);
+    $pathway_result = mysqli_stmt_get_result($pathway_stmt);
     
-    while ($benefit_row = mysqli_fetch_assoc($benefit_result)) {
-        if (!empty($benefit_row['benefit_detail'])) {
-            $benefit_data[] = $benefit_row['benefit_detail'];
+    if ($pathway_row = mysqli_fetch_assoc($pathway_result)) {
+        $benefit_json = $pathway_row['benefit_data'];
+        if (!empty($benefit_json)) {
+            $benefit_array = json_decode($benefit_json, true);
+            if (is_array($benefit_array)) {
+                foreach ($benefit_array as $index => $benefit) {
+                    // รวมข้อมูลทั้งหมดของผลประโยชน์
+                    $benefit_detail = [];
+                    $benefit_detail['beneficiary'] = $benefit['beneficiary'] ?? '';
+                    $benefit_detail['benefit_detail'] = $benefit['benefit_detail'] ?? '';
+                    $benefit_detail['benefit_note'] = $benefit['benefit_note'] ?? '';
+                    $benefit_detail['attribution'] = $benefit['attribution'] ?? '0';
+                    $benefit_detail['deadweight'] = $benefit['deadweight'] ?? '0';
+                    $benefit_detail['displacement'] = $benefit['displacement'] ?? '0';
+                    $benefit_detail['impact_percentage'] = $benefit['impact_percentage'] ?? '0';
+                    
+                    // สร้างข้อความแสดงรายละเอียดเต็ม
+                    $full_description = "ผลประโยชน์ " . ($index + 1) . ": " . $benefit_detail['beneficiary'];
+                    if (!empty($benefit_detail['benefit_detail'])) {
+                        $full_description .= "\n\nรายละเอียด: " . $benefit_detail['benefit_detail'];
+                    }
+                    
+                    if (!empty($full_description)) {
+                        $benefit_data[] = $full_description;
+                    }
+                }
+            }
         }
     }
-    mysqli_stmt_close($benefit_stmt);
+    mysqli_stmt_close($pathway_stmt);
+    
+    // ถ้าไม่พบข้อมูลใน social_impact_pathway ให้ fallback ไปใช้ project_impact_ratios
+    if (empty($benefit_data)) {
+        $benefit_query = "SELECT benefit_detail, benefit_number FROM project_impact_ratios WHERE project_id = ? ORDER BY benefit_number ASC";
+        $benefit_stmt = mysqli_prepare($conn, $benefit_query);
+        mysqli_stmt_bind_param($benefit_stmt, 'i', $project_id);
+        mysqli_stmt_execute($benefit_stmt);
+        $benefit_result = mysqli_stmt_get_result($benefit_stmt);
+        
+        while ($benefit_row = mysqli_fetch_assoc($benefit_result)) {
+            if (!empty($benefit_row['benefit_detail'])) {
+                $benefit_data[] = $benefit_row['benefit_detail'];
+            }
+        }
+        
+        mysqli_stmt_close($benefit_stmt);
+    }
 }
 
 // ดึงข้อมูล with-without ที่บันทึกไว้แล้ว
@@ -102,13 +143,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($saved_count > 0) {
             $message = "บันทึกข้อมูล " . $saved_count . " รายการเรียบร้อยแล้ว";
+            
+            // Redirect ไป SROI Ex-post Analysis
+            $_SESSION['success_message'] = $message;
+            header("location: ../sroi-expost/index.php?project_id=" . $project_id);
+            exit;
         } else {
             $message = "ไม่มีข้อมูลที่จะบันทึก";
         }
 
-        // ลิงค์ไปยังหน้า sroi-expost/index.php พร้อมส่ง project_id
-        header("Location: ../sroi-expost/index.php?project_id=" . $project_id);
-        exit();
     } catch (Exception $e) {
         $error = $e->getMessage();
     }
@@ -307,6 +350,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             text-align: left;
             min-width: 200px;
             color: #0056b3;
+            vertical-align: top;
+            padding-left: 0.25rem;
         }
 
         /* Value Cells */
@@ -486,7 +531,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ?>
 
     <!-- Main Content -->
-    <div class="main-container">
+    <div class="main-container" style="margin-top: 80px;">
         <!-- Form Container -->
         <div class="form-container">
             <h2 class="form-title">เปรียบเทียบกรณี มี-ไม่มี โครงการ</h2>
@@ -523,17 +568,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ?>
                             <tr>
                                 <td class="beneficiary-header">
-                                    <?php echo htmlspecialchars($benefit_name); ?>
+                                    <?php echo nl2br(htmlspecialchars($benefit_name)); ?>
                                 </td>
                                 <td class="value-cell">
-                                    <input type="text" name="with_<?php echo $index + 1; ?>" 
-                                           value="<?php echo isset($existing_data[$benefit_name]) ? htmlspecialchars($existing_data[$benefit_name]['with']) : ''; ?>" 
-                                           placeholder="">
+                                    <textarea name="with_<?php echo $index + 1; ?>" rows="3" 
+                                           class="form-control w-100"
+                                           style="width: 100%; resize: vertical;"
+                                           placeholder=""><?php echo isset($existing_data[$benefit_name]) ? htmlspecialchars($existing_data[$benefit_name]['with']) : ''; ?></textarea>
                                 </td>
                                 <td class="value-cell">
-                                    <input type="text" name="without_<?php echo $index + 1; ?>" 
-                                           value="<?php echo isset($existing_data[$benefit_name]) ? htmlspecialchars($existing_data[$benefit_name]['without']) : ''; ?>" 
-                                           placeholder="">
+                                    <textarea name="without_<?php echo $index + 1; ?>" rows="3"
+                                           class="form-control w-100"
+                                           style="width: 100%; resize: vertical;"
+                                           placeholder=""><?php echo isset($existing_data[$benefit_name]) ? htmlspecialchars($existing_data[$benefit_name]['without']) : ''; ?></textarea>
                                 </td>
                             </tr>
                         <?php 

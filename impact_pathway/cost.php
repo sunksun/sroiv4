@@ -114,13 +114,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($saved_count > 0) {
             $message = "บันทึกข้อมูลต้นทุน " . $saved_count . " รายการเรียบร้อยแล้ว";
+            
+            // Redirect ไป With-Without Analysis
+            $_SESSION['success_message'] = $message;
+            $project_id = $_GET['project_id'] ?? $_POST['project_id'] ?? '';
+            header("location: with-without.php?project_id=" . $project_id);
+            exit;
         } else {
             $message = "ไม่มีข้อมูลที่จะบันทึก";
         }
 
-        // ลิงค์ไปยังหน้า with-without.php พร้อมส่ง project_id
-        header("Location: with-without.php?project_id=" . $project_id);
-        exit();
     } catch (Exception $e) {
         $error = $e->getMessage();
     }
@@ -505,7 +508,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ?>
 
     <!-- Main Content -->
-    <div class="main-container">
+    <div class="main-container" style="margin-top: 80px;">
         <!-- Form Container -->
         <div class="form-container">
             <h2 class="form-title">ต้นทุน/งบประมาณโครงการ (งบ/ปี)</h2>
